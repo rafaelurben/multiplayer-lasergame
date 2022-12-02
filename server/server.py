@@ -1,10 +1,10 @@
 import aiohttp
 import logging
 import os.path
-import asyncio
+import json
 from aiohttp import web
 
-log = logging.getLogger(__name__)
+log = logging.getLogger()
 
 class BasicServer:
     "Basic websocket and http server"
@@ -12,12 +12,10 @@ class BasicServer:
     def __init__(self) -> None:
         self.app = self.create_app()
         self.websockets = {}
+        self._last_id = 0
 
     async def index_view(self, request):
         """Index page"""
-
-        if request.method == 'POST':
-            return web.Response(text="POST")
 
         return web.FileResponse(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'client', 'index.html'))
 
@@ -28,22 +26,24 @@ class BasicServer:
             if ws != exclude:
                 await ws.send_json(data)
 
-    async def onmessage(self, ws, msg, name):
+    async def handle_message(self, data, ws, wsid):
+        """Handle incoming messages"""
+
+    async def handle_message_json(self, data, ws, wsid):
+        """Handle incoming messages in json format."""
+
+    async def _handle_message(self, msg, ws, wsid):
         """Handle incoming messages."""
 
         if msg.type == aiohttp.WSMsgType.text:
-            await self.send_all_json({'action': 'sent', 'name': name, 'text': msg.data}, exclude=ws)
-            # data = json.loads(msg.data)
-            # if data['action'] == 'connect':
-            #     await self.onconnect(ws, data)
-            # elif data['action'] == 'sent':
-            #     await self.onsent(ws, data)
-            # elif data['action'] == 'disconnect':
-            #     await self.ondisconnect(ws, data)
-            # else:
-            #     log.warning('Unknown action: %s', data['action'])
+            try:
+                data = json.loads(msg.data)
+                await self.handle_message_json(data, ws, wsid)
+            except json.JSONDecodeError:
+                await self.handle_message(msg.data, ws, wsid)
         elif msg.type == aiohttp.WSMsgType.error:
-            log.warning('ws connection closed with exception %s', ws.exception())
+            log.warning('ws connection closed with exception %s',
+                        ws.exception())
         else:
             raise RuntimeError("Unsupported message type: %s" % msg.type)
 
@@ -55,15 +55,16 @@ class BasicServer:
 
         # Join
 
-        name = "anyone"
-        log.info('%s joined.', name)
-        await ws_current.send_json({'action': 'connect', 'name': name})
+        self._last_id += 1
+        wsid = self._last_id
+        log.info('%s joined.', wsid)
+        await ws_current.send_json({'action': 'connect', 'id': wsid})
 
         # Inform others and add to list
 
         for ws in self.websockets.values():
-            await ws.send_json({'action': 'join', 'name': name})
-        self.websockets[name] = ws_current
+            await ws.send_json({'action': 'join', 'id': wsid})
+        self.websockets[wsid] = ws_current
 
         # Main loop
 
@@ -71,30 +72,32 @@ class BasicServer:
             while True:
                 msg = await ws_current.receive()
 
-                await self.onmessage(ws_current, msg, name)
+                await self._handle_message(msg=msg, ws=ws_current, wsid=wsid)
         except RuntimeError:
             pass
 
         # On disconnect / error
 
-        del self.websockets[name]
-        log.info('%s disconnected.', name)
+        del self.websockets[wsid]
+        log.info('%s disconnected.', wsid)
         for ws in self.websockets.values():
-            await ws.send_json({'action': 'disconnect', 'name': name})
+            await ws.send_json({'action': 'disconnect', 'id': wsid})
 
         return ws_current
 
     async def onshutdown(self, app):
         """Cleanup tasks tied to the application's shutdown."""
 
-        for ws in self.websockets.values():
+        for ws in list(self.websockets.values()):
             await ws.close()
         self.websockets.clear()
 
     def get_routes(self) -> list:
         return [
-            web.view('/', self.index_view),
-            web.static('/static', os.path.join(os.path.dirname(os.path.dirname(__file__)), 'client', 'static')),
+            web.view(
+                '/', self.index_view),
+            web.static(
+                '/static', os.path.join(os.path.dirname(os.path.dirname(__file__)), 'client', 'static')),
         ]
 
     def create_app(self) -> web.Application:
@@ -107,11 +110,15 @@ class BasicServer:
         app.on_shutdown.append(self.onshutdown)
         return app
 
-    def run(self, host="0.0.0.0", port=80) -> None:
+    def run(self, host="0.0.0.0", port=80):
         """Run the server."""
 
-        web.run_app(self.app, host=host, port=port)
+        return web.run_app(self.app, host=host, port=port)
 
-if __name__ == "__main__":
-    server = BasicServer()
-    server.run()
+    async def start(self, host="0.0.0.0", port=80):
+        """Start the server."""
+
+        runner = web.AppRunner(self.app)
+        await runner.setup()
+        site = web.TCPSite(runner, host=host, port=port)
+        return await site.start()

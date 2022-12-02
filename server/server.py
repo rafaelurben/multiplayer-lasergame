@@ -14,10 +14,11 @@ class BasicServer:
         self.websockets = {}
         self._last_id = 0
 
-    async def index_view(self, request):
-        """Index page"""
+    async def send_one_json(self, data, wsid):
+        """Send json data to a specific client."""
 
-        return web.FileResponse(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'client', 'index.html'))
+        ws = self.websockets[wsid]
+        await ws.send_json(data)
 
     async def send_all_json(self, data, exclude=None):
         """Send json data to all connected clients."""
@@ -29,8 +30,22 @@ class BasicServer:
     async def handle_message(self, data, ws, wsid):
         """Handle incoming messages"""
 
+        log.info('[WS] Message received from %s: %s', wsid, data)
+
     async def handle_message_json(self, data, ws, wsid):
         """Handle incoming messages in json format."""
+
+        log.info('[WS] JSON message received from %s: %s', wsid, str(data))
+
+    async def handle_connect(self, ws, wsid):
+        """Handle client connection."""
+
+        log.info('[WS] Client %s connected!', wsid)
+
+    async def handle_disconnect(self, ws, wsid):
+        """Handle client disconnection."""
+
+        log.info('[WS] Client %s disconnected!', wsid)
 
     async def _handle_message(self, msg, ws, wsid):
         """Handle incoming messages."""
@@ -53,18 +68,15 @@ class BasicServer:
         ws_current = web.WebSocketResponse()
         await ws_current.prepare(request)
 
-        # Join
+        # Generate a unique id for the client
 
         self._last_id += 1
         wsid = self._last_id
-        log.info('%s joined.', wsid)
-        await ws_current.send_json({'action': 'connect', 'id': wsid})
 
-        # Inform others and add to list
+        # Handle connect
 
-        for ws in self.websockets.values():
-            await ws.send_json({'action': 'join', 'id': wsid})
         self.websockets[wsid] = ws_current
+        await self.handle_connect(ws_current, wsid)
 
         # Main loop
 
@@ -79,13 +91,11 @@ class BasicServer:
         # On disconnect / error
 
         del self.websockets[wsid]
-        log.info('%s disconnected.', wsid)
-        for ws in self.websockets.values():
-            await ws.send_json({'action': 'disconnect', 'id': wsid})
+        await self.handle_disconnect(ws_current, wsid)
 
         return ws_current
 
-    async def onshutdown(self, app):
+    async def handle_shutdown(self, app):
         """Cleanup tasks tied to the application's shutdown."""
 
         for ws in list(self.websockets.values()):
@@ -93,12 +103,7 @@ class BasicServer:
         self.websockets.clear()
 
     def get_routes(self) -> list:
-        return [
-            web.view(
-                '/', self.index_view),
-            web.static(
-                '/static', os.path.join(os.path.dirname(os.path.dirname(__file__)), 'client', 'static')),
-        ]
+        return []
 
     def create_app(self) -> web.Application:
         """Create the aiohttp application."""
@@ -107,7 +112,7 @@ class BasicServer:
         app.add_routes([
             web.get('/ws', self.websocket_handler),
         ] + self.get_routes())
-        app.on_shutdown.append(self.onshutdown)
+        app.on_shutdown.append(self.handle_shutdown)
         return app
 
     def run(self, host="0.0.0.0", port=80):

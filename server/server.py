@@ -1,6 +1,5 @@
 import aiohttp
 import logging
-import os.path
 import json
 from aiohttp import web
 
@@ -116,12 +115,12 @@ class BasicServer:
         return app
 
     def run(self, host="0.0.0.0", port=80):
-        """Run the server."""
+        """Run the server synchronously"""
 
         return web.run_app(self.app, host=host, port=port)
 
     async def start(self, host="0.0.0.0", port=80):
-        """Start the server."""
+        """Start the server asynchronously."""
 
         runner = web.AppRunner(self.app)
         await runner.setup()

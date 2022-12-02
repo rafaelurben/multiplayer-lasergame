@@ -1,6 +1,7 @@
 import logging
 import sys
 import os.path
+import asyncio
 from aiohttp import web
 from server import BasicServer
 
@@ -55,6 +56,7 @@ class GameServer(BasicServer):
 
 if __name__ == "__main__":
     server = GameServer()
-    server.run()
-    # loop = asyncio.get_event_loop()
-    # loop.run_until_complete(server.start())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(server.start())
+
+    loop.run_forever()

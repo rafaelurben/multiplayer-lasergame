@@ -1,23 +1,55 @@
-let socket = new WebSocket("ws://" + location.host + "/ws");
+var socket;
 
-socket.onopen = function (e) {
-    alert("[open] Connection established");
-};
+function connect(name) {
+    let ws = new WebSocket("ws://" + location.host + "/ws");
 
-socket.onmessage = function (event) {
-    alert(`[message] Data received from server: ${event.data}`);
-};
+    ws.onopen = function (e) {
+        console.log("[WS] Connection established, sending name...");
+        ws.send(name)
+    };
 
-socket.onclose = function (event) {
-    if (event.wasClean) {
-        alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-    } else {
-        // e.g. server process killed or network down
-        // event.code is usually 1006 in this case
-        alert('[close] Connection died');
+    ws.onmessage = function (event) {
+        console.log(`[WS] Data received from server: ${event.data}`);
+        alert("Data received from server: " + event.data);
+    };
+
+    ws.onclose = function (event) {
+        if (event.wasClean) {
+            console.log(`[WS] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+        } else {
+            // e.g. server process killed or network down
+            // event.code is usually 1006 in this case
+            console.warn('[WS] Connection died', event);
+            alert('[close] Connection died');
+        }
+    };
+
+    ws.onerror = function (error) {
+        alert(`Error: ${error.message}`);
+    };
+
+    return ws;
+}
+
+function ws_sendjson(data) {
+    socket.send(JSON.stringify(data));
+}
+
+function ws_setname() {
+    let nameinput = document.getElementById("nameinput");
+    let name = nameinput.value;
+
+    if (name == "") {
+        alert("Bitte gib einen Namen ein!");
+        return;
     }
-};
 
-socket.onerror = function (error) {
-    alert(`[error]`);
-};
+    nameinput.value = "";
+    document.getElementById("nameinputsubmit").innerText = "Name ändern";
+
+    if (socket === undefined || socket.readyState != WebSocket.OPEN) {
+        socket = connect(name);
+    } else {
+        ws_sendjson({ "action": "setname", "name": name });
+    }
+}

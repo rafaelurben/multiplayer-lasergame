@@ -1,12 +1,12 @@
 var socket;
 
-function connect(name) {
+function connect(name, spectator) {
     let prot = location.protocol === "http:" ? "ws://" : "wss://";
     let ws = new WebSocket(prot + location.host + "/ws");
 
     ws.onopen = function (e) {
-        console.log("[WS] Connection established, sending name...");
-        ws.send(name)
+        console.log("[WS] Connection established!");
+        ws_sendjson({ "mode": spectator ? "spectator" : "player", "name": name });
     };
 
     ws.onmessage = function (event) {

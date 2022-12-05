@@ -38,7 +38,7 @@ class GameSocket {
         };
 
         newsock.onerror = function (error) {
-            alert(`Error: ${error.message}`);
+            console.warn("[WS] Error:", error);
         };
 
         this.socket = newsock;

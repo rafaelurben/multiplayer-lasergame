@@ -2,28 +2,31 @@ class GameSocket {
     constructor() {
         this.socket = undefined;
         this.mode = undefined;
-        this._isSetup = false;
+        this.game = {
+            "state": undefined,
+            "players": {},
+        }
 
         this.connect();
     }
 
     connect() {
-        let newthis = this;
-
         let prot = location.protocol === "http:" ? "ws://" : "wss://";
-        this.socket = new WebSocket(prot + location.host + "/ws");
+        
+        let newthis = this; // Ugly hack to get around the fact that "this" is not the same in the callback
+        let newsock = new WebSocket(prot + location.host + "/ws");
 
-        this.socket.onopen = function (event) {
+        newsock.onopen = function (event) {
             console.log("[WS] Connection established!");
         };
 
-        this.socket.onmessage = function (event) {
+        newsock.onmessage = function (event) {
             let json = JSON.parse(event.data);
             console.debug("[WS] Data received:", json);
             newthis.onreceive(json);
         };
 
-        this.socket.onclose = function (event) {
+        newsock.onclose = function (event) {
             if (event.wasClean) {
                 console.log(`[WS] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
             } else {
@@ -34,13 +37,47 @@ class GameSocket {
             }
         };
 
-        this.socket.onerror = function (error) {
+        newsock.onerror = function (error) {
             alert(`Error: ${error.message}`);
         };
+
+        this.socket = newsock;
     }
 
     onreceive(json) {
-        let action = json.action;
+        switch (json.action) {
+            case "message": {
+                console.log("Message received from " + json.id + ": " + json.message);
+                break;
+            }
+            case "alert": {
+                alert(json.message);
+                break;
+            }
+            case "connection_established": {
+                this.mode = json.mode;
+                this.game.state = json.game_state;
+                this.game.players = json.players;
+                document.getElementById("block_connect").classList.add("hidden");
+                if (this.mode === "player") document.getElementById("block_teamselect").classList.remove("hidden");
+                break;
+            }
+            case "player_updated": {
+                this.game.players[json.id] = json.player;
+                break;
+            }
+            case "player_connected": {
+                this.game.players[json.id] = json.player;
+                break;
+            }
+            case "player_disconnected": {
+                delete this.game.players[json.id];
+                break;
+            }
+            default: {
+                console.warning("[WS] Unknown action received:", json);
+            }
+        }
     }
 
     send(json) {
@@ -48,21 +85,31 @@ class GameSocket {
         console.debug(`[WS] Sent:`, json);
     }
 
-    setupPlayer(name) {
-        if (this._isSetup) {
+    joinAsPlayer(name) {
+        if (this.mode !== undefined) {
             console.error("[WS] Cannot setup twice!");
             return;
+        } else if (name === undefined) {
+            name = document.getElementById("nameinput").value;
         }
+
+        if (name === "") {
+            alert("Please enter a name!");
+            return;
+        }
+
         this.send({"action": "setup", "mode": "player", "name": name})
-        this._isSetup = true;
     }
 
-    setupSpectator() {
-        if (this._isSetup) {
+    joinAsSpectator() {
+        if (this.mode !== undefined) {
             console.error("[WS] Cannot setup twice!");
             return;
         }
         this.send({"action": "setup", "mode": "spectator"})
-        this._isSetup = true;
+    }
+
+    selectTeam(team) {
+        this.send({"action": "select_team", "team": team});
     }
 }

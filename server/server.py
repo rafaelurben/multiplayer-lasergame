@@ -13,38 +13,43 @@ class BasicServer:
         self.websockets = {}
         self._last_id = 0
 
-    async def send_one_json(self, data, wsid):
+    async def send_to_one(self, data, wsid):
         """Send json data to a specific client."""
 
         ws = self.websockets[wsid]
         await ws.send_json(data)
 
-    async def send_all_json(self, data, exclude=None):
+    async def send_to_ids(self, data, ids):
+        """Send json data to a list of websocket ids."""
+
+        for wsid in ids:
+            await self.send_to_one(data, wsid)
+
+    async def send_to_all(self, data):
         """Send json data to all connected clients."""
 
         for ws in self.websockets.values():
-            if ws != exclude:
-                await ws.send_json(data)
+            await ws.send_json(data)
 
     async def handle_message(self, data, ws, wsid):
         """Handle incoming messages"""
 
-        log.info('[WS] Message received from %s: %s', wsid, data)
+        log.info('[WS] #%s sent a message: %s', wsid, data)
 
     async def handle_message_json(self, data, ws, wsid):
         """Handle incoming messages in json format."""
 
-        log.info('[WS] JSON message received from %s: %s', wsid, str(data))
+        log.info('[WS] #%s sent a JSON message: %s', wsid, str(data))
 
     async def handle_connect(self, ws, wsid):
         """Handle client connection."""
 
-        log.info('[WS] Client %s connected!', wsid)
+        log.info('[WS] #%s connected!', wsid)
 
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
 
-        log.info('[WS] Client %s disconnected!', wsid)
+        log.info('[WS] #%s disconnected!', wsid)
 
     async def _handle_message(self, msg, ws, wsid):
         """Handle incoming messages."""
@@ -56,10 +61,9 @@ class BasicServer:
             except json.JSONDecodeError:
                 await self.handle_message(msg.data, ws, wsid)
         elif msg.type == aiohttp.WSMsgType.error:
-            log.warning('ws connection closed with exception %s',
-                        ws.exception())
+            log.warning('[WS] #%s Connection closed with exception %s', wsid, ws.exception())
         else:
-            raise RuntimeError("Unsupported message type: %s" % msg.type)
+            raise RuntimeError("[WS] #%s Unsupported message type: %s" % (wsid, msg.type))
 
     async def websocket_handler(self, request):
         """Handle incoming websocket connections."""

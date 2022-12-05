@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multiplayergame</title>
 
+    <link rel="stylesheet" href="/static/css/main.css">
+
     <script src="/static/js/connection.js"></script>
     <script>
         window.sock = new GameSocket();
@@ -15,9 +17,14 @@
 
 <body>
     <div id="block_connect">
-        <button onclick="sock.setupSpectator()">Join as spectator</button>
-        <input id="nameinput" type="text" name="name" type="text">
-        <button onclick="sock.setupPlayer(document.getElementById('nameinput').value)">Connect as player</button>
+        <button onclick="sock.joinAsSpectator()">Join as spectator</button>
+        <span>or</span>
+        <input id="nameinput" type="text" name="name" placeholder="Enter your name" required>
+        <button onclick="sock.joinAsPlayer()">Connect as player</button>
+    </div>
+    <div id="block_teamselect" class="hidden">
+        <button onclick="sock.selectTeam(0)">Team red (0)</button>
+        <button onclick="sock.selectTeam(1)">Team blue (1)</button>
     </div>
 </body>
 

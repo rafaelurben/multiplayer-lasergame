@@ -1,56 +1,68 @@
-var socket;
+class GameSocket {
+    constructor() {
+        this.socket = undefined;
+        this.mode = undefined;
+        this._isSetup = false;
 
-function connect(name, spectator) {
-    let prot = location.protocol === "http:" ? "ws://" : "wss://";
-    let ws = new WebSocket(prot + location.host + "/ws");
-
-    ws.onopen = function (e) {
-        console.log("[WS] Connection established!");
-        ws_sendjson({ "mode": spectator ? "spectator" : "player", "name": name });
-    };
-
-    ws.onmessage = function (event) {
-        console.log(`[WS] Data received from server: ${event.data}`);
-        alert("Data received from server: " + event.data);
-    };
-
-    ws.onclose = function (event) {
-        if (event.wasClean) {
-            console.log(`[WS] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-        } else {
-            // e.g. server process killed or network down
-            // event.code is usually 1006 in this case
-            console.warn('[WS] Connection died', event);
-            alert('[close] Connection died');
-        }
-    };
-
-    ws.onerror = function (error) {
-        alert(`Error: ${error.message}`);
-    };
-
-    return ws;
-}
-
-function ws_sendjson(data) {
-    socket.send(JSON.stringify(data));
-}
-
-function ws_setname() {
-    let nameinput = document.getElementById("nameinput");
-    let name = nameinput.value;
-
-    if (name == "") {
-        alert("Bitte gib einen Namen ein!");
-        return;
+        this.connect();
     }
 
-    nameinput.value = "";
-    document.getElementById("nameinputsubmit").innerText = "Name ändern";
+    connect() {
+        let newthis = this;
 
-    if (socket === undefined || socket.readyState != WebSocket.OPEN) {
-        socket = connect(name);
-    } else {
-        ws_sendjson({ "action": "setname", "name": name });
+        let prot = location.protocol === "http:" ? "ws://" : "wss://";
+        this.socket = new WebSocket(prot + location.host + "/ws");
+
+        this.socket.onopen = function (event) {
+            console.log("[WS] Connection established!");
+        };
+
+        this.socket.onmessage = function (event) {
+            let json = JSON.parse(event.data);
+            console.debug("[WS] Data received:", json);
+            newthis.onreceive(json);
+        };
+
+        this.socket.onclose = function (event) {
+            if (event.wasClean) {
+                console.log(`[WS] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            } else {
+                // e.g. server process killed or network down
+                // event.code is usually 1006 in this case
+                console.warn('[WS] Connection died', event);
+                alert('[Error] Connection died');
+            }
+        };
+
+        this.socket.onerror = function (error) {
+            alert(`Error: ${error.message}`);
+        };
+    }
+
+    onreceive(json) {
+        let action = json.action;
+    }
+
+    send(json) {
+        this.socket.send(JSON.stringify(json));
+        console.debug(`[WS] Sent:`, json);
+    }
+
+    setupPlayer(name) {
+        if (this._isSetup) {
+            console.error("[WS] Cannot setup twice!");
+            return;
+        }
+        this.send({"action": "setup", "mode": "player", "name": name})
+        this._isSetup = true;
+    }
+
+    setupSpectator() {
+        if (this._isSetup) {
+            console.error("[WS] Cannot setup twice!");
+            return;
+        }
+        this.send({"action": "setup", "mode": "spectator"})
+        this._isSetup = true;
     }
 }

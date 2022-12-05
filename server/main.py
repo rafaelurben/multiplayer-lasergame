@@ -20,38 +20,36 @@ class GameServer(BasicServer):
         super().__init__()
 
         self.players = {}
-        self.spectators = {}
+        self.spectatorIds = []
+        self.masterId = None
 
     async def handle_message_json(self, data, ws, wsid):
         """Handle incoming messages in json format."""
 
         await super().handle_message_json(data, ws, wsid)
-        await self.send_all_json({'action': 'sent', 'wsid': wsid, 'data': data}, exclude=ws)
-        # if data['action'] == 'connect':
-        #     await self.onconnect(ws, data)
-        # elif data['action'] == 'sent':
-        #     await self.onsent(ws, data)
-        # elif data['action'] == 'disconnect':
-        #     await self.ondisconnect(ws, data)
-        # else:
-        #     log.warning('Unknown action: %s', data['action'])
+
+        action = data['action']
+        if action == 'setup':
+            mode = data['mode']
+            if mode == 'player':
+                name = data['name']
+                log.info('[WS] Websocket %s connected as player with name %s', wsid, name)
+                self.players[wsid] = {'name': name}
+                await self.send_all_json({'action': 'player_connected', 'id': wsid, 'name': name}, exclude=ws)
+            elif mode == 'spectator':
+                log.info('[WS] Websocket %s connected as spectator!', wsid)
+                self.spectatorIds.append(wsid)
+                if self.masterId is None:
+                    self.masterId = wsid
+                    log.info('[WS] Websocket %s is now the game master!', wsid)
+            await ws.send_json({'action': 'connection_established', 'id': wsid, 'players': self.players})
+        elif action == 'message':
+            await self.send_all_json({'action': 'message', 'wsid': wsid, 'data': data}, exclude=ws)
 
     async def handle_connect(self, ws, wsid):
         """Handle client connection."""
 
         await super().handle_connect(ws, wsid)
-
-        data = await ws.receive_json()
-        mode = data['mode']
-        name = data['name']
-        if mode == 'player':
-            log.info('[WS] Websocket %s connected as player with name %s', wsid, name)
-            self.players[wsid] = {'name': name}
-            await self.send_all_json({'action': 'player_connected', 'id': wsid, 'name': name}, exclude=ws)
-        elif mode == 'spectator':
-            log.info('[WS] Websocket %s connected as spectator', wsid)
-            self.spectators[wsid] = {'name': name}
-        await ws.send_json({'action': 'connection_established', 'id': wsid, 'players': self.players})
 
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
@@ -62,9 +60,12 @@ class GameServer(BasicServer):
             log.info('[WS] Player %s using websocket %s disconnected', self.players[wsid]['name'], wsid)
             del self.players[wsid]
             await self.send_all_json({'action': 'player_disconnected', 'id': wsid})
-        elif wsid in self.spectators:
+        elif wsid in self.spectatorIds:
             log.info('[WS] Spectator using websocket %s disconnected', wsid)
-            del self.spectators[wsid]
+            self.spectatorIds.remove(wsid)
+        if wsid == self.masterId:
+            log.info('[WS] Master using websocket %s disconnected!', wsid)
+            self.masterId = None
 
     def get_routes(self) -> list:
         """Get the routes for the http server"""

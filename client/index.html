@@ -8,12 +8,16 @@
     <title>Multiplayergame</title>
 
     <script src="/static/js/connection.js"></script>
+    <script>
+        window.sock = new GameSocket();
+    </script>
 </head>
 
 <body>
-    <div>
+    <div id="block_connect">
+        <button onclick="sock.setupSpectator()">Join as spectator</button>
         <input id="nameinput" type="text" name="name" type="text">
-        <button id="nameinputsubmit" onclick="ws_setname()">Verbinden</button>
+        <button onclick="sock.setupPlayer(document.getElementById('nameinput').value)">Connect as player</button>
     </div>
 </body>
 

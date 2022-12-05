@@ -1,7 +1,8 @@
 var socket;
 
 function connect(name) {
-    let ws = new WebSocket("ws://" + location.host + "/ws");
+    let prot = location.protocol === "http:" ? "ws://" : "wss://";
+    let ws = new WebSocket(prot + location.host + "/ws");
 
     ws.onopen = function (e) {
         console.log("[WS] Connection established, sending name...");

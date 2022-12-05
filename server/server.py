@@ -94,12 +94,23 @@ class BasicServer:
 
         return ws_current
 
-    async def handle_shutdown(self, app):
-        """Cleanup tasks tied to the application's shutdown."""
+    async def handle_cleanup(self, app):
+        """Cleanup tasks tied to the application's cleanup."""
 
+        log.info("[Server] Cleanup...")
         for ws in list(self.websockets.values()):
             await ws.close()
         self.websockets.clear()
+
+    async def handle_shutdown(self, app):
+        """Shutdown tasks tied to the application's shutdown."""
+
+        log.info("[Server] Stopped!")
+
+    async def handle_startup(self, app):
+        """Startup tasks tied to the application's startup."""
+
+        log.info("[Server] Started!")
 
     def get_routes(self) -> list:
         return []
@@ -111,7 +122,9 @@ class BasicServer:
         app.add_routes([
             web.get('/ws', self.websocket_handler),
         ] + self.get_routes())
+        app.on_cleanup.append(self.handle_cleanup)
         app.on_shutdown.append(self.handle_shutdown)
+        app.on_startup.append(self.handle_startup)
         return app
 
     def run(self, host="0.0.0.0", port=80):

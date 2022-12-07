@@ -11,34 +11,38 @@
     <link rel="stylesheet" href="/static/css/main.css">
 
     <script src="/static/js/connection.js"></script>
+    <script src="/static/js/game.js"></script>
     <script>
-        window.sock = new GameSocket();
+        window.game = new Game();
+        window.sock = new GameSocket(window.game);
     </script>
 </head>
 
 <body>
     <div class="w-100 h-100 d-flex flex-column">
-        <div id="block_header" class="w-100 p-2 row border-bottom align-items-center">
+        <div id="block_header" class="w-100 p-2 m-0 row border-bottom align-items-center">
             <div class="col-12 col-sm-6">
                 <h3 class="mb-0">Multiplayergame</h3>
             </div>
             <div class="col-12 col-sm-6 text-end">
-                <span id="header_team" class="me-2"></span>
                 <span id="header_status">Not connected</span>
+                <span id="header_team" class="hidden">■</span>
             </div>
         </div>
-        <div id="block_connect" class="m-2">
-            <div class="row row-cols-lg-auto g-3 align-items-center">
-                <div class="col-12"><button class="btn btn-light" onclick="sock.joinAsSpectator()">Connect as spectator</button></div>
-                <div class="input-group">
-                    <input id="nameinput" class="form-control" type="text" name="name" placeholder="Enter your name">
-                    <button class="btn btn-primary" onclick="sock.joinAsPlayer()">Join as player</button>
+        <div id="maincontent" class="m-2 row gap-2 flex-grow-1">
+            <div id="block_connect" class="hidden mt-2">
+                <div class="row row-cols-lg-auto g-3 align-items-center">
+                    <div class="col-12"><button class="btn btn-light" onclick="sock.joinAsSpectator()">Connect as spectator</button></div>
+                    <div class="input-group">
+                        <input id="nameinput" class="form-control" type="text" name="name" placeholder="Enter your name">
+                        <button class="btn btn-primary" onclick="sock.joinAsPlayer()">Join as player</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="block_teamselect" class="hidden m-2 row gap-2 flex-grow-1">
-            <button class="btn t0-bg" onclick="sock.selectTeam(0)">Team red</button>
-            <button class="btn t1-bg" onclick="sock.selectTeam(1)">Team blue</button>
+            <div id="block_teamselect" class="hidden row gap-2 m-0 p-0">
+                <button class="btn t0-bg fs-2" onclick="sock.selectTeam(0)">Team red</button>
+                <button class="btn t1-bg fs-2" onclick="sock.selectTeam(1)">Team blue</button>
+            </div>
         </div>
     </div>
 </body>

@@ -1,13 +1,8 @@
 class GameSocket {
-    constructor() {
+    constructor(game) {
         this.socket = undefined;
         this.wsid = undefined;
-        this.mode = undefined;
-        this.game = {
-            "state": undefined,
-            "players": {},
-        }
-        this.name = undefined;
+        this.game = game;
 
         this.connect();
     }
@@ -20,6 +15,7 @@ class GameSocket {
 
         newsock.onopen = function (event) {
             console.log("[WS] Connection established!");
+            newthis.game.updateUi();
         };
 
         newsock.onmessage = function (event) {
@@ -58,20 +54,20 @@ class GameSocket {
             }
             case "connection_established": {
                 this.wsid = json.id;
-                this.mode = json.mode;
+                this.game.client.id = json.id;
+                this.game.client.mode = json.mode;
                 this.game.state = json.game_state;
                 this.game.players = json.players;
-                document.getElementById("block_connect").classList.add("hidden");
-                if (this.mode === "player") {
-                    document.getElementById("header_status").innerText = `Connected as "${this.name}" (${this.wsid})`;
-                    document.getElementById("block_teamselect").classList.remove("hidden");
-                } else {
-                    document.getElementById("header_status").innerText = `Connected as spectator (${this.wsid})`;
-                }
+
+                this.game.updateUi();
                 break;
             }
             case "player_updated": {
                 this.game.players[json.id] = json.player;
+                if (json.id === this.game.client.id) {
+                    this.game.player = json.player;
+                    this.game.updateUi();
+                }
                 break;
             }
             case "player_connected": {
@@ -94,7 +90,7 @@ class GameSocket {
     }
 
     joinAsPlayer(name) {
-        if (this.mode !== undefined) {
+        if (this.game.client.mode !== undefined) {
             console.error("[WS] Cannot setup twice!");
             return;
         } else if (name === undefined) {
@@ -106,12 +102,12 @@ class GameSocket {
             return;
         }
 
-        this.name = name;
+        this.game.player.name = name;
         this.send({"action": "setup", "mode": "player", "name": name})
     }
 
     joinAsSpectator() {
-        if (this.mode !== undefined) {
+        if (this.game.client.mode !== undefined) {
             console.error("[WS] Cannot setup twice!");
             return;
         }

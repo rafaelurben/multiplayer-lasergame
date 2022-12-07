@@ -72,6 +72,7 @@ class GameServer(BasicServer):
                 if self.master_id is None:
                     self.master_id = wsid
                     log.info('[WS] #%s is now the game master!', wsid)
+                    mode = 'master'
             await ws.send_json({'action': 'connection_established', 'id': wsid, 'mode': mode, 'players': self.players, 'game_state': self.game_state})
         elif action == 'message':
             await self.send_to_all({'action': 'message', 'id': wsid, 'message': data['message']})

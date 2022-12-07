@@ -1,3 +1,24 @@
+/* Team colors */
+
+:root {
+    --col-team-0: #f44336;
+    --col-team-1: #2196f3;
+    --bs-body-color: #ffffff;
+    --bs-body-bg: #333;
+}
+
+.t0-fg { color: var(--col-team-0); }
+.t1-fg { color: var(--col-team-1); }
+.t0-bg { background-color: var(--col-team-0); }
+.t1-bg { background-color: var(--col-team-1); }
+
+/* Utils */
+
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
 .hidden {
     display: none;
 }

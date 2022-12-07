@@ -1,11 +1,13 @@
 class GameSocket {
     constructor() {
         this.socket = undefined;
+        this.wsid = undefined;
         this.mode = undefined;
         this.game = {
             "state": undefined,
             "players": {},
         }
+        this.name = undefined;
 
         this.connect();
     }
@@ -55,11 +57,17 @@ class GameSocket {
                 break;
             }
             case "connection_established": {
+                this.wsid = json.id;
                 this.mode = json.mode;
                 this.game.state = json.game_state;
                 this.game.players = json.players;
                 document.getElementById("block_connect").classList.add("hidden");
-                if (this.mode === "player") document.getElementById("block_teamselect").classList.remove("hidden");
+                if (this.mode === "player") {
+                    document.getElementById("header_status").innerText = `Connected as "${this.name}" (${this.wsid})`;
+                    document.getElementById("block_teamselect").classList.remove("hidden");
+                } else {
+                    document.getElementById("header_status").innerText = `Connected as spectator (${this.wsid})`;
+                }
                 break;
             }
             case "player_updated": {
@@ -98,6 +106,7 @@ class GameSocket {
             return;
         }
 
+        this.name = name;
         this.send({"action": "setup", "mode": "player", "name": name})
     }
 

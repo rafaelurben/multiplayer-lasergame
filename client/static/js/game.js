@@ -14,24 +14,22 @@ class Game {
     }
 
     updateUi() {
-        if (this.state === undefined) {
-            document.getElementById("block_connect").classList.remove("hidden");
+        $(`.modeblock:not(#mode_${this.client.mode})`).addClass("hidden");
+        $(`.modeblock.mode_${this.client.mode}`).removeClass("hidden");
+        $(`.stateblock:not(#state_${this.state})`).addClass("hidden");
+        $(`.stateblock.state_${this.state}`).removeClass("hidden");
+
+        if (this.player.team === undefined) {
+            $("#header_team").attr('class', 'hidden');
         } else {
-            document.getElementById("block_connect").classList.add("hidden");
+            $("#header_team").attr('class', `ms-2 t${this.player.team}-fg`); 
         }
-    
-        if (this.state === "lobby") {
-            if (this.client.mode === "player") {
-                document.getElementById("header_status").innerText = `Connected as player ${this.player.name} (${this.client.id})`;
-                document.getElementById("block_teamselect").classList.remove("hidden");
-                if (this.player.team !== undefined) {
-                    document.getElementById("header_team").classList = `ms-2 t${this.player.team}-fg`;
-                }
-            } else {
-                document.getElementById("block_teamselect").classList.add("hidden");
-                document.getElementById("header_status").innerText = `Connected as ${this.client.mode} (${this.client.id})`;
-                document.getElementById("header_team").classList = "hidden";
-            }
+
+        if (this.client.mode === "player") {
+            $("#header_status").text(`Connected as player ${this.player.name} (${this.client.id})`);
+        } else
+        if (this.client.mode === "spectator" || this.client.mode === "master") {
+            $("#header_status").text(`Connected as ${this.client.mode} (${this.client.id})`);
         }
     }
 }

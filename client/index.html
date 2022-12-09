@@ -21,7 +21,7 @@
 
 <body>
     <div class="w-100 h-100 d-flex flex-column">
-        <div id="block_header" class="w-100 p-2 m-0 row border-bottom align-items-center">
+        <div class="w-100 p-2 m-0 row border-bottom align-items-center">
             <div class="col-12 col-sm-6">
                 <h3 class="mb-0">Multiplayergame</h3>
             </div>
@@ -30,8 +30,9 @@
                 <span id="header_team" class="hidden">■</span>
             </div>
         </div>
-        <div id="maincontent" class="m-2 row gap-2 flex-grow-1">
-            <div id="block_connect" class="hidden mt-2">
+        <div id="maincontent" class="m-2 row flex-grow-1">
+            <!-- Connect screen -->
+            <div class="modeblock mode_connect hidden mt-2">
                 <div class="row row-cols-lg-auto g-3 align-items-center">
                     <div class="col-12"><button class="btn btn-light" onclick="sock.joinAsSpectator()">Connect as spectator</button></div>
                     <div class="input-group">
@@ -40,9 +41,18 @@
                     </div>
                 </div>
             </div>
-            <div id="block_teamselect" class="hidden row gap-2 m-0 p-0">
-                <button class="btn t0-bg fs-2" onclick="sock.selectTeam(0)">Team red</button>
-                <button class="btn t1-bg fs-2" onclick="sock.selectTeam(1)">Team blue</button>
+            <!-- Player screen -->
+            <div class="modeblock mode_player hidden">
+                <div class="stateblock state_lobby hidden row gap-2 m-0 p-0 h-100">
+                    <button class="btn t0-bg fs-2" onclick="sock.selectTeam(0)">Team red</button>
+                    <button class="btn t1-bg fs-2" onclick="sock.selectTeam(1)">Team blue</button>
+                </div>
+            </div>
+            <!-- Spectator screen -->
+            <div class="modeblock mode_spectator mode_master hidden">
+                <div class="stateblock state_lobby">
+                    
+                </div>
             </div>
         </div>
     </div>

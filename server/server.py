@@ -17,7 +17,11 @@ class BasicServer:
         """Send json data to a specific client."""
 
         ws = self.websockets[wsid]
-        await ws.send_json(data)
+        try:
+            await ws.send_json(data)
+        except ConnectionResetError:
+            log.warning('[WS] #%s: Connection reset by peer', wsid)
+            await self.handle_disconnect(ws, wsid)
 
     async def send_to_ids(self, data, ids):
         """Send json data to a list of websocket ids."""
@@ -28,8 +32,8 @@ class BasicServer:
     async def send_to_all(self, data):
         """Send json data to all connected clients."""
 
-        for ws in self.websockets.values():
-            await ws.send_json(data)
+        for wsid in list(self.websockets.keys()):
+            await self.send_to_one(data, wsid)
 
     async def handle_message(self, data, ws, wsid):
         """Handle incoming messages"""
@@ -44,11 +48,13 @@ class BasicServer:
     async def handle_connect(self, ws, wsid):
         """Handle client connection."""
 
+        self.websockets[wsid] = ws
         log.info('[WS] #%s connected!', wsid)
 
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
 
+        del self.websockets[wsid]
         log.info('[WS] #%s disconnected!', wsid)
 
     async def _handle_message(self, msg, ws, wsid):
@@ -60,8 +66,6 @@ class BasicServer:
                 await self.handle_message_json(data, ws, wsid)
             except json.JSONDecodeError:
                 await self.handle_message(msg.data, ws, wsid)
-        elif msg.type == aiohttp.WSMsgType.error:
-            log.warning('[WS] #%s Connection closed with exception %s', wsid, ws.exception())
         else:
             raise RuntimeError("[WS] #%s Unsupported message type: %s" % (wsid, msg.type))
 
@@ -78,7 +82,6 @@ class BasicServer:
 
         # Handle connect
 
-        self.websockets[wsid] = ws_current
         await self.handle_connect(ws_current, wsid)
 
         # Main loop
@@ -87,13 +90,18 @@ class BasicServer:
             while True:
                 msg = await ws_current.receive()
 
+                if msg.type == aiohttp.WSMsgType.ERROR:
+                    log.warning('[WS] #%s: Connection closed with exception %s', wsid, ws_current.exception())
+                    break
+                if msg.type == aiohttp.WSMsgType.CLOSE:
+                    log.warning('[WS] #%s: Connection closed!', wsid)
+                    break
                 await self._handle_message(msg=msg, ws=ws_current, wsid=wsid)
-        except RuntimeError:
-            pass
+        except (ConnectionResetError, ConnectionAbortedError, RuntimeError):
+            log.warning('[WS] #%s: Connection failed:', wsid)
 
         # On disconnect / error
 
-        del self.websockets[wsid]
         await self.handle_disconnect(ws_current, wsid)
 
         return ws_current

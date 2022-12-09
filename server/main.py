@@ -91,6 +91,8 @@ class GameServer(BasicServer):
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
 
+        await super().handle_disconnect(ws, wsid)
+
         if wsid in self.players:
             log.info('[WS] #%s ("%s") disconnected!', wsid, self.players[wsid]['name'])
             del self.players[wsid]
@@ -102,8 +104,6 @@ class GameServer(BasicServer):
             if wsid == self.master_id:
                 log.info('[WS] Master disconnected! The next spectator will become the new game master!')
                 self.master_id = None
-        else:
-            await super().handle_disconnect(ws, wsid)
 
 
     def get_routes(self) -> list:

@@ -58,15 +58,12 @@ class GameSocket {
                 this.game.client.mode = json.mode;
                 this.game.state = json.game_state;
                 this.game.players = json.players;
-
-                this.game.updateUi();
                 break;
             }
             case "player_updated": {
                 this.game.players[json.id] = json.player;
                 if (json.id === this.game.client.id) {
                     this.game.player = json.player;
-                    this.game.updateUi();
                 }
                 break;
             }
@@ -82,6 +79,7 @@ class GameSocket {
                 console.warning("[WS] Unknown action received:", json);
             }
         }
+        this.game.updateUi();
     }
 
     send(json) {

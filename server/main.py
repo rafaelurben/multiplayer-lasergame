@@ -64,7 +64,7 @@ class GameServer(BasicServer):
                     return
                 name = data['name']
                 log.info('[WS] #%s joined as player "%s"', wsid, name)
-                self.players[wsid] = {'name': name, 'team': None}
+                self.players[wsid] = {'name': name, 'team': None, 'id': wsid}
                 await self.send_to_all({'action': 'player_connected', 'id': wsid, 'player': self.players[wsid]})
             else:
                 log.info('[WS] #%s joined as spectator!', wsid)

@@ -43,15 +43,17 @@
             </div>
             <!-- Player screen -->
             <div class="modeblock mode_player hidden">
-                <div class="stateblock state_lobby hidden row gap-2 m-0 p-0 h-100">
+                <div class="stateblock state_lobby row gap-2 m-0 p-0 h-100">
                     <button class="btn t0-bg fs-2" onclick="sock.selectTeam(0)">Team red</button>
                     <button class="btn t1-bg fs-2" onclick="sock.selectTeam(1)">Team blue</button>
                 </div>
             </div>
             <!-- Spectator screen -->
             <div class="modeblock mode_spectator mode_master hidden">
-                <div class="stateblock state_lobby">
-                    
+                <div class="stateblock state_lobby w-100 h-100">
+                    <div id="playerlist" class="row gap-2 m-0 p-0 h-100">
+                        
+                    </div>
                 </div>
             </div>
         </div>

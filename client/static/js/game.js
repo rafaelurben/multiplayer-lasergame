@@ -1,7 +1,7 @@
 class Game {
     constructor() {
         this.client = {
-            mode: undefined,
+            mode: "connect",
             id: undefined,
         }
         this.player = {

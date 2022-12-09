@@ -90,7 +90,7 @@ class GameSocket {
     }
 
     joinAsPlayer(name) {
-        if (this.game.client.mode !== undefined) {
+        if (this.game.client.mode !== "connect") {
             console.error("[WS] Cannot setup twice!");
             return;
         } else if (name === undefined) {
@@ -107,7 +107,7 @@ class GameSocket {
     }
 
     joinAsSpectator() {
-        if (this.game.client.mode !== undefined) {
+        if (this.game.client.mode !== "connect") {
             console.error("[WS] Cannot setup twice!");
             return;
         }

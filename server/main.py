@@ -3,7 +3,9 @@ import sys
 import os.path
 import asyncio
 from aiohttp import web
+
 from server import BasicServer
+from ngrok_helpers import NgrokTunnel
 
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
@@ -120,8 +122,16 @@ class GameServer(BasicServer):
         ]
 
 if __name__ == "__main__":
-    server = GameServer()
-    loop = asyncio.new_event_loop()
-    loop.run_until_complete(server.start())
+    with NgrokTunnel() as url:
+        log.info("Tunnel URL: %s", url)
 
-    loop.run_forever()
+        server = GameServer()
+
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(server.start())
+
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            loop.run_until_complete(server.stop())
+            loop.close()

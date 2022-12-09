@@ -151,3 +151,8 @@ class BasicServer:
         await runner.setup()
         site = web.TCPSite(runner, host=host, port=port)
         return await site.start()
+
+    async def stop(self):
+        """Stop the server asynchronously."""
+
+        return await self.app.shutdown()

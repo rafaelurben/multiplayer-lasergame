@@ -124,6 +124,14 @@ class GameSocket {
         this.send({"action": "join_room", "mode": "spectator"})
     }
 
+    leave() {
+        if (this.game.client.mode === "connected") {
+            console.error("[WS] Not joined!");
+            return;
+        }
+        this.send({"action": "leave_room"});
+    }
+
     selectTeam(team) {
         this.send({"action": "select_team", "team": team});
     }

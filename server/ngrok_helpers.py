@@ -1,6 +1,15 @@
 import subprocess
 import requests
 
+def is_ngrok_available() -> bool:
+    "Check if ngrok is available"
+
+    try:
+        result = subprocess.run(["ngrok", "version"], check=False, stdout=subprocess.DEVNULL)
+        return result.returncode == 0
+    except FileNotFoundError:
+        return False
+
 class NgrokTunnel():
     def __init__(self, port: int = 80, web_addr: str = "localhost:4040"):
         self.port = port

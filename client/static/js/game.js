@@ -1,3 +1,6 @@
+TEAMNAMES = ["Team Red", "Team Blue"];
+TEAMNAME_NONE = "No team";
+
 class Game {
     constructor() {
         this.client = {
@@ -13,6 +16,14 @@ class Game {
         this.state = undefined;
         this.joining_allowed = undefined;
         this.players = {};
+
+        // On page load: add team select buttons
+        window.addEventListener('load', () => {
+            let teamselectcontainer = $("#teamselectcontainer");
+            for (let team in TEAMNAMES) {
+                teamselectcontainer.append($(`<button class="btn t${team}-bg fs-2" onclick="sock.selectTeam(${team})">${TEAMNAMES[team]}</button>`))
+            }
+        })
     }
 
     updateUi() {
@@ -52,7 +63,7 @@ class Game {
 
     renderSpectatorLobby() {
         let playerlistelem = $("#playerlist");
-        for (let team of [0, 1]) {
+        for (let team of [null, 0, 1]) {
             // Create a new team element if it doesn't exist
             let teamelem = $(`#playerlist_team${team}`);
             if (teamelem.length === 0) {
@@ -60,7 +71,7 @@ class Game {
                 playerlistelem.append(teamelem);
             }
             teamelem.empty();
-            teamelem.append(`<div class="playerlist_teamname mb-3 fw-bold">Team ${team}</div>`)
+            teamelem.append(`<div class="playerlist_teamname mb-3 fw-bold">${TEAMNAMES[team] || "No team"}</div>`)
 
             // Update the team members
             for (let playerid in this.players) {

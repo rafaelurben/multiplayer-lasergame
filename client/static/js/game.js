@@ -81,5 +81,15 @@ class Game {
                 }
             }
         }
+
+        if (this.client.mode === "master") {
+            if (this.joining_allowed) {
+                $("#toggle_joining").attr("class", 'btn btn-success');
+                $("#toggle_joining").text("Joining enabled");
+            } else {
+                $("#toggle_joining").attr("class", 'btn btn-danger');
+                $("#toggle_joining").text("Joining disabled");
+            }
+        }
     }
 }

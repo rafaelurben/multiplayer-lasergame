@@ -62,9 +62,14 @@
             </div>
             <!-- Spectator screen -->
             <div class="modeblock mode_spectator mode_master hidden">
-                <div class="stateblock state_lobby w-100 h-100">
-                    <div id="playerlist" class="row gap-2 m-0 p-0 h-100">
+                <div class="stateblock state_lobby w-100 h-100 d-flex flex-column">
+                    <div id="playerlist" class="row gap-2 m-0 p-0 h-100 flex-grow-1">
                         
+                    </div>
+                    <div class="modeblock mode_master d-flex flex-row gap-2">
+                        <button id="toggle_joining" class="btn btn-light" onclick="sock.action('toggle_joining')">Toggle joining</button>
+                        <span class="flex-grow-1"></span>
+                        <button class="btn btn-light" onclick="sock.action('start_game')">Start game</button>
                     </div>
                 </div>
             </div>

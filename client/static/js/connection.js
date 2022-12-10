@@ -140,4 +140,8 @@ class GameSocket {
     selectTeam(team) {
         this.send({"action": "select_team", "team": team});
     }
+
+    action(action, data) {
+        this.send({"action": action, ...data});
+    }
 }

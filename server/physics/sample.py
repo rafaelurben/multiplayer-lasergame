@@ -6,4 +6,16 @@ height = 2
 
 map = Map(width, height)
 
-print(map.map)
+map.change_field(0, 1, 3)
+map.change_field(0, 2, 2)
+
+
+
+
+map.step()
+
+
+
+m = map.map
+for l in m:
+    print(l)

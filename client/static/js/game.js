@@ -1,7 +1,7 @@
 class Game {
     constructor() {
         this.client = {
-            mode: "connect",
+            mode: undefined,
             id: undefined,
         }
         this.player = {
@@ -26,18 +26,20 @@ class Game {
             $("#header_team").attr('class', `ms-2 t${this.player.team}-fg`); 
         }
 
+        if (this.client.mode === "connected") {
+            $("#header_status").text(`Connected (${this.client.id})`);
+        } else
         if (this.client.mode === "player") {
-            $("#header_status").text(`Connected as player ${this.player.name} (${this.client.id})`);
+            $("#header_status").text(`Joined as player ${this.player.name} (${this.client.id})`);
         } else
         if (this.client.mode === "spectator" || this.client.mode === "master") {
-            $("#header_status").text(`Connected as ${this.client.mode} (${this.client.id})`);
+            $("#header_status").text(`Joined as ${this.client.mode} (${this.client.id})`);
 
             if (this.state === "lobby") this.renderSpectatorLobby();
         }
     }
 
     renderSpectatorLobby() {
-        console.log("Rendering spectator lobby")
         let playerlistelem = $("#playerlist");
         for (let team of [0, 1]) {
             // Create a new team element if it doesn't exist

@@ -53,12 +53,23 @@ class GameSocket {
                 alert(json.message);
                 break;
             }
-            case "connection_established": {
+            case "connected": {
                 this.wsid = json.id;
                 this.game.client.id = json.id;
+                this.game.client.mode = "connected";
+                break;
+            }
+            case "room_joined": {
                 this.game.client.mode = json.mode;
                 this.game.state = json.game_state;
                 this.game.players = json.players;
+                break;
+            }
+            case "room_left": {
+                this.game.client.mode = "connected";
+                this.game.state = undefined;
+                this.game.players = {};
+                this.game.player = {};
                 break;
             }
             case "player_updated": {
@@ -68,11 +79,11 @@ class GameSocket {
                 }
                 break;
             }
-            case "player_connected": {
+            case "player_joined": {
                 this.game.players[json.id] = json.player;
                 break;
             }
-            case "player_disconnected": {
+            case "player_left": {
                 delete this.game.players[json.id];
                 break;
             }
@@ -89,8 +100,8 @@ class GameSocket {
     }
 
     joinAsPlayer(name) {
-        if (this.game.client.mode !== "connect") {
-            console.error("[WS] Cannot setup twice!");
+        if (this.game.client.mode !== "connected") {
+            console.error("[WS] Already joined!");
             return;
         } else if (name === undefined) {
             name = document.getElementById("nameinput").value;
@@ -102,15 +113,15 @@ class GameSocket {
         }
 
         this.game.player.name = name;
-        this.send({"action": "setup", "mode": "player", "name": name})
+        this.send({"action": "join_room", "mode": "player", "name": name})
     }
 
     joinAsSpectator() {
-        if (this.game.client.mode !== "connect") {
-            console.error("[WS] Cannot setup twice!");
+        if (this.game.client.mode !== "connected") {
+            console.error("[WS] Already joined!");
             return;
         }
-        this.send({"action": "setup", "mode": "spectator"})
+        this.send({"action": "join_room", "mode": "spectator"})
     }
 
     selectTeam(team) {

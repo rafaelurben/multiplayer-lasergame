@@ -28,28 +28,77 @@ class GameServer(BasicServer):
         self.game_state = "lobby"
 
     async def send_to_spectators(self, data):
-        """Send data to all spectators."""
+        """Send data to all spectators"""
 
         await self.send_to_ids(data, ids=self.spectator_ids)
 
     async def send_to_joined(self, data):
-        """Send data to all clients who joined the game as player or spectator."""
+        """Send data to all clients who joined the game as player or spectator"""
 
-        await self.send_to_ids(data, ids=self.players.keys()+self.spectator_ids)
+        joined_ids = self.players.keys()+self.spectator_ids
+        await self.send_to_ids(data, ids=joined_ids)
 
-    async def handle_action_by_player(self, action, data, ws, wsid):
-        """Handle player action."""
+    async def send_to_unjoined(self, data):
+        """Send data to all clients who haven't joined the game"""
 
+        unjoined_ids = set(self.websockets.keys()) - set(self.players.keys()) - set(self.spectator_ids)
+        await self.send_to_ids(data, ids=unjoined_ids)
+
+    async def handle_action_from_player(self, action, data, ws, wsid):
+        """Handle action sent from a joined player"""
+
+        if action == 'leave_room':
+            log.info('[WS] #%s left the room! ("%s")', wsid, self.players[wsid]['name'])
+            del self.players[wsid]
+            await self.send_to_all({'action': 'player_left', 'id': wsid})
+            return await ws.send_json({'action': 'room_left'})
         if action == 'select_team' and self.game_state == 'lobby':
             team = data['team']
             if team in [0, 1]:
                 self.players[wsid]['team'] = team
-                await self.send_to_all({'action': 'player_updated', 'id': wsid, 'player': self.players[wsid]})
-        else:
-            await ws.send_json({'action': 'alert', 'message': '[Error] Invalid action!'})
+            return await self.send_to_all({'action': 'player_updated', 'id': wsid, 'player': self.players[wsid]})
+        return False
 
-    async def handle_action_by_master(self, action, data, ws, wsid):
-        """Handle master action."""
+    async def handle_action_from_master(self, action, data, ws, wsid):
+        """Handle action sent from master"""
+
+        if action == 'leave_room':
+            self.spectator_ids.remove(wsid)
+            self.master_id = None
+            log.info('[WS] #%s: The game master left the room! The next spectator will become the new game master!', wsid)
+            return await ws.send_json({'action': 'room_left'})
+        return False
+
+    async def handle_action_from_spectator(self, action, data, ws, wsid):
+        """Handle action sent from spectators (except master)"""
+
+        if action == 'leave_room':
+            self.spectator_ids.remove(wsid)
+            log.info('[WS] #%s stopped spectating!', wsid)
+            return await ws.send_json({'action': 'room_left'})
+        return False
+
+    async def handle_action_from_unjoined(self, action, data, ws, wsid):
+        """Handle action sent from a player that hasn't joined"""
+
+        if action == 'join_room':
+            mode = data['mode']
+            if mode == 'player':
+                if self.game_state != 'lobby':
+                    return await ws.send_json({'action': 'alert', 'message': '[Error] Game already started!'})
+                name = data['name']
+                self.players[wsid] = {'name': name, 'team': None, 'id': wsid}
+                log.info('[WS] #%s joined as player "%s"', wsid, name)
+                await self.send_to_all({'action': 'player_joined', 'id': wsid, 'player': self.players[wsid]})
+            else:
+                self.spectator_ids.append(wsid)
+                log.info('[WS] #%s started spectating!', wsid)
+                if self.master_id is None:
+                    self.master_id = wsid
+                    mode = 'master'
+                    log.info('[WS] #%s is now the game master!', wsid)
+            return await ws.send_json({'action': 'room_joined', 'id': wsid, 'mode': mode, 'players': self.players, 'game_state': self.game_state})
+        return False
 
     async def handle_message_json(self, data, ws, wsid):
         """Handle incoming messages in json format."""
@@ -58,37 +107,29 @@ class GameServer(BasicServer):
 
         action = data.pop('action', None)
 
-        if action == 'setup':
-            mode = data['mode']
-            if mode == 'player':
-                if self.game_state != 'lobby':
-                    await ws.send_json({'action': 'alert', 'message': '[Error] Game already started!'})
-                    return
-                name = data['name']
-                log.info('[WS] #%s joined as player "%s"', wsid, name)
-                self.players[wsid] = {'name': name, 'team': None, 'id': wsid}
-                await self.send_to_all({'action': 'player_connected', 'id': wsid, 'player': self.players[wsid]})
-            else:
-                log.info('[WS] #%s joined as spectator!', wsid)
-                self.spectator_ids.append(wsid)
-                if self.master_id is None:
-                    self.master_id = wsid
-                    log.info('[WS] #%s is now the game master!', wsid)
-                    mode = 'master'
-            await ws.send_json({'action': 'connection_established', 'id': wsid, 'mode': mode, 'players': self.players, 'game_state': self.game_state})
-        elif action == 'message':
+        if action == 'message':
             await self.send_to_all({'action': 'message', 'id': wsid, 'message': data['message']})
         elif wsid in self.players:
-            await self.handle_action_by_player(action, data, ws, wsid)
+            if await self.handle_action_from_player(action, data, ws, wsid) is not False:
+                return
         elif wsid == self.master_id:
-            await self.handle_action_by_master(action, data, ws, wsid)
+            if await self.handle_action_from_master(action, data, ws, wsid) is not False:
+                return
+        elif wsid in self.spectator_ids:
+            if await self.handle_action_from_spectator(action, data, ws, wsid) is not False:
+                return
         else:
-            await ws.send_json({'action': 'alert', 'message': '[Error] Invalid action!'})
+            if await self.handle_action_from_unjoined(action, data, ws, wsid) is not False:
+                return
+
+        await ws.send_json({'action': 'alert', 'message': '[Error] Invalid action!'})
 
     async def handle_connect(self, ws, wsid):
         """Handle client connection."""
 
         await super().handle_connect(ws, wsid)
+
+        await ws.send_json({'action': 'connected', 'id': wsid})
 
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
@@ -98,7 +139,7 @@ class GameServer(BasicServer):
         if wsid in self.players:
             log.info('[WS] #%s ("%s") disconnected!', wsid, self.players[wsid]['name'])
             del self.players[wsid]
-            await self.send_to_all({'action': 'player_disconnected', 'id': wsid})
+            await self.send_to_all({'action': 'player_left', 'id': wsid})
         elif wsid in self.spectator_ids:
             log.info('[WS] #%s (spectator) disconnected!', wsid)
             self.spectator_ids.remove(wsid)

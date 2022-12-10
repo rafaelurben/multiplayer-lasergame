@@ -57,6 +57,7 @@ class GameSocket {
                 this.wsid = json.id;
                 this.game.client.id = json.id;
                 this.game.client.mode = "connected";
+                this.game.joining_allowed = json.joining_allowed;
                 break;
             }
             case "room_joined": {
@@ -70,6 +71,10 @@ class GameSocket {
                 this.game.state = undefined;
                 this.game.players = {};
                 this.game.player = {};
+                break;
+            }
+            case "joining_toggled": {
+                this.game.joining_allowed = json.allowed;
                 break;
             }
             case "player_updated": {

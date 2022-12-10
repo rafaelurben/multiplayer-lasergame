@@ -11,6 +11,7 @@ class Game {
         }
 
         this.state = undefined;
+        this.joining_allowed = undefined;
         this.players = {};
     }
 
@@ -24,6 +25,16 @@ class Game {
             $("#header_team").attr('class', 'hidden');
         } else {
             $("#header_team").attr('class', `ms-2 t${this.player.team}-fg`); 
+        }
+
+        if (this.state === undefined) {
+            if (this.joining_allowed) {
+                $("#lobby_join_player_form").removeClass("hidden");
+                $("#lobby_join_player_disabled_message").addClass("hidden");
+            } else {
+                $("#lobby_join_player_form").addClass("hidden");
+                $("#lobby_join_player_disabled_message").removeClass("hidden");
+            }
         }
 
         if (this.client.mode === "connected") {

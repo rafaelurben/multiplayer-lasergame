@@ -18,6 +18,7 @@ class GameServer(BasicServer):
         self.master_id = None
 
         self.game_state = "lobby"
+        self.joining_allowed = True
 
         super().__init__()
 
@@ -64,6 +65,9 @@ class GameServer(BasicServer):
             log.info(
                 '[WS] #%s: The game master left the room! The next spectator will become the new game master!', wsid)
             return await ws.send_json({'action': 'room_left'})
+        if action == 'toggle_joining':
+            self.joining_allowed = not self.joining_allowed
+            return await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed})
         return False
 
     async def handle_action_from_spectator(self, action, data, ws, wsid):
@@ -126,7 +130,7 @@ class GameServer(BasicServer):
 
         await super().handle_connect(ws, wsid)
 
-        await ws.send_json({'action': 'connected', 'id': wsid})
+        await ws.send_json({'action': 'connected', 'id': wsid, 'joining_allowed': self.joining_allowed})
 
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""

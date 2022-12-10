@@ -40,10 +40,17 @@
             <!-- Connect screen -->
             <div class="modeblock mode_connected hidden mt-2">
                 <div class="row row-cols-lg-auto g-3 align-items-center">
-                    <div class="col-12"><button class="btn btn-light" onclick="sock.joinAsSpectator()">Connect as spectator</button></div>
-                    <div class="input-group">
-                        <input id="nameinput" class="form-control" type="text" name="name" placeholder="Enter your name">
-                        <button class="btn btn-primary" onclick="sock.joinAsPlayer()">Join as player</button>
+                    <div class="col-12">
+                        <button class="btn btn-light" onclick="sock.joinAsSpectator()">Connect as spectator</button>
+                    </div>
+                    <div class="col-12">
+                        <div id="lobby_join_player_form" class="input-group">
+                            <input id="nameinput" class="form-control" type="text" name="name" placeholder="Enter your name">
+                            <button class="btn btn-primary" onclick="sock.joinAsPlayer()">Join as player</button>
+                        </div>
+                        <div id="lobby_join_player_disabled_message" class="hidden">
+                            <span class="text-gray">Joining as a player is currently disabled. This might be the case if a game is running or because it was manually disabled.</span>
+                        </div>
                     </div>
                 </div>
             </div>

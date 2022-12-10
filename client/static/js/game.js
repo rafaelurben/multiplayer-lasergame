@@ -30,7 +30,7 @@ class Game {
             $("#header_status").text(`Connected (${this.client.id})`);
         } else
         if (this.client.mode === "player") {
-            $("#header_status").text(`Joined as player ${this.player.name} (${this.client.id})`);
+            $("#header_status").text(`Joined as player ${this.player.name}\xa0(${this.client.id})`);
         } else
         if (this.client.mode === "spectator" || this.client.mode === "master") {
             $("#header_status").text(`Joined as ${this.client.mode} (${this.client.id})`);

@@ -1,4 +1,4 @@
-from blocks import Empty, Blocked, Emitter, Receiver, Wood, Mirror, Glass
+from blocks import Empty, Wall, Emitter, Receiver, Wood, Mirror, Glass
 from copy import deepcopy
 
 class Map:
@@ -29,6 +29,9 @@ class Map:
                 if type(self.map[row][col]) == Emitter:
                     lines, point, angle, strength, border = self.map[row][col].create_laser_path()
                     y, x = row, col
+                    for l in lines:
+                        l[0] += x
+                        l[1] += y
                     laser_path = lines
                     for bounce in range(self.max_laser_bounces):     
                         if "n" in border:
@@ -39,17 +42,20 @@ class Map:
                             y += 1
                         if "w" in border:
                             x -= 1
+                        
+                        if y == len(self.map) or x == len(self.map[0]):
+                            break
                     self.lasers.append(laser_path)
 
 
     def get_data(self):
-        pass
+        return [self.map, self.lasers]
 
     def change_field(self, field_x, field_y, block_id):
         self.map[field_x][field_y] = self.block_id_dic[block_id](field_x, field_y)
 
     def update_state(self, field_x, field_y, new_state):
-        pass
+        self.map[field_x][field_y].update_state(new_state)
 
     def move(self, field_x, field_y, direction):
         pass

@@ -23,6 +23,10 @@ class Emitter:
         self.angle = angle
         self.strength = strength
 
+    def update_state(self, new_state):
+        self.angle = new_state[0]
+        self.strength = new_state[1]
+
     def create_laser_path(self):
         lines = [[0.5, 0.5]]
 

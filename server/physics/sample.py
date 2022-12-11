@@ -1,48 +1,42 @@
 from blocks import Emitter
 import numpy as np
 import cv2
-# from map import Map 
+from playingfield import Map 
 
 
-# width = 4
-# height = 2
+width = 4
+height = 2
 
-# map = Map(width, height)
+block_size = 100
 
-# map.change_field(0, 1, 3)
-# map.change_field(0, 2, 2)
+m = Map(width, height)
 
-
-
-
-# map.step()
-
-
-
-# m = map.map
-# for l in m:
-#     print(l)
+m.change_field(0, 1, 2)
+m.change_field(0, 2, 2)
 
 
 
 
-e = Emitter(0, 10)
 
-
-image = np.zeros((500, 500))
-for i in range(100):
-    lines, point, angle, strength, border = e.create_laser_path()
-    start_point = (50 + 200, 50 + 200)
-    end_point = (int(point[0] * 100) + 200, int(point[1] * 100) + 200)
-    image = cv2.line(image, start_point, end_point, (255,255,255), 1)
+angle = 0
+while True:
+    data, lasers = m.step()
 
 
 
+
+
+    image = np.zeros((block_size * height, block_size * width))
+    for laser in lasers:
+        start = [int(laser[0][0] * block_size), int(laser[0][1] * block_size)]
+        end = [int(laser[1][0] * block_size), int(laser[1][1] * block_size)]
+
+        image = cv2.line(image, start, end, (255,255,255), 1)
+
+    angle += 0.05
+    m.update_state(0, 2, (angle, 10))
     cv2.imshow("test", image)
     cv2.waitKey(50)
-
-    e.angle += 0.1
-
 
 
 cv2.destroyAllWindows()

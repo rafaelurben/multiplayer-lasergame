@@ -4,7 +4,7 @@ from copy import deepcopy
 class Map:
     block_id_dic = {
         0 : Empty,
-        1 : Blocked,
+        1 : Wall,
         2 : Emitter,
         3 : Receiver,
         4 : Wood,
@@ -31,13 +31,13 @@ class Map:
                     y, x = row, col
                     laser_path = lines
                     for bounce in range(self.max_laser_bounces):     
-                        if border == "n":
+                        if "n" in border:
                             y -= 1
-                        elif border == "e":
+                        if "e" in border:
                             x += 1
-                        elif border == "s":
+                        if "s" in border:
                             y += 1
-                        elif border == "w":
+                        if "w" in border:
                             x -= 1
                     self.lasers.append(laser_path)
 

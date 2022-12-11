@@ -51,11 +51,10 @@ class Emitter:
     
     def get_laser_path(self, point, angle, strength, border):
         # some code
-        return (lines, end_point, end_angle, end_strength, exit_border)
+        return ([lines], end_point, end_angle, end_strength, exit_border)
 
 
-e = Emitter(4, 10)
-print(e.create_laser_path())
+
 
 class Receiver:
     def __init__(self, x, y):

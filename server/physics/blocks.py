@@ -1,9 +1,9 @@
 import math
+from copy import deepcopy
 
 class Empty:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self):
+        pass
 
     def get_laser_path(self, point, angle, strength, border):
         # some code
@@ -49,13 +49,13 @@ class Emitter:
             end_point = [0.5 - dx, 0]
 
 
-        lines.append(end_point)
+        lines.append(deepcopy(end_point))
 
         return (lines, end_point, self.angle, self.strength, exit_border)
     
     def get_laser_path(self, point, angle, strength, border):
-        # some code
-        return ([lines], end_point, end_angle, end_strength, exit_border)
+        lines =[]
+        return (lines, end_point, end_angle, end_strength, exit_border)
 
 
 

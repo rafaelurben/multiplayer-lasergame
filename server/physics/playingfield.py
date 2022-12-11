@@ -14,7 +14,7 @@ class Map:
     max_laser_bounces = 100
 
     def __init__(self, mapwidth, mapheight):
-        self.map = [[Empty(x, y) for x in range(mapwidth)] for y in range(mapheight)]
+        self.map = [[Empty() for x in range(mapwidth)] for y in range(mapheight)]
         self.lasers = []
 
     def step(self):
@@ -45,6 +45,12 @@ class Map:
                         
                         if y == len(self.map) or x == len(self.map[0]):
                             break
+
+                        lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border)
+                        for l in lines:
+                            l[0] += x
+                            l[1] += y
+                        laser_path += lines
                     self.lasers.append(laser_path)
 
 
@@ -52,7 +58,7 @@ class Map:
         return [self.map, self.lasers]
 
     def change_field(self, field_x, field_y, block_id):
-        self.map[field_x][field_y] = self.block_id_dic[block_id](field_x, field_y)
+        self.map[field_x][field_y] = self.block_id_dic[block_id]()
 
     def update_state(self, field_x, field_y, new_state):
         self.map[field_x][field_y].update_state(new_state)

@@ -12,8 +12,8 @@ stream = logging.StreamHandler(sys.stdout)
 stream.setLevel(logging.DEBUG)
 log.addHandler(stream)
 
-def main(clientdir, url=None):
-    server = GameServer(clientdir)
+def main(*args, **kwargs):
+    server = GameServer(*args, **kwargs)
 
     loop.run_until_complete(server.start())
 
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     if is_ngrok_available():
         with NgrokTunnel() as ngrok_url:
             log.info("[Server] Tunnel URL: %s", ngrok_url)
-            main(clientdir, ngrok_url)
+            main(clientdir, public_url=ngrok_url)
     else:
         log.warning("[Server] ngrok is not in PATH! Please install it from https://ngrok.com/download or add it to PATH.")
         main(clientdir)

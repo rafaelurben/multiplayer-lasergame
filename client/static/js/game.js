@@ -1,5 +1,5 @@
-TEAMNAMES = ["Team Red", "Team Blue"];
-TEAMNAME_NONE = "No team";
+TEAMNAMES = ["Team\xa0Red", "Team\xa0Blue"];
+TEAMNAME_NONE = "No\xa0team";
 
 class Game {
     constructor() {
@@ -16,6 +16,8 @@ class Game {
         this.state = undefined;
         this.joining_allowed = undefined;
         this.players = {};
+
+        this.public_url = undefined;
 
         // On page load: add team select buttons
         window.addEventListener('load', () => {
@@ -75,7 +77,7 @@ class Game {
                 playerlistelem.append(teamelem);
             }
             teamelem.empty();
-            teamelem.append(`<div class="playerlist_teamname mb-3 fw-bold">${TEAMNAMES[team] || "No team"}</div>`)
+            teamelem.append(`<div class="playerlist_teamname mb-3 fw-bold">${TEAMNAMES[team] || TEAMNAME_NONE}</div>`)
 
             // Update the team members
             for (let playerid in this.players) {
@@ -94,6 +96,13 @@ class Game {
                 $("#toggle_joining").attr("class", 'btn btn-danger');
                 $("#toggle_joining").text("Joining disabled");
             }
+        }
+
+        if (this.public_url) {
+            $("#toggle_qrcode").removeClass("hidden");
+            let apibase = "https://api.qrserver.com/v1/create-qr-code/?format=svg&qzone=1&size=500x500&color=fff&bgcolor=212529&data="
+            let url = apibase + encodeURIComponent(this.public_url);
+            $("#qrcode").attr("src", url);
         }
     }
 }

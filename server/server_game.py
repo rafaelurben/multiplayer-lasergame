@@ -10,8 +10,9 @@ log = logging.getLogger()
 class GameServer(BasicServer):
     "Game server"
 
-    def __init__(self, clientdir) -> None:
+    def __init__(self, clientdir, public_url = None) -> None:
         self.clientdir = clientdir
+        self.public_url = public_url
 
         self.players = {}
         self.spectator_ids = []
@@ -130,7 +131,12 @@ class GameServer(BasicServer):
 
         await super().handle_connect(ws, wsid)
 
-        await ws.send_json({'action': 'connected', 'id': wsid, 'joining_allowed': self.joining_allowed})
+        await ws.send_json({
+            'action': 'connected',
+            'id': wsid,
+            'joining_allowed': self.joining_allowed,
+            'public_url': self.public_url,
+        })
 
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""

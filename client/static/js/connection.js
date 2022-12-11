@@ -58,6 +58,7 @@ class GameSocket {
                 this.game.client.id = json.id;
                 this.game.client.mode = "connected";
                 this.game.joining_allowed = json.joining_allowed;
+                this.game.public_url = json.public_url;
                 break;
             }
             case "room_joined": {

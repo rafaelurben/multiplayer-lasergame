@@ -93,8 +93,12 @@ class GameSocket {
                 delete this.game.players[json.id];
                 break;
             }
+            case "state_changed": {
+                this.game.state = json.state;
+                break;
+            }
             default: {
-                console.warning("[WS] Unknown action received:", json);
+                console.warn("[WS] Unknown action received:", json);
             }
         }
         this.game.updateUi();

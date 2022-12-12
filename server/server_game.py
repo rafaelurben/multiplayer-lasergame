@@ -66,9 +66,16 @@ class GameServer(BasicServer):
             log.info(
                 '[WS] #%s: The game master left the room! The next spectator will become the new game master!', wsid)
             return await ws.send_json({'action': 'room_left'})
-        if action == 'toggle_joining':
-            self.joining_allowed = not self.joining_allowed
-            return await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed})
+        if self.game_state.startswith('lobby'):
+            if action == 'toggle_joining':
+                self.joining_allowed = not self.joining_allowed
+                return await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed})
+            if action == 'toggle_teamlock':
+                self.game_state = 'lobby_teamlock' if self.game_state == 'lobby' else 'lobby'
+                return await self.send_to_all({'action': 'state_changed', 'state': self.game_state})
+            if action == 'start_game':
+                self.game_state = 'ingame'
+                return await self.send_to_all({'action': 'state_changed', 'state': self.game_state})
         return False
 
     async def handle_action_from_spectator(self, action, data, ws, wsid):
@@ -86,7 +93,7 @@ class GameServer(BasicServer):
         if action == 'join_room':
             mode = data['mode']
             if mode == 'player':
-                if self.game_state != 'lobby':
+                if not self.game_state.startswith('lobby'):
                     return await ws.send_json({'action': 'alert', 'message': '[Error] Game already started!'})
                 name = data['name']
                 self.players[wsid] = {'name': name, 'team': None, 'id': wsid}

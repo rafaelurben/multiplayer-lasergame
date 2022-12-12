@@ -60,16 +60,20 @@
                 <div id="teamselectcontainer" class="stateblock state_lobby row gap-2 m-0 p-0 h-100">
                     <!-- Teamselect-buttons are created in game.js on page load -->
                 </div>
+                <div class="stateblock state_lobby_teamlock d-flex align-items-center justify-items-center">
+                    <span class="text-gray">The host has disabled teamchanges. Please wait for the game to start.</span>
+                </div>
             </div>
             <!-- Spectator screen -->
             <div class="modeblock mode_spectator mode_master hidden">
-                <div class="stateblock state_lobby w-100 h-100 d-flex flex-column">
+                <div class="stateblock state_lobby state_lobby_teamlock w-100 h-100 d-flex flex-column">
                     <div id="playerlist" class="row gap-2 m-0 p-0 h-100 flex-grow-1">
                         
                     </div>
                     <div class="modeblock mode_master d-flex flex-row gap-2">
                         <button id="toggle_qrcode" class="btn btn-light hidden" data-bs-toggle="modal" data-bs-target="#qrcontainer">Show QR Code</button>
                         <button id="toggle_joining" class="btn btn-light" onclick="sock.action('toggle_joining')">Toggle joining</button>
+                        <button id="toggle_teamlock" class="btn btn-light" onclick="sock.action('toggle_teamlock')">Toggle teamlock</button>
                         <span class="flex-grow-1"></span>
                         <button class="btn btn-light" onclick="sock.action('start_game')">Start game</button>
                     </div>

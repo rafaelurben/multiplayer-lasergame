@@ -63,7 +63,7 @@ class Game {
                 $("#header_status").text(`Spectating (#${this.client.id})`);
             }
 
-            if (this.state === "lobby") this.renderSpectatorLobby();
+            if (this.state.startsWith('lobby')) this.renderSpectatorLobby();
         }
     }
 
@@ -89,6 +89,13 @@ class Game {
         }
 
         if (this.client.mode === "master") {
+            if (this.state === "lobby_teamlock") {
+                $("#toggle_teamlock").attr("class", 'btn btn-danger');
+                $("#toggle_teamlock").text("Team change disabled");
+            } else {
+                $("#toggle_teamlock").attr("class", 'btn btn-success');
+                $("#toggle_teamlock").text("Team change enabled");
+            }
             if (this.joining_allowed) {
                 $("#toggle_joining").attr("class", 'btn btn-success');
                 $("#toggle_joining").text("Joining enabled");

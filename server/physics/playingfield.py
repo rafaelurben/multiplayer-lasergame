@@ -30,8 +30,10 @@ class Map:
                     lines, point, angle, strength, border = self.map[row][col].create_laser_path()
                     y, x = row, col
                     for l in lines:
-                        l[0] += x
-                        l[1] += y
+                        l[0][1] += y
+                        l[0][0] += x
+                        l[1][0] += x
+                        l[1][1] += y
                     laser_path = lines
                     for bounce in range(self.max_laser_bounces):     
                         if "n" in border:
@@ -48,8 +50,10 @@ class Map:
 
                         lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border)
                         for l in lines:
-                            l[0] += x
-                            l[1] += y
+                            l[0][1] += y
+                            l[0][0] += x
+                            l[1][0] += x
+                            l[1][1] += y
                         laser_path += lines
                     self.lasers.append(laser_path)
 

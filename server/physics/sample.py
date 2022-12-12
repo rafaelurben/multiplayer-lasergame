@@ -25,10 +25,11 @@ while True:
 
     image = np.zeros((block_size * height, block_size * width))
     for laser in lasers:
-        start = [int(laser[0][0] * block_size), int(laser[0][1] * block_size)]
-        end = [int(laser[1][0] * block_size), int(laser[1][1] * block_size)]
+        for line in laser:
+            start = [int(line[0][0] * block_size), int(line[0][1] * block_size)]
+            end = [int(line[1][0] * block_size), int(line[1][1] * block_size)]
 
-        image = cv2.line(image, start, end, (255,255,255), 1)
+            image = cv2.line(image, start, end, (255,255,255), 1)
 
     angle += 0.05
     m.update_state(0, 2, (angle, 10))

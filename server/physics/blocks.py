@@ -6,32 +6,26 @@ class Empty:
         pass
 
     def get_laser_path(self, point, angle, strength, border):
-        start_point = point
         lines = []
         # normalize input
         if "n" in border:
-            start_point[1] = 1
+            start_point = [0, point[0]]
+            angle += 0.5 * math.pi
         if "e" in border:
-            start_point[0] = 0
+            start_point = [0, point[1]]
         if "s" in border:
-            start_point[1] = 0
+            start_point = [0, 1 - point[0]]
+            angle += 1.5 * math.pi
         if "w" in border:
-            start_point[0] = 1
+            start_point = [0, 1 - point[1]]
+            angle += math.pi
         # get output
 
         # denormalize output
-        if "n" in border:
-            start_point[1] = 1
-        if "e" in border:
-            start_point[0] = 0
-        if "s" in border:
-            start_point[1] = 0
-        if "w" in border:
-            start_point[0] = 1
+       
 
-
-        print(start_point, border)
-        return (lines, end_point, end_angle, end_strength, exit_border)
+        lines = [start_point,[0.5, 0.5]]
+        return ([lines], point, angle, strength, border)
 
 class Wall:
     def __init__(self, x, y):
@@ -75,7 +69,7 @@ class Emitter:
 
         lines.append(deepcopy(end_point))
 
-        return (lines, end_point, self.angle, self.strength, exit_border)
+        return ([lines], end_point, self.angle, self.strength, exit_border)
     
     def get_laser_path(self, point, angle, strength, border):
         lines =[]

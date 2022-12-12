@@ -6,7 +6,11 @@ class GameCanvas {
         this.ctx = this.canvas.getContext('2d');
 
         this.setSize();
-        this.drawCooridnateSystem();
+        this.drawCoordinateSystem();
+    }
+
+    clear() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     setSize(width, height) {
@@ -41,8 +45,10 @@ class GameCanvas {
         }
     }
 
-    drawCooridnateSystem(color) {
-        let lw = 0.05; // line width
+    drawCoordinateSystem(line_width) {
+        this.clear();
+
+        let lw = line_width || 0.05; // line width
         let c = 'rgba(255, 255, 255, 0.2)'; // color
 
         for (let x = 1; x < this.width; x++) {

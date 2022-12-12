@@ -13,11 +13,8 @@
     <script src="/static/external/jquery-3.6.1.min.js"></script>
     <script src="/static/external/bootstrap-5.2.3.bundle.min.js"></script>
     <script src="/static/js/connection.js"></script>
+    <script src="/static/js/canvas.js"></script>
     <script src="/static/js/game.js"></script>
-    <script>
-        window.game = new Game();
-        window.sock = new GameSocket(window.game);
-    </script>
 </head>
 
 <body>
@@ -66,6 +63,9 @@
             </div>
             <!-- Spectator screen -->
             <div class="modeblock mode_spectator mode_master hidden">
+                <div class="stateblock state_ingame w-100 h-100 d-flex">
+                    <canvas id="gamecanvas" class="img-fluid"></canvas>
+                </div>
                 <div class="stateblock state_lobby state_lobby_teamlock w-100 h-100 d-flex flex-column">
                     <div id="playerlist" class="row gap-2 m-0 p-0 h-100 flex-grow-1">
                         
@@ -95,6 +95,12 @@
             </div>
         </div>
     </div>
+
+    <script>
+        window.canvas = new GameCanvas(document.getElementById('gamecanvas'));
+        window.game = new Game();
+        window.sock = new GameSocket(window.game);
+    </script>
 </body>
 
 </html>

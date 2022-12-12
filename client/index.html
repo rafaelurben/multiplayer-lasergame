@@ -63,8 +63,8 @@
             </div>
             <!-- Spectator screen -->
             <div class="modeblock mode_spectator mode_master hidden">
-                <div class="stateblock state_ingame w-100 h-100 d-flex">
-                    <canvas id="gamecanvas" class="img-fluid"></canvas>
+                <div id="gamecanvascontainer" class="stateblock state_ingame w-100 h-100">
+                    <canvas id="gamecanvas" class="" style="image-rendering: pixelated;"></canvas>
                 </div>
                 <div class="stateblock state_lobby state_lobby_teamlock w-100 h-100 d-flex flex-column">
                     <div id="playerlist" class="row gap-2 m-0 p-0 h-100 flex-grow-1">
@@ -97,7 +97,7 @@
     </div>
 
     <script>
-        window.canvas = new GameCanvas(document.getElementById('gamecanvas'));
+        window.canvas = new GameCanvas(document.getElementById('gamecanvas'), document.getElementById('gamecanvascontainer'));
         window.game = new Game();
         window.sock = new GameSocket(window.game);
     </script>

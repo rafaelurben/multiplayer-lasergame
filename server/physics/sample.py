@@ -23,9 +23,6 @@ while True:
     data, lasers = m.step()
 
 
-
-
-
     image = np.zeros((block_size * height, block_size * width))
     for laser in lasers:
         start = [int(laser[0][0] * block_size), int(laser[0][1] * block_size)]

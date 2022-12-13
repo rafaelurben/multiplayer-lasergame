@@ -74,21 +74,22 @@ class Game {
             let teamelem = $(`#playerlist_team${team}`);
             if (teamelem.length === 0) {
                 teamelem = $(`<div id="playerlist_team${team}" class="col playerlist_team"></div>`);
-
-                if (this.client.mode === "master") {
-                    game = this;
-                    teamelem.on('dragover', (e) => {
-                        e.preventDefault();
-                    });
-                    teamelem.on('drop', (e) => {
-                        e.preventDefault();
-                        let playerid = e.originalEvent.dataTransfer.getData("playerId");
-                        window.sock.action("change_player_team", {id: playerid, team: team})
-                    });
-                }
-
                 playerlistelem.append(teamelem);
             }
+
+            teamelem.off('dragover');
+            teamelem.off('drop');
+            if (this.client.mode === "master") {
+                teamelem.on('dragover', (e) => {
+                    e.preventDefault();
+                });
+                teamelem.on('drop', (e) => {
+                    e.preventDefault();
+                    let playerid = e.originalEvent.dataTransfer.getData("playerId");
+                    window.sock.action("change_player_team", {id: playerid, team: team})
+                });
+            }
+
             teamelem.empty();
             teamelem.append(`<div class="playerlist_teamname mb-3 fw-bold">${TEAMNAMES[team] || TEAMNAME_NONE}</div>`)
 

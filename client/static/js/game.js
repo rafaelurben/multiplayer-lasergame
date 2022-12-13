@@ -91,7 +91,7 @@ class Game {
             }
 
             teamelem.empty();
-            teamelem.append(`<div class="playerlist_teamname mb-3 fw-bold">${TEAMNAMES[team] || TEAMNAME_NONE}</div>`)
+            teamelem.append(`<div class="playerlist_teamname mb-3 fw-bold">${TEAMNAMES[team] || TEAMNAME_NONE}<span class="t${team}-fg ms-2">■</span></div>`)
 
             // Update the team members
             for (let playerid in this.players) {

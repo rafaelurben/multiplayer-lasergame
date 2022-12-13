@@ -73,7 +73,7 @@ class Game {
             // Create a new team element if it doesn't exist
             let teamelem = $(`#playerlist_team${team}`);
             if (teamelem.length === 0) {
-                teamelem = $(`<div id="playerlist_team${team}" class="col playerlist_team"></div>`);
+                teamelem = $(`<div id="playerlist_team${team}" class="col playerlist_team rounded-3"></div>`);
                 playerlistelem.append(teamelem);
             }
 
@@ -82,16 +82,22 @@ class Game {
             if (this.client.mode === "master") {
                 teamelem.on('dragover', (e) => {
                     e.preventDefault();
+                    e.currentTarget.classList.add("dragover");
+                });
+                teamelem.on('dragleave', (e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove("dragover");
                 });
                 teamelem.on('drop', (e) => {
                     e.preventDefault();
+                    e.currentTarget.classList.remove("dragover");
                     let playerid = e.originalEvent.dataTransfer.getData("playerId");
                     window.sock.action("change_player_team", {id: playerid, team: team})
                 });
             }
 
             teamelem.empty();
-            teamelem.append(`<div class="playerlist_teamname mb-3 fw-bold">${TEAMNAMES[team] || TEAMNAME_NONE}<span class="t${team}-fg ms-2">■</span></div>`)
+            teamelem.append(`<div class="playerlist_teamname mb-3 mt-2 fw-bold">${TEAMNAMES[team] || TEAMNAME_NONE}<span class="t${team}-fg ms-2">■</span></div>`)
 
             // Update the team members
             for (let playerid in this.players) {

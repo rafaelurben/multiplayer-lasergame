@@ -70,13 +70,15 @@
                     <div id="playerlist" class="row gap-2 m-0 p-0 h-100 flex-grow-1">
                         
                     </div>
-                    <div class="modeblock mode_master d-flex flex-row gap-2">
+                    <!-- Master control bar -->
+                    <div class="modeblock mode_master d-flex flex-row gap-2 mt-2">
                         <button id="toggle_qrcode" class="btn btn-light hidden" data-bs-toggle="modal" data-bs-target="#qrcontainer">Show QR Code</button>
                         <button id="toggle_joining" class="btn btn-light" onclick="sock.action('toggle_joining')">Toggle joining</button>
                         <button id="toggle_teamlock" class="btn btn-light" onclick="sock.action('toggle_teamlock')">Toggle teamlock</button>
                         <span class="flex-grow-1"></span>
                         <button class="btn btn-light" onclick="sock.action('start_game')">Start game</button>
                     </div>
+                    <!-- QR code modal -->
                     <div id="qrcontainer" class="modal fade" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">

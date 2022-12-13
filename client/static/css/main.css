@@ -33,3 +33,21 @@ body {
     width: 100%;
     height: 100%;
 }
+
+*[draggable] {
+    cursor: move;
+    /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+*[draggable]:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.dragover {
+    outline: 2px dashed gray;
+}

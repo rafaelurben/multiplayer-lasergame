@@ -34,7 +34,7 @@ class Game {
         $(`.stateblock:not(#state_${this.state})`).addClass("hidden");
         $(`.stateblock.state_${this.state}`).removeClass("hidden");
 
-        if (this.player.team === undefined) {
+        if (this.player.team === undefined || this.player.team === null) {
             $("#header_team").attr('class', 'hidden');
         } else {
             $("#header_team").attr('class', `ms-2 t${this.player.team}-fg`); 
@@ -74,6 +74,19 @@ class Game {
             let teamelem = $(`#playerlist_team${team}`);
             if (teamelem.length === 0) {
                 teamelem = $(`<div id="playerlist_team${team}" class="col playerlist_team"></div>`);
+
+                if (this.client.mode === "master") {
+                    game = this;
+                    teamelem.on('dragover', (e) => {
+                        e.preventDefault();
+                    });
+                    teamelem.on('drop', (e) => {
+                        e.preventDefault();
+                        let playerid = e.originalEvent.dataTransfer.getData("playerId");
+                        window.sock.action("change_player_team", {id: playerid, team: team})
+                    });
+                }
+
                 playerlistelem.append(teamelem);
             }
             teamelem.empty();
@@ -83,7 +96,16 @@ class Game {
             for (let playerid in this.players) {
                 let player = this.players[playerid];
                 if (player.team === team) {
-                    teamelem.append(`<div class="playerlist_player">${player.name} (${playerid})</div>`);
+                    let playerelem = $(`<div class="playerlist_player">${player.name} (${playerid})</div>`);
+
+                    if (this.client.mode === "master") {
+                        playerelem.attr("draggable", "true");
+                        playerelem.on('dragstart', (e) => {
+                            e.originalEvent.dataTransfer.setData("playerId", playerid);
+                        });
+                    }
+
+                    teamelem.append(playerelem);
                 }
             }
         }

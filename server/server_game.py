@@ -76,6 +76,20 @@ class GameServer(BasicServer):
             if action == 'start_game':
                 self.game_state = 'ingame'
                 return await self.send_to_all({'action': 'state_changed', 'state': self.game_state})
+            if action == 'change_player_team':
+                player_id = str(data.get('id', None))
+                if not player_id.isdigit():
+                    return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid player id format!'})
+                player_id = int(player_id)
+                if player_id not in self.players:
+                    return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid player id!'})
+                team = str(data.get('team', None))
+                team = int(team) if team.isdigit() else None
+                if team not in [None, 0, 1]:
+                    return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid team!'})
+                
+                self.players[player_id]['team'] = team
+                return await self.send_to_all({'action': 'player_updated', 'id': player_id, 'player': self.players[player_id]})
         return False
 
     async def handle_action_from_spectator(self, action, data, ws, wsid):

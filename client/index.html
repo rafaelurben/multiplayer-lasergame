@@ -34,9 +34,9 @@
             </div>
         </div>
         <!-- Maincontent -->
-        <div id="maincontent" class="m-2 row flex-grow-1">
+        <div id="maincontent" class="d-flex flex-wrap flex-grow-1">
             <!-- Connect screen -->
-            <div class="modeblock mode_connected hidden mt-2">
+            <div class="modeblock mode_connected hidden p-3">
                 <div class="row row-cols-lg-auto g-3 align-items-center">
                     <div class="col-12">
                         <button class="btn btn-light" onclick="sock.joinAsSpectator()">Connect as spectator</button>
@@ -53,25 +53,30 @@
                 </div>
             </div>
             <!-- Player screen -->
-            <div class="modeblock mode_player hidden">
-                <div id="teamselectcontainer" class="stateblock state_lobby row gap-2 m-0 p-0 h-100">
+            <div class="modeblock mode_player hidden d-flex">
+                <!-- Team selection buttons -->
+                <div id="teamselectcontainer" class="stateblock state_lobby row gap-2 m-2 flex-grow-1">
                     <!-- Teamselect-buttons are created in game.js on page load -->
                 </div>
-                <div class="stateblock state_lobby_teamlock d-flex align-items-center justify-items-center">
-                    <span class="text-gray">The host has disabled teamchanges. Please wait for the game to start.</span>
+                <!-- Team selection disabled -->
+                <div class="stateblock state_lobby_teamlock m-2">
+                    <span class="text-gray">The host has disabled team selection.</span>
                 </div>
             </div>
             <!-- Spectator screen -->
-            <div class="modeblock mode_spectator mode_master hidden">
+            <div class="modeblock mode_spectator mode_master hidden p-0">
+                <!-- Game -->
                 <div id="gamecanvascontainer" class="stateblock state_ingame w-100 h-100">
                     <canvas id="gamecanvas" class="" style="image-rendering: pixelated;"></canvas>
                 </div>
+                <!-- Lobby -->
                 <div class="stateblock state_lobby state_lobby_teamlock w-100 h-100 d-flex flex-column">
-                    <div id="playerlist" class="row gap-2 m-0 p-0 h-100 flex-grow-1">
-                        
+                    <!-- Player list (Lobby) -->
+                    <div id="playerlist" class="row gap-2 m-2 flex-grow-1">
+                        <!-- Playerlist is created in game.js -->
                     </div>
                     <!-- Master control bar -->
-                    <div class="modeblock mode_master d-flex flex-row gap-2 mt-2">
+                    <div class="modeblock mode_master d-flex flex-row flex-wrap gap-2 p-2">
                         <button id="toggle_qrcode" class="btn btn-light hidden" data-bs-toggle="modal" data-bs-target="#qrcontainer">Show QR Code</button>
                         <button id="toggle_joining" class="btn btn-light" onclick="sock.action('toggle_joining')">Toggle joining</button>
                         <button id="toggle_teamlock" class="btn btn-light" onclick="sock.action('toggle_teamlock')">Toggle teamlock</button>

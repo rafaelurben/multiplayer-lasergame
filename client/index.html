@@ -65,13 +65,13 @@
                 </div>
             </div>
             <!-- Spectator screen -->
-            <div class="modeblock mode_spectator mode_master hidden p-0">
+            <div class="modeblock mode_spectator mode_master hidden p-0 d-flex">
                 <!-- Game -->
-                <div id="gamecanvascontainer" class="stateblock state_ingame w-100 h-100">
-                    <canvas id="gamecanvas" class="" style="image-rendering: pixelated;"></canvas>
+                <div id="spectatorcanvascontainer" class="stateblock state_ingame flex-grow-1 d-flex justify-content-center">
+                    <!-- Canvas is created by konvajs -->
                 </div>
                 <!-- Lobby -->
-                <div class="stateblock state_lobby state_lobby_teamlock w-100 h-100 d-flex flex-column">
+                <div class="stateblock state_lobby state_lobby_teamlock d-flex flex-column flex-grow-1">
                     <!-- Player list (Lobby) -->
                     <div id="playerlist" class="row gap-2 m-2 flex-grow-1">
                         <!-- Playerlist is created in game.js -->
@@ -105,7 +105,6 @@
     </div>
 
     <script>
-        window.canvas = new GameCanvas(document.getElementById('gamecanvas'), document.getElementById('gamecanvascontainer'));
         window.game = new Game();
         window.sock = new GameSocket(window.game);
     </script>

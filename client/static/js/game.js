@@ -13,9 +13,12 @@ class Game {
             id: undefined,
         }
 
-        this.state = undefined;
+        this.__state = undefined;
+        
         this.joining_allowed = undefined;
         this.players = {};
+
+        this.canvas = undefined;
 
         this.public_url = undefined;
 
@@ -27,6 +30,9 @@ class Game {
             }
         })
     }
+
+    get state() { return this.__state; }
+    set state(value) { this.__state = value; this.handleStateUpdate(); }
 
     updateUi() {
         $(`.modeblock:not(#mode_${this.client.mode})`).addClass("hidden");
@@ -62,6 +68,17 @@ class Game {
             }
 
             if (this.state.startsWith('lobby')) this.renderSpectatorLobby();
+        }
+    }
+
+    handleStateUpdate() {
+        this.updateUi();
+
+        if (this.state !== "ingame" && this.canvas !== undefined) {
+            this.canvas.stage.destroy();
+            this.canvas = undefined;
+        } else if (this.state === "ingame" && this.canvas === undefined && this.client.mode === "spectator" || this.client.mode === "master") {
+            this.canvas = new GameCanvas('spectatorcanvascontainer', 30, 15);
         }
     }
 

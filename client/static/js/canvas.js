@@ -1,109 +1,96 @@
 class GameCanvas {
-    constructor(canvas, container) {
-        this.canvas = canvas;
-        this.container = container;
-        this.ctx = this.canvas.getContext('2d');
+    constructor(containerId, mapWidth, mapHeight) {
+        this.container = document.getElementById(containerId);
 
-        // Virtual canvas size (in game units)
-        this.v_width = 30;
-        this.v_height = 15;
+        this.mapWidth = mapWidth || 30;
+        this.mapHeight = mapHeight || 15;
 
-        window.addEventListener('load', () => this.resize());
-        window.addEventListener('resize', () => this.resize());
+        this.w = this.mapWidth + 1;
+        this.h = this.mapHeight + 3;
+        this.ratio = this.w / this.h;
+
+        this.stage = new Konva.Stage({
+            container: containerId,
+            width: this.w,
+            height: this.h
+        })
+
+        this.resize();
+        window.addEventListener('resize', this.resize.bind(this));
+        
+        // Score layer
+        this.scorelayer = new Konva.Layer();
+        this.stage.add(this.scorelayer);
+
+        // Coordinate system layer
+        this.coordlayer = this.getCoordinateSystemLayer();
+        this.coordlayer.move({ x: 0, y: 2, width: this.mapWidth + 1, height: this.mapHeight + 1 });
+        this.stage.add(this.coordlayer);
+
+        // Map layer
+        this.maplayer = new Konva.Layer();
+        this.maplayer.move({ x: 0.5, y: 2.5 });
+        this.stage.add(this.maplayer);
     }
 
     clear() {
-        // clear canvas
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.maplayer.destroyChildren();
     }
 
     resize() {
-        // Reset canvas size so the container has the correct dimensions
-        this.canvas.style.height = "1px";
-        this.canvas.style.width = "1px";
+        // Reset stage size to get correct container size
+        this.stage.width(1);
+        this.stage.height(1);
 
-        // Calculate real canvas size
+        // Get container size
         let { width, height } = this.container.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
 
         // Apply better orientation
-        if (width/height >= this.v_width/this.v_height) {
-            width = height * this.v_width / this.v_height;
+        if (width/height >= this.ratio) {
+            width = height * this.ratio;
         } else {
-            height = width * this.v_height / this.v_width;
+            height = width / this.ratio;
         }
-
-        // Apply device pixel ratio and round up
-        width = Math.ceil(width);
-        height = Math.ceil(height);
         
-        // Set canvas size (in whole pixels)
-        this.canvas.width = width;
-        this.canvas.height = height;
-        
-        // Set canvas display size (in CSS pixels, can be fractional)
-        this.canvas.style.width = `${width}px`;
-        this.canvas.style.height = `${height}px`;
-
-        // Set canvas scale
-        //this.ctx.scale(dpr, dpr);
-
-        // Cleanup
-        this.clear();
-        this.drawCoordinateSystem();
+        // Set stage size to container size and scale
+        this.stage.width(width);
+        this.stage.height(height);
+        this.stage.scale({ x: width / this.w, y: height / this.h });
     }
 
-    x(x) {
-        // convert virtual x to canvas x
-        return (this.canvas.width / this.v_width) * x;
-    }
+    getCoordinateSystemLayer() {
+        let layer = new Konva.Layer();
 
-    y(y) {
-        // convert virtual y to canvas y
-        return (this.canvas.height / this.v_height) * y;
-    }
-
-    c(x, y) {
-        // convert virtual (x,y) to canvas (x,y)
-        return [this.x(x), this.y(y)];
-    }
-
-    drawLine(x1, y1, x2, y2, width, color) {
-        this.ctx.lineWidth = width;
-        this.ctx.strokeStyle = color;
-        this.ctx.beginPath();
-        this.ctx.moveTo(...this.c(x1, y1));
-        this.ctx.lineTo(...this.c(x2, y2));
-        this.ctx.stroke();
-        this.ctx.closePath()
-    }
-
-    drawRect(x, y, width, height, fill_color, outline_color, outline_width) {
-        let args = [...this.c(x, y), ...this.c(width, height)]
-        if (fill_color) {
-            this.ctx.fillStyle = fill_color;
-            this.ctx.fillRect(...args);
-        }
-        if (outline_width && outline_color) {
-            this.ctx.lineWidth = outline_width;
-            this.ctx.strokeStyle = outline_color;
-            this.ctx.strokeRect(...args);
-        }
-    }
-
-    drawCoordinateSystem(line_width) {
-        this.clear();
-
-        let lw = line_width || 1; // line width
+        let o = 0.5; // offset to avoid clipping outline
         let c = 'rgba(255, 255, 255, 0.2)'; // color
 
-        for (let x = 1; x < this.v_width; x++) {
-            this.drawLine(x, 0, x, this.v_height, lw, c);
+        // Draw outline
+        layer.add(new Konva.Rect({
+            x: 0 + o,
+            y: 0 + o,
+            width: this.mapWidth,
+            height: this.mapHeight,
+            stroke: 'white',
+            strokeWidth: 0.1,
+        }));
+
+        // Draw vertical lines
+        for (let x = 1; x < this.mapWidth; x++) {
+            layer.add(new Konva.Line({
+                points: [x + o, 0 + o, x + o, this.mapHeight + o],
+                stroke: c,
+                strokeWidth: 0.01,
+            }));
         }
-        for (let y = 1; y < this.v_height; y++) {
-            this.drawLine(0, y, this.v_width, y, lw, c);
+        // Draw horizontal lines
+        for (let y = 1; y < this.mapHeight; y++) {
+            layer.add(new Konva.Line({
+                points: [0 + o, y + o, this.mapWidth + o, y + o],
+                stroke: c,
+                strokeWidth: 0.01,
+            }));
         }
 
-        this.drawRect(0, 0, this.v_width, this.v_height, null, 'white', 1);
+        return layer;
     }
 }

@@ -40,7 +40,9 @@ class Game {
             $("#header_team").attr('class', `ms-2 t${this.player.team}-fg`); 
         }
 
-        if (this.state === undefined) {
+        if (this.client.mode === "connected") {
+            $("#header_status").text(`Connected (#${this.client.id})`);
+
             if (this.joining_allowed) {
                 $("#lobby_join_player_form").removeClass("hidden");
                 $("#lobby_join_player_disabled_message").addClass("hidden");
@@ -48,10 +50,6 @@ class Game {
                 $("#lobby_join_player_form").addClass("hidden");
                 $("#lobby_join_player_disabled_message").removeClass("hidden");
             }
-        }
-
-        if (this.client.mode === "connected") {
-            $("#header_status").text(`Connected (#${this.client.id})`);
         } else
         if (this.client.mode === "player") {
             $("#header_status").text(`Playing as ${this.player.name}\xa0(#${this.client.id})`);

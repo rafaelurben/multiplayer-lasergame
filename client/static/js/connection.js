@@ -89,6 +89,9 @@ class GameSocket {
             }
             case "player_joined": {
                 this.game.players[json.id] = json.player;
+                if (json.id === this.game.client.id) {
+                    this.game.player = json.player;
+                }
                 break;
             }
             case "player_left": {

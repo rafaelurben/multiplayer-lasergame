@@ -31,7 +31,7 @@ class GameServer(BasicServer):
     async def send_to_joined(self, data):
         """Send data to all clients who joined the game as player or spectator"""
 
-        joined_ids = self.players.keys()+self.spectator_ids
+        joined_ids = set(self.players) | set(self.spectator_ids)
         await self.send_to_ids(data, ids=joined_ids)
 
     async def send_to_unjoined(self, data):
@@ -48,13 +48,13 @@ class GameServer(BasicServer):
             log.info('[WS] #%s left the room! ("%s")',
                      wsid, self.players[wsid]['name'])
             del self.players[wsid]
-            await self.send_to_all({'action': 'player_left', 'id': wsid})
+            await self.send_to_joined({'action': 'player_left', 'id': wsid})
             return await ws.send_json({'action': 'room_left'})
         if action == 'select_team' and self.game_state == 'lobby':
             team = data['team']
             if team in [0, 1]:
                 self.players[wsid]['team'] = team
-            return await self.send_to_all({'action': 'player_updated', 'id': wsid, 'player': self.players[wsid]})
+            return await self.send_to_joined({'action': 'player_updated', 'id': wsid, 'player': self.players[wsid]})
         return False
 
     async def handle_action_from_master(self, action, data, ws, wsid):
@@ -72,7 +72,7 @@ class GameServer(BasicServer):
                 return await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed, 'reason': 'master'})
             if action == 'toggle_teamlock':
                 self.game_state = 'lobby_teamlock' if self.game_state == 'lobby' else 'lobby'
-                return await self.send_to_all({'action': 'state_changed', 'state': self.game_state})
+                return await self.send_to_joined({'action': 'state_changed', 'state': self.game_state})
             if action == 'start_game':
                 self.game_state = 'ingame'
                 await self.send_to_all({'action': 'joining_toggled', 'allowed': False, 'reason': 'ingame'})
@@ -90,7 +90,7 @@ class GameServer(BasicServer):
                     return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid team!'})
                 
                 self.players[player_id]['team'] = team
-                return await self.send_to_all({'action': 'player_updated', 'id': player_id, 'player': self.players[player_id]})
+                return await self.send_to_joined({'action': 'player_updated', 'id': player_id, 'player': self.players[player_id]})
         return False
 
     async def handle_action_from_spectator(self, action, data, ws, wsid):
@@ -113,7 +113,7 @@ class GameServer(BasicServer):
                 name = data['name']
                 self.players[wsid] = {'name': name, 'team': None, 'id': wsid}
                 log.info('[WS] #%s joined as player "%s"', wsid, name)
-                await self.send_to_all({'action': 'player_joined', 'id': wsid, 'player': self.players[wsid]})
+                await self.send_to_joined({'action': 'player_joined', 'id': wsid, 'player': self.players[wsid]})
             else:
                 self.spectator_ids.append(wsid)
                 log.info('[WS] #%s started spectating!', wsid)

@@ -23,6 +23,10 @@ class GameServer(BasicServer):
 
         super().__init__()
 
+    @property
+    def in_lobby(self):
+        return self.game_state.startswith('lobby')
+
     async def send_to_spectators(self, data):
         """Send data to all spectators"""
 
@@ -66,7 +70,7 @@ class GameServer(BasicServer):
             log.info(
                 '[WS] #%s: The game master left the room! The next spectator will become the new game master!', wsid)
             return await ws.send_json({'action': 'room_left'})
-        if self.game_state.startswith('lobby'):
+        if self.in_lobby:
             if action == 'toggle_joining':
                 self.joining_allowed = not self.joining_allowed
                 return await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed, 'reason': 'master'})
@@ -108,7 +112,7 @@ class GameServer(BasicServer):
         if action == 'join_room':
             mode = data['mode']
             if mode == 'player':
-                if not self.game_state.startswith('lobby'):
+                if not self.in_lobby:
                     return await ws.send_json({'action': 'alert', 'message': '[Error] Game already started!'})
                 name = data['name']
                 self.players[wsid] = {'name': name, 'team': None, 'id': wsid}
@@ -156,8 +160,8 @@ class GameServer(BasicServer):
         await ws.send_json({
             'action': 'connected',
             'id': wsid,
-            'joining_allowed': self.joining_allowed,
-            'joining_allowed_reason': 'ingame' if not self.game_state.startswith('lobby') else 'master',
+            'joining_allowed': self.joining_allowed and self.in_lobby,
+            'joining_allowed_reason': 'ingame' if not self.in_lobby else 'master',
             'public_url': self.public_url,
         })
 

@@ -71,6 +71,14 @@ class Game {
 
             if (this.state.startsWith('lobby')) this.renderSpectatorLobby();
         }
+
+        if (this.public_url !== undefined) {
+            $("#show_qrcode").removeClass("hidden");
+            let apibase = "https://api.qrserver.com/v1/create-qr-code/?format=svg&qzone=1&size=500x500&color=fff&bgcolor=212529&data="
+            let url = apibase + encodeURIComponent(this.public_url);
+            $("#qrcode_image").attr("src", url);
+            $("#qrcode_link").attr("href", this.public_url);
+        }
     }
 
     handleStateUpdate() {
@@ -149,14 +157,6 @@ class Game {
                 $("#toggle_joining").attr("class", 'btn btn-danger');
                 $("#toggle_joining").text("Joining disabled");
             }
-        }
-
-        if (this.public_url) {
-            $("#show_qrcode").removeClass("hidden");
-            let apibase = "https://api.qrserver.com/v1/create-qr-code/?format=svg&qzone=1&size=500x500&color=fff&bgcolor=212529&data="
-            let url = apibase + encodeURIComponent(this.public_url);
-            $("#qrcode_image").attr("src", url);
-            $("#qrcode_link").attr("href", this.public_url);
         }
     }
 }

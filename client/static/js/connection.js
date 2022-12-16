@@ -58,6 +58,7 @@ class GameSocket {
                 this.game.client.id = json.id;
                 this.game.client.mode = "connected";
                 this.game.joining_allowed = json.joining_allowed;
+                this.game.joining_allowed_reason = json.joining_allowed_reason;
                 this.game.public_url = json.public_url;
                 break;
             }
@@ -76,6 +77,7 @@ class GameSocket {
             }
             case "joining_toggled": {
                 this.game.joining_allowed = json.allowed;
+                this.game.joining_allowed_reason = json.reason;
                 break;
             }
             case "player_updated": {

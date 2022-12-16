@@ -69,13 +69,14 @@ class GameServer(BasicServer):
         if self.game_state.startswith('lobby'):
             if action == 'toggle_joining':
                 self.joining_allowed = not self.joining_allowed
-                return await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed})
+                return await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed, 'reason': 'master'})
             if action == 'toggle_teamlock':
                 self.game_state = 'lobby_teamlock' if self.game_state == 'lobby' else 'lobby'
                 return await self.send_to_all({'action': 'state_changed', 'state': self.game_state})
             if action == 'start_game':
                 self.game_state = 'ingame'
-                return await self.send_to_all({'action': 'state_changed', 'state': self.game_state})
+                await self.send_to_all({'action': 'joining_toggled', 'allowed': False, 'reason': 'ingame'})
+                return await self.send_to_joined({'action': 'state_changed', 'state': self.game_state})
             if action == 'change_player_team':
                 player_id = str(data.get('id', None))
                 if not player_id.isdigit():
@@ -156,6 +157,7 @@ class GameServer(BasicServer):
             'action': 'connected',
             'id': wsid,
             'joining_allowed': self.joining_allowed,
+            'joining_allowed_reason': 'ingame' if not self.game_state.startswith('lobby') else 'master',
             'public_url': self.public_url,
         })
 

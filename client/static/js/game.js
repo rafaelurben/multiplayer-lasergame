@@ -16,6 +16,7 @@ class Game {
         this.__state = undefined;
         
         this.joining_allowed = undefined;
+        this.joining_allowed_reason = undefined;
         this.players = {};
 
         this.canvas = undefined;
@@ -55,6 +56,7 @@ class Game {
             } else {
                 $("#lobby_join_player_form").addClass("hidden");
                 $("#lobby_join_player_disabled_message").removeClass("hidden");
+                $("#lobby_join_player_disabled_message > span").text(this.joining_allowed_reason == 'master' ? 'The host has disabled joining.' : 'The game has already started.');
             }
         } else
         if (this.client.mode === "player") {

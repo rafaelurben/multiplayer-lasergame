@@ -18,23 +18,26 @@ class GameCanvas {
         this.resize();
         window.addEventListener('resize', this.resize.bind(this));
         
-        // Score layer
-        this.scorelayer = new Konva.Layer();
-        this.stage.add(this.scorelayer);
+        this.layer = new Konva.Layer();
+        this.stage.add(this.layer);
 
-        // Coordinate system layer
-        this.coordlayer = this.getCoordinateSystemLayer();
-        this.coordlayer.move({ x: 0, y: 1.5});
-        this.stage.add(this.coordlayer);
+        // Score group
+        this.grp_score = new Konva.Group({ x: 0.5, y: 0.5 });
+        this.layer.add(this.grp_score);
+        this.drawScore(0.5);
 
-        // Map layer
-        this.maplayer = new Konva.Layer();
-        this.maplayer.move({ x: 0.5, y: 2 });
-        this.stage.add(this.maplayer);
+        // Coordinate system group
+        this.grp_coordsystem = new Konva.Group({ x: 0.5, y: 1.5 });
+        this.layer.add(this.grp_coordsystem);
+        this.drawCoordinateSystem();
+
+        // Main group
+        this.grp_main = new Konva.Group({ x: 0.5, y: 1.5 });
+        this.layer.add(this.grp_main);
     }
 
     clear() {
-        this.maplayer.destroyChildren();
+        this.grp_main.destroyChildren();
     }
 
     resize() {
@@ -59,51 +62,49 @@ class GameCanvas {
     }
 
     drawScore(score) {
-        let o = 0.5; // offset to avoid clipping outline
         let css = window.getComputedStyle(document.documentElement);
+        let c = 'black'; // stroke color
 
-        this.scorelayer.destroyChildren();
+        this.grp_score.destroyChildren();
 
         let w = this.mapWidth;
+        let h = 0.5;
 
         let team0poly = new Konva.Line({
             points: [
                 0, 0,
                 score * (w - 0.5) + 0.25, 0,
-                score * (w - 0.5), 1,
-                0, 1,
+                score * (w - 0.5), h,
+                0, h,
             ],
             fill: css.getPropertyValue('--col-team-0'),
-            stroke: 'black',
+            stroke: c,
             strokeWidth: 0.1,
             closed: true,
         })
-        team0poly.move({ x: o, y: o })
-        this.scorelayer.add(team0poly);
+        this.grp_score.add(team0poly);
 
         let team1poly = new Konva.Line({
             points: [
                 w, 0,
                 score * (w - 0.5) + 0.5, 0,
-                score * (w - 0.5) + 0.25, 1,
-                w, 1,
+                score * (w - 0.5) + 0.25, h,
+                w, h,
             ],
             fill: css.getPropertyValue('--col-team-1'),
-            stroke: 'black',
+            stroke: c,
             strokeWidth: 0.1,
             closed: true,
         })
-        team1poly.move({ x: o, y: o })
-        this.scorelayer.add(team1poly);
+        this.grp_score.add(team1poly);
 
-        this.scorelayer.draw();
+        this.layer.draw();
     }
 
-    getCoordinateSystemLayer() {
-        let layer = new Konva.Layer();
-
-        let o = 0.5; // offset to avoid clipping outline
+    drawCoordinateSystem() {
         let c = 'rgba(255, 255, 255, 0.2)'; // color
+
+        this.grp_coordsystem.destroyChildren();
 
         // Draw outline
         let outline = new Konva.Rect({
@@ -114,8 +115,7 @@ class GameCanvas {
             stroke: 'white',
             strokeWidth: 0.1,
         });
-        outline.move({ x: o, y: o });
-        layer.add(outline);
+        this.grp_coordsystem.add(outline);
 
         // Draw vertical lines
         for (let x = 1; x < this.mapWidth; x++) {
@@ -124,8 +124,7 @@ class GameCanvas {
                 stroke: c,
                 strokeWidth: 0.01,
             });
-            line.move({ x: o, y: o });
-            layer.add(line);
+            this.grp_coordsystem.add(line);
         }
         // Draw horizontal lines
         for (let y = 1; y < this.mapHeight; y++) {
@@ -134,10 +133,7 @@ class GameCanvas {
                 stroke: c,
                 strokeWidth: 0.01,
             });
-            line.move({ x: o, y: o });
-            layer.add(line);
+            this.grp_coordsystem.add(line);
         }
-
-        return layer;
     }
 }

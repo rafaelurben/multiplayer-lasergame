@@ -29,7 +29,9 @@ if __name__ == '__main__':
     clientdir = os.path.join(os.path.dirname(
         os.path.dirname(__file__)), 'client')
 
-    if is_ngrok_available():
+    if len(sys.argv) > 1 and "--no-ngrok" in sys.argv:
+        main(clientdir)
+    elif is_ngrok_available():
         with NgrokTunnel() as ngrok_url:
             log.info("[Server] Tunnel URL: %s", ngrok_url)
             main(clientdir, public_url=ngrok_url)

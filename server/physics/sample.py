@@ -34,7 +34,7 @@ while True:
     angle += 0.05
     m.update_state(0, 2, (angle, 10))
     cv2.imshow("test", image)
-    cv2.waitKey(50)
+    cv2.waitKey(200)
 
 
 cv2.destroyAllWindows()

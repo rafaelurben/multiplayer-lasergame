@@ -10,21 +10,40 @@ class Empty:
         # normalize input
         if "n" in border:
             start_point = [0, point[0]]
-            angle += 0.5 * math.pi
+            angle += 1.5 * math.pi
         if "e" in border:
             start_point = [0, point[1]]
         if "s" in border:
             start_point = [0, 1 - point[0]]
-            angle += 1.5 * math.pi
+            angle += 0.5 * math.pi
         if "w" in border:
             start_point = [0, 1 - point[1]]
             angle += math.pi
+
+        angle = (angle + (2*math.pi))%(2*math.pi)
+        print(angle)
+
         # get output
+        if angle < math.pi:
+            new_y = start_point[1] + math.tan(angle)
+            new_x = 1
+            if new_y > 1:
+                new_y = 1
+                new_x = (1-start_point[1]) / math.tan(angle)
+        else:
+            new_y = start_point[1] + math.tan(angle)
+            new_x = 1
+            if new_y < 0:
+                new_y = 0
+                new_x = start_point[1] / math.tan(-angle)
+        end_point = [new_x, new_y]
+
 
         # denormalize output
+
        
 
-        lines = [start_point,[0.5, 0.5]]
+        lines = [start_point, end_point]
         return ([lines], point, angle, strength, border)
 
 class Wall:

@@ -27,6 +27,10 @@ class GameServer(BasicServer):
     def in_lobby(self):
         return self.game_state.startswith('lobby')
 
+    @property
+    def in_game(self):
+        return self.game_state == 'ingame'
+
     async def send_to_spectators(self, data):
         """Send data to all spectators"""
 
@@ -95,6 +99,11 @@ class GameServer(BasicServer):
                 
                 self.players[player_id]['team'] = team
                 return await self.send_to_joined({'action': 'player_updated', 'id': player_id, 'player': self.players[player_id]})
+        if self.in_game:
+            if action == 'end_game':
+                self.game_state = 'lobby'
+                await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed, 'reason': 'master'})
+                return await self.send_to_joined({'action': 'state_changed', 'state': self.game_state})
         return False
 
     async def handle_action_from_spectator(self, action, data, ws, wsid):

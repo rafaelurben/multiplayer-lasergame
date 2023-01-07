@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 from aiohttp import web
 
 from server_base import BasicServer
@@ -23,12 +24,35 @@ class GameServer(BasicServer):
 
         super().__init__()
 
+    async def shuffle_teams(self, only_unassigned = False):
+        """Randomly assign teams to all players"""
+
+        teamcounts = [0, 0]
+        for player in self.players.values():
+            if player['team'] is not None:
+                teamcounts[player['team']] += 1
+
+        if only_unassigned:
+            pids = [pid for pid in self.players if self.players[pid]['team'] is None]
+        else:
+            pids = list(self.players.keys())
+        random.shuffle(pids)
+
+        for pid in pids:
+            team = teamcounts.index(min(teamcounts)) # select team with least players
+
+            self.players[pid]['team'] = team
+            await self.send_to_joined({'action': 'player_updated', 'id': pid, 'player': self.players[pid]})
+            teamcounts[team] += 1
+
     @property
     def in_lobby(self):
+        "Returns True if the game is in a lobby state"
         return self.game_state.startswith('lobby')
 
     @property
     def in_game(self):
+        "Returns True if the game is in a game state"
         return self.game_state == 'ingame'
 
     async def send_to_spectators(self, data):
@@ -84,6 +108,7 @@ class GameServer(BasicServer):
             if action == 'start_game':
                 self.game_state = 'ingame'
                 await self.send_to_all({'action': 'joining_toggled', 'allowed': False, 'reason': 'ingame'})
+                await self.shuffle_teams(only_unassigned=True) # assign unassigned players to teams
                 return await self.send_to_joined({'action': 'state_changed', 'state': self.game_state})
             if action == 'change_player_team':
                 player_id = str(data.get('id', None))
@@ -99,6 +124,8 @@ class GameServer(BasicServer):
                 
                 self.players[player_id]['team'] = team
                 return await self.send_to_joined({'action': 'player_updated', 'id': player_id, 'player': self.players[player_id]})
+            if action == 'shuffle_teams':
+                return await self.shuffle_teams()
         if self.in_game:
             if action == 'end_game':
                 self.game_state = 'lobby'

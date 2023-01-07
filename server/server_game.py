@@ -27,23 +27,23 @@ class GameServer(BasicServer):
     async def shuffle_teams(self, only_unassigned = False):
         """Randomly assign teams to all players"""
 
-        teamcounts = [0, 0]
-        for player in self.players.values():
-            if player['team'] is not None:
-                teamcounts[player['team']] += 1
+        teamsizes = [0, 0]
+        pids = list(self.players.keys())
 
         if only_unassigned:
-            pids = [pid for pid in self.players if self.players[pid]['team'] is None]
-        else:
-            pids = list(self.players.keys())
+            for pid, player in self.players.items():
+                if player['team'] is not None:
+                    teamsizes[player['team']] += 1
+                    pids.remove(pid)
+
         random.shuffle(pids)
 
         for pid in pids:
-            team = teamcounts.index(min(teamcounts)) # select team with least players
+            team = teamsizes.index(min(teamsizes)) # select team with least players
 
             self.players[pid]['team'] = team
             await self.send_to_joined({'action': 'player_updated', 'id': pid, 'player': self.players[pid]})
-            teamcounts[team] += 1
+            teamsizes[team] += 1
 
     @property
     def in_lobby(self):

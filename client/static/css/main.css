@@ -63,3 +63,9 @@ svg.icon {
 .rotate-90 {rotate: 90deg;}
 .rotate-180 {rotate: 180deg;}
 .rotate-270 {rotate: 270deg;}
+
+/* Player controls */
+
+#player-move-controls > div > * {
+    width: 28%;
+}

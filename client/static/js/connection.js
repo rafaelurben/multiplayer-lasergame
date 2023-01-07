@@ -64,18 +64,18 @@ class GameSocket {
             }
             case "room_joined": {
                 this.game.client.mode = json.mode;
-                this.game.state = json.game_state;
                 this.game.players = json.players;
                 if (json.mode === "player") {
                     this.game.player = json.players[this.game.client.id];
                 }
+                this.game.state = json.game_state;
                 break;
             }
             case "room_left": {
                 this.game.client.mode = "connected";
-                this.game.state = undefined;
                 this.game.players = {};
                 this.game.player = {};
+                this.game.state = undefined;
                 break;
             }
             case "joining_toggled": {

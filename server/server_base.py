@@ -1,6 +1,7 @@
 import aiohttp
 import logging
 import json
+import sys
 from aiohttp import web
 
 log = logging.getLogger()
@@ -13,8 +14,21 @@ class BasicServer:
         self.websockets = {}
         self._last_id = 0
 
+        self.allow_reconnect = "--allow-reconnect" in sys.argv
+        self._reconnectable_ids = []
+
+    def get_next_id(self) -> int:
+        """Get the next available id for a websocket."""
+
+        self._last_id += 1
+        return self._last_id
+
     async def send_to_one(self, data, wsid):
         """Send json data to a specific client."""
+
+        if wsid not in self.websockets:
+            log.warning('[WS] #%s: Client websocket not found!', wsid)
+            return
 
         ws = self.websockets[wsid]
         try:
@@ -51,6 +65,12 @@ class BasicServer:
         self.websockets[wsid] = ws
         log.info('[WS] #%s connected!', wsid)
 
+    async def handle_reconnect(self, ws, wsid):
+        """Handle client reconnection."""
+
+        self.websockets[wsid] = ws
+        log.info('[WS] #%s reconnected!', wsid)
+
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
 
@@ -72,17 +92,32 @@ class BasicServer:
     async def websocket_handler(self, request):
         """Handle incoming websocket connections."""
 
+        # Setup the websocket connection
+
         ws_current = web.WebSocketResponse()
+
+        wsid = None
+        is_reconnected = False
+
+        if self.allow_reconnect:
+            old_wsid = request.cookies.get("multiplayergame_wsid", "")
+            if old_wsid.isdigit() and int(old_wsid) in self._reconnectable_ids:
+                wsid = int(old_wsid)
+                self._reconnectable_ids.remove(wsid)
+                is_reconnected = True
+
+        if not is_reconnected:
+            wsid = self.get_next_id()
+
+        ws_current.set_cookie("multiplayergame_wsid", str(wsid), samesite="Strict")
         await ws_current.prepare(request)
 
-        # Generate a unique id for the client
+        # Reconnect or connect
 
-        self._last_id += 1
-        wsid = self._last_id
-
-        # Handle connect
-
-        await self.handle_connect(ws_current, wsid)
+        if is_reconnected:
+            await self.handle_reconnect(ws_current, wsid)
+        else:
+            await self.handle_connect(ws_current, wsid)
 
         # Main loop
 
@@ -102,9 +137,14 @@ class BasicServer:
 
         # On disconnect / error
 
-        await self.handle_disconnect(ws_current, wsid)
+        if self.allow_reconnect:
+            del self.websockets[wsid]
+            self._reconnectable_ids.append(wsid)
 
-        return ws_current
+            # Note: If reconnecting is enabled, handle_disconnect() won't be called.
+            #       This is because otherwise the client data would be deleted.
+        else:
+            await self.handle_disconnect(ws_current, wsid)
 
     async def handle_cleanup(self, app):
         """Cleanup tasks tied to the application's cleanup."""

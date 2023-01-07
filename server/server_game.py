@@ -201,6 +201,16 @@ class GameServer(BasicServer):
             'public_url': self.public_url,
         })
 
+    async def handle_reconnect(self, ws, wsid):
+        """Handle client reconnection."""
+
+        await self.handle_connect(ws, wsid)
+        await super().handle_reconnect(ws, wsid)
+
+        if wsid in self.players or wsid in self.spectator_ids:
+            mode = 'master' if wsid == self.master_id else 'spectator' if wsid in self.spectator_ids else 'player'
+            await ws.send_json({'action': 'room_joined', 'id': wsid, 'mode': mode, 'players': self.players, 'game_state': self.game_state})
+
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
 

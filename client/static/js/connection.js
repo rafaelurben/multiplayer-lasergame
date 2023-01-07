@@ -66,6 +66,9 @@ class GameSocket {
                 this.game.client.mode = json.mode;
                 this.game.state = json.game_state;
                 this.game.players = json.players;
+                if (json.mode === "player") {
+                    this.game.player = json.players[this.game.client.id];
+                }
                 break;
             }
             case "room_left": {

@@ -87,8 +87,13 @@ class Game {
         if (this.state !== "ingame" && this.canvas !== undefined) {
             this.canvas.stage.destroy();
             this.canvas = undefined;
-        } else if (this.state === "ingame" && this.canvas === undefined && this.client.mode === "spectator" || this.client.mode === "master") {
-            this.canvas = new GameCanvas('spectatorcanvascontainer', 30, 15);
+        } else if (this.state === "ingame" && this.canvas === undefined) {
+            if (this.client.mode === "spectator" || this.client.mode === "master") {
+                this.canvas = new SpectatorCanvas('spectatorcanvascontainer', 30, 15);
+            } else if (this.client.mode === "player") {
+                console.log(this.player)
+                this.canvas = new PlayerCanvas('playercanvascontainer', 30, 15, this.player);
+            }
         }
     }
 

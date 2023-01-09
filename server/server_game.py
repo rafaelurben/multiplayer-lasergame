@@ -214,8 +214,6 @@ class GameServer(BasicServer):
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
 
-        await super().handle_disconnect(ws, wsid)
-
         if wsid in self.players:
             log.info('[WS] #%s ("%s") disconnected!',
                      wsid, self.players[wsid]['name'])

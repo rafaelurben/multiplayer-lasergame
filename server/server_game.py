@@ -172,8 +172,9 @@ class GameServer(BasicServer):
         action = data.pop('action', None)
 
         if action == 'message':
-            await self.send_to_all({'action': 'message', 'id': wsid, 'message': data['message']})
-        elif wsid in self.players:
+            return await self.send_to_all({'action': 'message', 'id': wsid, 'message': data['message']})
+
+        if wsid in self.players:
             if await self.handle_action_from_player(action, data, ws, wsid) is not False:
                 return
         elif wsid == self.master_id:

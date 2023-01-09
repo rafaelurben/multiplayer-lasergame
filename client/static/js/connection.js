@@ -30,8 +30,8 @@ class GameSocket {
             } else {
                 // e.g. server process killed or network down
                 // event.code is usually 1006 in this case
-                console.warn('[WS] Connection died', event);
-                alert('[Error] Connection died');
+                console.warn('[WS] Connection died! Code:', event, 'Reason:', event.reason);
+                alert(`[Error] Connection died! Code: ${event.code} - Reason: ${event.reason}`);
                 location.reload();
             }
         };

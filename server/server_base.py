@@ -33,8 +33,8 @@ class BasicServer:
         ws = self.websockets[wsid]
         try:
             await ws.send_json(data)
-        except ConnectionResetError:
-            log.warning('[WS] #%s: Connection reset by peer', wsid)
+        except ConnectionError:
+            log.warning('[WS] #%s: Connection reset; failed to send message!', wsid)
             await self._handle_disconnect(ws, wsid)
 
     async def send_to_ids(self, data, ids):

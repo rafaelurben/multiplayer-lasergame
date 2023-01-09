@@ -4,15 +4,15 @@ import cv2
 from playingfield import Map 
 
 
-width = 4
-height = 2
+width = 9
+height = 9
 
 block_size = 100
 
 m = Map(width, height)
 
 # m.change_field(0, 1, 2)
-m.change_field(0, 2, 2)
+m.change_field(2, 2, 2)
 
 
 
@@ -32,7 +32,7 @@ while True:
             image = cv2.line(image, start, end, (255,255,255), 1)
 
     angle += 0.05
-    m.update_state(0, 2, (angle, 10))
+    m.update_state(2, 2, (angle, 10))
     cv2.imshow("test", image)
     cv2.waitKey(200)
 

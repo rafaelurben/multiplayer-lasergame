@@ -174,6 +174,21 @@ class PlayerCanvas extends GameMapCanvas {
                 y: this.stage.absolutePosition().y
             };
         });
+
+        this.setInitialPosition();
+    }
+
+    setInitialPosition() {
+        let offset = 24;
+        let map_width = this.mapWidth * this.stage.scaleY();
+
+        if (map_width <= this.stage.width()) {
+            // Center map horizontally
+            this.stage.x((this.stage.width() - map_width - offset) / 2);
+        } else if (this.player.team == 1) {
+            // Show most right part of the map for team 1
+            this.stage.x(this.stage.width() - map_width - offset);
+        }
     }
 
     resize() {

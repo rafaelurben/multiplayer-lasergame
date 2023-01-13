@@ -5,6 +5,7 @@ class GameSocket {
         this.game = game;
 
         this.connect();
+        this.setupKeybinds();
     }
 
     connect() {
@@ -158,5 +159,39 @@ class GameSocket {
 
     action(action, data) {
         this.send({"action": action, ...data});
+    }
+
+    setupKeybinds() {
+        let newthis = this;
+        document.addEventListener("keydown", function (event) {
+            if (event.ctrlKey || event.altKey || event.metaKey) {
+                // Ignore keybinds if ctrl/alt/meta is pressed
+                return;
+            }
+
+            if (newthis.game.client.mode === 'master') {
+                if (event.key === "s") {
+                    // s: Start/stop game
+                    event.preventDefault();
+                    if (newthis.game.state === 'ingame') {
+                        newthis.action('end_game');
+                    } else {
+                        newthis.action('start_game');
+                    }
+                } else if (event.key === "j") {
+                    // j: Toggle joining
+                    if (newthis.game.state !== 'ingame') {
+                        event.preventDefault();
+                        newthis.action('toggle_joining');
+                    }
+                } else if (event.key === "t") {
+                    // t: Toggle teamlock
+                    if (newthis.game.state !== 'ingame') {
+                        event.preventDefault();
+                        newthis.action('toggle_teamlock');
+                    }
+                }
+            }
+        });
     }
 }

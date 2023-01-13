@@ -1,5 +1,6 @@
 import subprocess
 import requests
+import time
 
 def is_ngrok_available() -> bool:
     "Check if ngrok is available"
@@ -22,9 +23,23 @@ class NgrokTunnel():
     def __close(self):
         self.tunnel.kill()
 
-    def _get_url(self) -> str:
-        response = requests.get(f"http://{self.web_addr}/api/tunnels")
-        return response.json()["tunnels"][0]["public_url"]
+    def _get_url(self, tries=3, retry_wait_s=3, request_timeout=5) -> str:
+        "Get the ngrok tunnel url"
+
+        i = 1
+        while True:
+            try:
+                response = requests.get(f"http://{self.web_addr}/api/tunnels", timeout=request_timeout)
+                data = response.json()
+                url = data["tunnels"][0]["public_url"]
+                return url
+            except (requests.exceptions.ConnectionError, IndexError, KeyError) as exc:
+                if i == tries:
+                    raise RuntimeError(f"Failed to get ngrok tunnel url after {tries} tries.") from exc
+
+            print(f"Failed to get ngrok tunnel url, retrying in {retry_wait_s} seconds... ({i}/{tries})")
+            time.sleep(retry_wait_s)
+            i += 1
 
     def __enter__(self):
         self.__open()

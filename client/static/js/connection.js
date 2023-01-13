@@ -147,7 +147,9 @@ class GameSocket {
             console.error("[WS] Not joined!");
             return;
         }
-        this.send({"action": "leave_room"});
+        if (this.game.client.mode.startsWith("lobby") || confirm("Are you sure you want to leave?")) {
+            this.send({"action": "leave_room"});
+        }
     }
 
     selectTeam(team) {

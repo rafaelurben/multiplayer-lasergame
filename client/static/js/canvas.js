@@ -146,22 +146,49 @@ class SpectatorCanvas extends GameMapCanvas {
 
 class PlayerCanvas extends GameMapCanvas {
     constructor(containerId, mapWidth, mapHeight, player) {
-        super(containerId, mapWidth/2, mapHeight, mapWidth/2+1, mapHeight+1, 0.5, 0.5);
+        super(containerId, mapWidth, mapHeight, mapWidth+1, mapHeight+1, 0.5, 0.5);
 
         this.player = player;
 
-        // Draw map split line
+        // Draggable stage
+        this.stage.draggable(true);
+        this.stage.dragBoundFunc((pos) => {
+            // Define the dragging boundaries
+            let offset = 24;
 
-        console.log(this.player.team, this.mapWidth)
-        let x = this.player.team == 1 ? 0 : this.mapWidth;
-        let line = new Konva.Line({
-            points: [x, 0, x, this.mapHeight],
-            stroke: 'black',
-            strokeWidth: 0.1,
-            dash: [0, 1/3, 1/3],
+            let map_width = this.mapWidth * this.stage.scaleY();
+            let min_x, max_x;
+
+            if (map_width > this.stage.width()) {
+                min_x = this.stage.width() - map_width - offset;
+                max_x = 0;
+            } else {
+                min_x = 0;
+                max_x = this.stage.width() - map_width - offset;
+            }
+
+            return {
+                // Prevent dragging outside of the map
+                x: Math.min(Math.max(pos.x, min_x), max_x),
+                // Disable vertical dragging
+                y: this.stage.absolutePosition().y
+            };
         });
-        this.grp_coordsystem.add(line);
+    }
 
-        this.layer.draw();
+    resize() {
+        // Reset stage size to get correct container size
+        this.stage.width(1);
+        this.stage.height(1);
+
+        // Get container size
+        let { width, height } = this.container.getBoundingClientRect();
+
+        // Set stage size to container size
+        this.stage.width(width);
+        this.stage.height(height);
+
+        // Scale stage to fit map vertically
+        this.stage.scale({ x: height / this.h, y: height / this.h });
     }
 }

@@ -36,6 +36,7 @@ class Map:
                         l[1][1] += y
                     laser_path = lines
                     for bounce in range(self.max_laser_bounces):     
+                        print(x, y)
                         if "n" in border:
                             y -= 1
                         if "e" in border:
@@ -47,14 +48,17 @@ class Map:
                         
                         if y == len(self.map) or x == len(self.map[0]) or y == -1 or x == -1:
                             break
-
-                        lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border)
+                        try:
+                            lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border)
+                        except:
+                            break
                         for l in lines:
                             l[0][1] += y
                             l[0][0] += x
                             l[1][0] += x
                             l[1][1] += y
                         laser_path += lines
+                    print("")
                     self.lasers.append(laser_path)
 
 

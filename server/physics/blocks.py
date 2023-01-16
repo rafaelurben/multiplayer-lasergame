@@ -36,6 +36,7 @@ class Block:
             end_point = [1 - end_point[0], 1 - end_point[1]]
             angle += math.pi
         
+        print("end", end_point)
         return start_point, end_point, angle
 
 
@@ -48,7 +49,6 @@ class Empty(Block):
 
         # normalize
         start_point, angle = self.normalize(point, angle, border)
-        print(angle)
 
         # get output
         if angle < math.pi:
@@ -81,7 +81,7 @@ class Empty(Block):
             border.append("s")
 
        
-        print("end", end_point)
+        # print("end", end_point)
         lines = [start_point, end_point]
         return ([lines], deepcopy(end_point), angle, strength, border)
 
@@ -96,7 +96,7 @@ class Wall(Block):
             end_point = [point[0], 1]
             exit_border.append("s")
         if "e" in border:
-            angle = angle
+            angle = 0
             end_point = [0, point[1]]
             exit_border.append("w")
         if "s" in border:
@@ -104,13 +104,14 @@ class Wall(Block):
             end_point = [point[0], 0]
             exit_border.append("n")
         if "w" in border:
-            angle += math.pi
+            angle = 0
             end_point = [1, point[1]]
             exit_border.append("e")
 
         angle = (angle + (2*math.pi))%(2*math.pi)
 
         lines = []
+        print("moin")
         return (lines, end_point, angle, strength, exit_border)
 
 class Emitter:

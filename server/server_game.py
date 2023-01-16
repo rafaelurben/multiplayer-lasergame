@@ -105,6 +105,19 @@ class GameServer(BasicServer):
             if action == 'toggle_teamlock':
                 self.game_state = 'lobby_teamlock' if self.game_state == 'lobby' else 'lobby'
                 return await self.send_to_joined({'action': 'state_changed', 'state': self.game_state})
+            if action == 'kick_player':
+                player_id = str(data.get('id', None))
+                if not player_id.isdigit():
+                    return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid player id format!'})
+                player_id = int(player_id)
+                if player_id not in self.players:
+                    return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid player id!'})
+                log.info('[WS] #%s was kicked from the room! ("%s")',
+                         player_id, self.players[player_id]['name'])
+                del self.players[player_id]
+                await self.send_to_joined({'action': 'player_left', 'id': player_id})
+                await self.send_to_one({'action': 'room_left'}, player_id)
+                return await self.send_to_one({'action': 'alert', 'message': '[Info] You have been kicked from the room!'}, player_id)
             if action == 'start_game':
                 self.game_state = 'ingame'
                 await self.send_to_all({'action': 'joining_toggled', 'allowed': False, 'reason': 'ingame'})

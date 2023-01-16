@@ -98,6 +98,7 @@ class Game {
     }
 
     renderSpectatorLobby() {
+        let kickplayerelem = $("#kick_player");
         let playerlistelem = $("#playerlist");
         for (let team of [null, 0, 1]) {
             // Create a new team element if it doesn't exist
@@ -108,6 +109,7 @@ class Game {
             }
 
             teamelem.off('dragover');
+            teamelem.off('dragleave');
             teamelem.off('drop');
             if (this.client.mode === "master") {
                 teamelem.on('dragover', (e) => {
@@ -139,6 +141,10 @@ class Game {
                         playerelem.attr("draggable", "true");
                         playerelem.on('dragstart', (e) => {
                             e.originalEvent.dataTransfer.setData("playerId", playerid);
+                            kickplayerelem.attr('class', 'btn btn-outline-danger');
+                        });
+                        playerelem.on('dragend', (e) => {
+                            kickplayerelem.attr('class', 'd-none');
                         });
                     }
 
@@ -147,6 +153,9 @@ class Game {
             }
         }
 
+        kickplayerelem.off('dragover');
+        kickplayerelem.off('dragleave');
+        kickplayerelem.off('drop');
         if (this.client.mode === "master") {
             if (this.state === "lobby_teamlock") {
                 $("#toggle_teamlock").attr("class", 'btn btn-danger');
@@ -162,6 +171,23 @@ class Game {
                 $("#toggle_joining").attr("class", 'btn btn-danger');
                 $("#toggle_joining").text("Joining disabled");
             }
+
+
+            kickplayerelem.on('dragover', (e) => {
+                console.log("hey")
+                e.preventDefault();
+                kickplayerelem.attr('class', 'btn btn-danger');
+            });
+            kickplayerelem.on('dragleave', (e) => {
+                e.preventDefault();
+                kickplayerelem.attr('class', 'btn btn-outline-danger');
+            });
+            kickplayerelem.on('drop', (e) => {
+                e.preventDefault();
+                kickplayerelem.attr('class', 'd-none');
+                let playerid = e.originalEvent.dataTransfer.getData("playerId");
+                window.sock.action("kick_player", { id: playerid })
+            });
         }
     }
 }

@@ -95,7 +95,6 @@ class Game {
             if (this.client.mode === "spectator" || this.client.mode === "master") {
                 this.canvas = new SpectatorCanvas('spectatorcanvascontainer', 30, 15);
             } else if (this.client.mode === "player") {
-                console.log(this.player)
                 this.canvas = new PlayerCanvas('playercanvascontainer', 30, 15, this.player);
             }
         }
@@ -178,7 +177,6 @@ class Game {
 
 
             kickplayerelem.on('dragover', (e) => {
-                console.log("hey")
                 e.preventDefault();
                 kickplayerelem.attr('class', 'btn btn-danger');
             });

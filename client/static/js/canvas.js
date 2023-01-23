@@ -94,6 +94,14 @@ class GameMapCanvas {
 
     drawBlock(block) {
         console.log('NOT IMPLEMENTED: draw block', block);
+
+        // TODO: Different block types
+
+        Konva.Image.fromURL('/static/graphics/wood.svg', (image) => {
+            image.size({ width: 1, height: 1 });
+            image.position({ x: block.pos.x, y: block.pos.y })
+            this.grp_main.add(image);
+        });
     }
 
     drawMap(blocks) {

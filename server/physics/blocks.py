@@ -5,17 +5,18 @@ class Block:
     def normalize(self, point, angle, border):
         if "n" in border:
             start_point = [0, point[0]]
-            angle += 1.5 * math.pi
+            angle += 0.5 * math.pi
         if "e" in border:
             start_point = [0, point[1]]
         if "s" in border:
             start_point = [0, 1 - point[0]]
-            angle += 0.5 * math.pi
+            angle += 1.5 * math.pi
         if "w" in border:
             start_point = [0, 1 - point[1]]
             angle += math.pi
 
         angle = (angle + (2*math.pi))%(2*math.pi)
+
 
         return start_point, angle
     
@@ -23,20 +24,21 @@ class Block:
         if "n" in border:
             start_point = [start_point[1], 1]
             end_point = [end_point[1], 1 - end_point[0]]
-            angle += 0.5 * math.pi
+            angle -= 0.5 * math.pi
         if "e" in border:
             start_point = start_point
             end_point = end_point
         if "s" in border:
             start_point = [1 - start_point[1], 0]
             end_point = [1 - end_point[1], end_point[0]]
-            angle += 1.5 * math.pi
+            angle -= 1.5 * math.pi
         if "w" in border:
             start_point = [1, 1 - start_point[1]]
             end_point = [1 - end_point[0], 1 - end_point[1]]
-            angle += math.pi
+            angle -= math.pi
         
-        print("end", end_point)
+        angle = (angle + (2*math.pi))%(2*math.pi)
+
         return start_point, end_point, angle
 
 
@@ -51,19 +53,21 @@ class Empty(Block):
         start_point, angle = self.normalize(point, angle, border)
 
         # get output
-        if angle < math.pi:
+        if angle < (math.pi / 2):
             new_y = start_point[1] + math.tan(angle)
             new_x = 1
             if new_y > 1:
                 new_y = 1
                 new_x = (1-start_point[1]) / math.tan(angle)
         else:
+            # print(math.tan(angle), angle)
             new_y = start_point[1] + math.tan(angle)
             new_x = 1
             if new_y < 0:
                 new_y = 0
-                new_x = start_point[1] / math.tan(-angle)
+                new_x = start_point[1] / -math.tan(angle)
         end_point = [new_x, new_y]
+        print(end_point)
 
 
         # denormalize output
@@ -81,7 +85,6 @@ class Empty(Block):
             border.append("s")
 
        
-        # print("end", end_point)
         lines = [start_point, end_point]
         return ([lines], deepcopy(end_point), angle, strength, border)
 
@@ -111,7 +114,6 @@ class Wall(Block):
         angle = (angle + (2*math.pi))%(2*math.pi)
 
         lines = []
-        print("moin")
         return (lines, end_point, angle, strength, exit_border)
 
 class Emitter:

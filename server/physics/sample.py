@@ -11,12 +11,12 @@ block_size = 100
 
 m = Map(width, height)
 
-# m.change_field(1, 1, 1)
-# m.change_field(1, 0, 1)
+m.change_field(1, 1, 1)
+m.change_field(1, 0, 1)
 m.change_field(2, 2, 2)
 
 
-
+# 
 angle = 190
 while True:
     data, lasers = m.step()

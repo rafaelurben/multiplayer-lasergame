@@ -11,8 +11,15 @@ block_size = 100
 
 m = Map(width, height)
 
-m.change_field(1, 1, 1)
+m.change_field(0, 0, 1)
 m.change_field(1, 0, 1)
+m.change_field(2, 0, 1)
+m.change_field(3, 0, 1)
+m.change_field(4, 0, 1)
+
+
+
+
 m.change_field(2, 2, 2)
 
 

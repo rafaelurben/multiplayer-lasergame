@@ -168,15 +168,15 @@ class PlayerCanvas extends GameMapCanvas {
             // Define the dragging boundaries
             let offset = 24;
 
-            let map_width = this.mapWidth * this.stage.scaleY();
+            let mapWidthAbs = this.mapWidthAbs;
             let min_x, max_x;
 
-            if (map_width > this.stage.width()) {
-                min_x = this.stage.width() - map_width - offset;
+            if (mapWidthAbs > this.stage.width()) {
+                min_x = this.stage.width() - mapWidthAbs - offset;
                 max_x = 0;
             } else {
                 min_x = 0;
-                max_x = this.stage.width() - map_width - offset;
+                max_x = this.stage.width() - mapWidthAbs - offset;
             }
 
             return {
@@ -190,17 +190,29 @@ class PlayerCanvas extends GameMapCanvas {
         this.setInitialPosition();
     }
 
-    setInitialPosition() {
-        let offset = 24;
-        let map_width = this.mapWidth * this.stage.scaleY();
+    // Utils
 
-        if (map_width <= this.stage.width()) {
+    get mapWidthAbs() {
+        return this.mapWidth * this.stage.scaleY();
+    }
+
+    // Position
+
+    getInitialPositionX() {
+        let offset = 24;
+        let mapWidthAbs = this.mapWidthAbs;
+
+        if (mapWidthAbs <= this.stage.width()) {
             // Center map horizontally
-            this.stage.x((this.stage.width() - map_width - offset) / 2);
+            return ((this.stage.width() - mapWidthAbs - offset) / 2);
         } else if (this.player.team == 1) {
             // Show most right part of the map for team 1
-            this.stage.x(this.stage.width() - map_width - offset);
+            return (this.stage.width() - mapWidthAbs - offset);
         }
+    }
+
+    setInitialPosition() {
+        this.stage.x(this.getInitialPositionX());
     }
 
     resize() {
@@ -217,5 +229,10 @@ class PlayerCanvas extends GameMapCanvas {
 
         // Scale stage to fit map vertically
         this.stage.scale({ x: height / this.h, y: height / this.h });
+
+        // Set initial position
+        if (this.mapWidthAbs <= this.stage.width()) {
+            this.stage.x(this.getInitialPositionX());
+        }
     }
 }

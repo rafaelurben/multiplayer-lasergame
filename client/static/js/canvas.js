@@ -91,6 +91,18 @@ class GameMapCanvas {
             this.grp_coordsystem.add(line);
         }
     }
+
+    drawBlock(block) {
+        console.log('NOT IMPLEMENTED: draw block', block);
+    }
+
+    drawMap(blocks) {
+        this.clear();
+
+        for (let block of blocks) {
+            this.drawBlock(block);
+        }
+    }
 }
 
 class SpectatorCanvas extends GameMapCanvas {

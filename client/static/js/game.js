@@ -13,6 +13,10 @@ class Game {
             id: undefined,
         }
 
+        this.game_inventory_selected_item_id = undefined;
+        this.game_inventory = [];
+        this.game_map = [];
+
         this.__state = undefined;
         
         this.joining_allowed = undefined;
@@ -188,6 +192,55 @@ class Game {
                 let playerid = e.originalEvent.dataTransfer.getData("playerId");
                 window.sock.action("kick_player", { id: playerid })
             });
+        }
+    }
+
+    // Player inventory
+
+    playerInventoryRender() {
+        let inventoryelem = $("#player-inventory");
+        inventoryelem.empty();
+
+        this.game_inventory.forEach(block => {
+            let blockelem;
+
+            if (this.game_inventory_selected_item_id === block.id) {
+                // Selected element
+                blockelem = $(`<button class="btn btn-primary"></button>`);
+            } else {
+                // Unselected element
+                blockelem = $(`<button class="btn btn-outline-primary"></button>`);
+            }
+
+            blockelem.html(block.name.replaceAll(' ', '&nbsp;'));
+
+            blockelem.on('click', (e) => {
+                this.playerInventorySelect(block);
+            });
+            inventoryelem.append(blockelem);
+        });
+    }
+
+    playerInventorySelect(block) {
+        if (this.game_inventory_selected_item_id === block.id) {
+            // Deselect
+            this.game_inventory_selected_item_id = null;
+        } else {
+            // Select
+            this.game_inventory_selected_item_id = block.id;
+        }
+        this.playerInventoryRender();
+    }
+
+    // Player map
+
+    setMap(blocks) {
+        this.game_map = blocks;
+        this.canvas.drawMap(this.game_map);
+        
+        if (this.client.mode === "player") {
+            this.game_inventory = blocks.filter(b => b.owner === this.player.id);
+            this.playerInventoryRender();
         }
     }
 }

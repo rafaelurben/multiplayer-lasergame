@@ -36,9 +36,9 @@ m.change_field(0, 5, 1)
 
 m.change_field(6, 1, 1)
 m.change_field(6, 2, 1)
-m.change_field(6, 3, 1)
+m.change_field(6, 3, 4)
 m.change_field(6, 4, 1)
-m.change_field(6, 5, 1)
+m.change_field(6, 5, 1) 
 
 
 
@@ -75,7 +75,7 @@ while True:
                 (0,255,0),
                 (0,0,255)
             ]
-            image = cv2.line(image, start, end, colors[idx%3], 1)
+            image = cv2.line(image, start, end, colors[2], 1)
     angle += 0.05
     m.update_state(3, 3, (angle, 10))
     cv2.imshow("test", image)

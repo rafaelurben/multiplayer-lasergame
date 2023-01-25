@@ -39,13 +39,8 @@ class Block:
         angle = (angle + (2*math.pi))%(2*math.pi)
 
         return start_point, end_point, angle
-
-
-class Empty(Block):
-    def __init__(self):
-        pass
-
-    def get_laser_path(self, point, angle, strength, border):
+    
+    def get_path(self, point, angle, border):
         lines = []
 
         # normalize
@@ -84,7 +79,16 @@ class Empty(Block):
 
        
         lines = [start_point, end_point]
-        return ([lines], deepcopy(end_point), angle, strength, border)
+        return ([lines], deepcopy(end_point), angle, border)
+
+
+class Empty(Block):
+    def __init__(self):
+        pass
+
+    def get_laser_path(self, point, angle, strength, border):
+        lines, end_point, angle, border = self.get_path(point, angle, border)
+        return (lines, end_point, angle, strength, border)
 
 class Wall(Block):
     def __init__(self):
@@ -114,7 +118,7 @@ class Wall(Block):
         lines = []
         return (lines, end_point, angle, strength, exit_border)
 
-class Emitter(Empty):
+class Emitter(Block):
     def __init__(self, angle=0, strength=10):
         self.angle = angle
         self.strength = strength
@@ -148,7 +152,10 @@ class Emitter(Empty):
         lines.append(deepcopy(end_point))
 
         return ([lines], end_point, self.angle, self.strength, exit_border)
-    
+        
+    def get_laser_path(self, point, angle, strength, border):
+        lines, end_point, angle, border = self.get_path(point, angle, border)
+        return (lines, end_point, angle, strength, border)
 
 
 
@@ -162,14 +169,20 @@ class Receiver:
         # some code
         return (lines, end_point, end_angle, end_strength, exit_border)
 
-class Wood:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+class Wood(Block):
+    def __init__(self):
+        self.hp = 1000
+        self.cooldown = 100
 
     def get_laser_path(self, point, angle, strength, border):
-        # some code
-        return (lines, end_point, end_angle, end_strength, exit_border)
+        if self.hp > 0:
+            self.hp -= strength
+            if self.hp < 0:
+                self.hp = -self.cooldown
+            return ([], [0,0], angle, strength, [])
+        else:
+            lines, end_point, angle, border = self.get_path(point, angle, border)
+            return (lines, end_point, angle, strength, border)
 
 class Mirror:
     def __init__(self, x, y):

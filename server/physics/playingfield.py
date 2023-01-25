@@ -11,7 +11,7 @@ class Map:
         5 : Mirror,
         6 : Glass
     }
-    max_laser_bounces = 100
+    max_laser_bounces = 1000
 
     def __init__(self, mapwidth, mapheight):
         self.map = [[Empty() for x in range(mapwidth)] for y in range(mapheight)]
@@ -52,6 +52,8 @@ class Map:
                             lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border)
                         except Exception as e:
                             print(e)
+                            break
+                        if len(border) == 0:
                             break
                         for l in lines:
                             l[0][1] += y

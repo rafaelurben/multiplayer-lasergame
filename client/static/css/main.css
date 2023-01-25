@@ -32,6 +32,10 @@ body {
     display: none !important;
 }
 
+.userhidden {
+    display: none !important;
+}
+
 #maincontent > div {
     width: 100%;
     height: 100%;

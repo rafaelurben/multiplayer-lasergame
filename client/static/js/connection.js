@@ -196,10 +196,27 @@ class GameSocket {
                         event.preventDefault();
                         newthis.action('shuffle_teams');
                     }
-                } else if (event.key === "q") {
-                    // q: Show QR code
-                    event.preventDefault();
-                    $("#show_qrcode").click();
+                } else if (event.key === "c") {
+                    // c: Toggle controls
+                    if (newthis.game.state !== 'ingame') {
+                        event.preventDefault();
+                        $('#master-controls').toggleClass('userhidden');
+                        if (newthis.game.canvas) newthis.game.canvas.resize();
+                    }
+                }
+            } else if (newthis.game.client.mode === 'player') {
+                if (newthis.game.state === 'ingame') {
+                    if (event.key === "i") {
+                        // i: Toggle inventory
+                        event.preventDefault();
+                        $('#player-inventory').toggleClass('userhidden');
+                        if (newthis.game.canvas) newthis.game.canvas.resize();
+                    } else if (event.key === "c") {
+                        // c: Toggle controls
+                        event.preventDefault();
+                        $('#player-controls').toggleClass('userhidden');
+                        if (newthis.game.canvas) newthis.game.canvas.resize();
+                    }
                 }
             }
 
@@ -227,6 +244,10 @@ class GameSocket {
                 // l: Leave room
                 event.preventDefault();
                 newthis.leave();
+            } else if (event.key === "q") {
+                // q: Show QR code
+                event.preventDefault();
+                $("#show_qrcode").click();
             }
         });
     }

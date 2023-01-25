@@ -1,5 +1,6 @@
 class GameMapCanvas {
-    constructor(containerId, mapWidth, mapHeight, baseCanvasWidth, baseCanvasHeight, mapOffsetX, mapOffsetY) {
+    constructor(game, containerId, mapWidth, mapHeight, baseCanvasWidth, baseCanvasHeight, mapOffsetX, mapOffsetY) {
+        this.game = game;
         this.container = document.getElementById(containerId);
 
         this.mapWidth = mapWidth;
@@ -171,8 +172,8 @@ class GameMapCanvas {
 }
 
 class SpectatorCanvas extends GameMapCanvas {
-    constructor(containerId, mapWidth, mapHeight) {
-        super(containerId, mapWidth, mapHeight, mapWidth+1, mapHeight+2.5, 0.5, 1.5);
+    constructor(game, containerId, mapWidth, mapHeight) {
+        super(game, containerId, mapWidth, mapHeight, mapWidth+1, mapHeight+2.5, 0.5, 1.5);
 
         // Score group
         this.grp_score = new Konva.Group({ x: 0.5, y: 0.5 });
@@ -220,10 +221,8 @@ class SpectatorCanvas extends GameMapCanvas {
 }
 
 class PlayerCanvas extends GameMapCanvas {
-    constructor(containerId, mapWidth, mapHeight, player) {
-        super(containerId, mapWidth, mapHeight, mapWidth+1, mapHeight+1, 0.5, 0.5);
-
-        this.player = player;
+    constructor(game, containerId, mapWidth, mapHeight) {
+        super(game, containerId, mapWidth, mapHeight, mapWidth+1, mapHeight+1, 0.5, 0.5);
 
         // Draggable stage
         this.stage.draggable(true);
@@ -252,6 +251,18 @@ class PlayerCanvas extends GameMapCanvas {
         });
 
         this.setInitialPosition();
+
+        // Block selection
+        this.stage.on('click', (e) => {
+            // Get the clicked block
+            let pos = this.grp_main.getRelativePointerPosition();
+            let { x, y } = { x: Math.floor(pos.x), y: Math.floor(pos.y) };
+            let block = this.game.getBlockAt(x, y);
+
+            if (block) {
+                this.game.playerInventorySelect(block);
+            }
+        });
     }
 
     // Position
@@ -262,7 +273,7 @@ class PlayerCanvas extends GameMapCanvas {
         if (this.mapCanvasWidth <= this.stageWidth) {
             // Center map horizontally
             return ((this.stageWidth - this.mapCanvasWidth - offset) / 2);
-        } else if (this.player.team == 1) {
+        } else if (this.game.player.team == 1) {
             // Show most right part of the map for team 1
             return (this.stageWidth - this.mapCanvasWidth - offset);
         }
@@ -287,5 +298,25 @@ class PlayerCanvas extends GameMapCanvas {
         if (this.mapCanvasWidth <= this.stageWidth) {
             this.setInitialPosition();
         }
+    }
+
+    // Draw functions
+
+    clearSelection() {
+        this.grp_overlay.destroyChildren();
+    }
+
+    drawSelection(x, y) {
+        let c = '#00ff00'; // stroke color
+
+        let rect = new Konva.Rect({
+            x: x,
+            y: y,
+            width: 1,
+            height: 1,
+            stroke: c,
+            strokeWidth: 0.05,
+        });
+        this.grp_overlay.add(rect);
     }
 }

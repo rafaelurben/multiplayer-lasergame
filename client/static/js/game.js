@@ -1,6 +1,16 @@
 TEAMNAMES = ["Team\xa0Red", "Team\xa0Blue"];
 TEAMNAME_NONE = "No\xa0team";
 
+BLOCKNAMES = [
+    "Empty",
+    "Wall",
+    "Emitter",
+    "Receiver",
+    "Wood",
+    "Mirror",
+    "Glass",
+];
+
 class Game {
     constructor() {
         this.client = {
@@ -93,9 +103,9 @@ class Game {
             this.canvas = undefined;
         } else if (this.state === "ingame" && this.canvas === undefined) {
             if (this.client.mode === "spectator" || this.client.mode === "master") {
-                this.canvas = new SpectatorCanvas('spectatorcanvascontainer', 30, 15);
+                this.canvas = new SpectatorCanvas(this, 'spectatorcanvascontainer', 30, 15);
             } else if (this.client.mode === "player") {
-                this.canvas = new PlayerCanvas('playercanvascontainer', 30, 15, this.player);
+                this.canvas = new PlayerCanvas(this, 'playercanvascontainer', 30, 15);
             }
         }
     }
@@ -199,18 +209,21 @@ class Game {
         let inventoryelem = $("#player-inventory");
         inventoryelem.empty();
 
+        this.canvas.clearSelection();
+
         this.game_inventory.forEach(block => {
             let blockelem;
 
             if (this.game_inventory_selected_item_id === block.id) {
                 // Selected element
                 blockelem = $(`<button class="btn btn-primary"></button>`);
+                this.canvas.drawSelection(block.pos.x, block.pos.y)
             } else {
                 // Unselected element
                 blockelem = $(`<button class="btn btn-outline-primary"></button>`);
             }
 
-            blockelem.html(block.name.replaceAll(' ', '&nbsp;'));
+            blockelem.html(BLOCKNAMES[block.type]+`&nbsp;(${block.id})`);
 
             blockelem.on('click', (e) => {
                 this.playerInventorySelect(block);
@@ -220,6 +233,8 @@ class Game {
     }
 
     playerInventorySelect(block) {
+        if (!(block.owner === this.player.id)) return;
+        
         if (this.game_inventory_selected_item_id === block.id) {
             // Deselect
             this.game_inventory_selected_item_id = null;
@@ -240,5 +255,9 @@ class Game {
             this.game_inventory = blocks.filter(b => b.owner === this.player.id);
             this.playerInventoryRender();
         }
+    }
+
+    getBlockAt(x, y) {
+        return this.game_map.find(b => b.pos.x === x && b.pos.y === y);
     }
 }

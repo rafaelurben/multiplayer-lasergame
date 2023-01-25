@@ -162,17 +162,17 @@ class Game {
         if (this.client.mode === "master") {
             if (this.state === "lobby_teamlock") {
                 $("#toggle_teamlock").attr("class", 'btn btn-danger');
-                $("#toggle_teamlock").text("Team change disabled");
+                $("#toggle_teamlock").html("<u>T</u>eam change disabled");
             } else {
                 $("#toggle_teamlock").attr("class", 'btn btn-success');
-                $("#toggle_teamlock").text("Team change enabled");
+                $("#toggle_teamlock").html("<u>T</u>eam change enabled");
             }
             if (this.joining_allowed) {
                 $("#toggle_joining").attr("class", 'btn btn-success');
-                $("#toggle_joining").text("Joining enabled");
+                $("#toggle_joining").html("<u>J</u>oining enabled");
             } else {
                 $("#toggle_joining").attr("class", 'btn btn-danger');
-                $("#toggle_joining").text("Joining disabled");
+                $("#toggle_joining").html("<u>J</u>oining disabled");
             }
 
 

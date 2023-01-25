@@ -18,21 +18,23 @@ class GameMapCanvas {
         this.resize();
         window.addEventListener('resize', this.resize.bind(this));
 
-        this.layer = new Konva.Layer();
-        this.stage.add(this.layer);
+        this.layer0 = new Konva.Layer();
+        this.stage.add(this.layer0);
+        this.layer1 = new Konva.Layer();
+        this.stage.add(this.layer1);
+        
+        // Main group
+        this.grp_main = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
+        this.layer0.add(this.grp_main);
 
         // Coordinate system group
         this.grp_coordsystem = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
-        this.layer.add(this.grp_coordsystem);
+        this.layer1.add(this.grp_coordsystem);
         this.drawCoordinateSystem();
 
-        // Main group
-        this.grp_main = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
-        this.layer.add(this.grp_main);
-    }
-
-    clear() {
-        this.grp_main.destroyChildren();
+        // Overlay group
+        this.grp_overlay = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
+        this.layer1.add(this.grp_overlay);
     }
 
     resize() {
@@ -77,7 +79,7 @@ class GameMapCanvas {
             let line = new Konva.Line({
                 points: [x, 0, x, this.mapHeight],
                 stroke: c,
-                strokeWidth: 0.01,
+                strokeWidth: 0.02,
             });
             this.grp_coordsystem.add(line);
         }
@@ -86,7 +88,7 @@ class GameMapCanvas {
             let line = new Konva.Line({
                 points: [0, y, this.mapWidth, y],
                 stroke: c,
-                strokeWidth: 0.01,
+                strokeWidth: 0.02,
             });
             this.grp_coordsystem.add(line);
         }
@@ -137,7 +139,7 @@ class GameMapCanvas {
     }
 
     drawMap(blocks) {
-        this.clear();
+        this.grp_main.destroyChildren();
 
         for (let block of blocks) {
             this.drawBlock(block);
@@ -151,7 +153,7 @@ class SpectatorCanvas extends GameMapCanvas {
 
         // Score group
         this.grp_score = new Konva.Group({ x: 0.5, y: 0.5 });
-        this.layer.add(this.grp_score);
+        this.layer0.add(this.grp_score);
         this.drawScore(0.5);
     }
 
@@ -191,8 +193,6 @@ class SpectatorCanvas extends GameMapCanvas {
             closed: true,
         })
         this.grp_score.add(team1poly);
-
-        this.layer.draw();
     }
 }
 

@@ -228,29 +228,16 @@ class PlayerCanvas extends GameMapCanvas {
         this.stage.draggable(true);
         this.stage.dragBoundFunc((pos) => {
             // Define the dragging boundaries
-            let offset = 24;
-
-            let min_x, max_x;
-
-            if (this.mapCanvasWidth > this.stageWidth) {
-                // Small device (map is wider than screen)
-                min_x = this.stageWidth - this.mapCanvasWidth - offset;
-                max_x = 0;
-            } else {
-                // Large device (map is smaller than screen)
-                min_x = 0;
-                max_x = this.stageWidth - this.mapCanvasWidth - offset;
-            }
-
             return {
-                // Prevent dragging outside of the map
-                x: Math.min(Math.max(pos.x, min_x), max_x),
+                // Prevent dragging the map out of view
+                x: this.normalizeX(pos.x),
                 // Disable vertical dragging
                 y: this.stage.absolutePosition().y
             };
         });
 
-        this.setInitialPosition();
+        // Set default view position depending on team (only relevant for small devices)
+        this.stage.x(this.normalizeX(this.game.player.team === 0 ? Infinity : -Infinity));
 
         // Block selection
         this.stage.on('click', (e) => {
@@ -267,20 +254,19 @@ class PlayerCanvas extends GameMapCanvas {
 
     // Position
 
-    getInitialPositionX() {
+    normalizeX(x) {
+        // Normalize x position to prevent dragging the map out of view
         let offset = 24;
-
-        if (this.mapCanvasWidth <= this.stageWidth) {
+        
+        if (this.mapCanvasWidth > this.stageWidth) {
+            // Small device (map is wider than screen)
+            let min_x = this.stageWidth - this.mapCanvasWidth - offset;
+            return Math.min(Math.max(x, min_x), 0);
+        } else {
+            // Large device (map is smaller than screen)
             // Center map horizontally
             return ((this.stageWidth - this.mapCanvasWidth - offset) / 2);
-        } else if (this.game.player.team == 1) {
-            // Show most right part of the map for team 1
-            return (this.stageWidth - this.mapCanvasWidth - offset);
         }
-    }
-
-    setInitialPosition() {
-        this.stage.x(this.getInitialPositionX());
     }
 
     resize() {
@@ -294,10 +280,8 @@ class PlayerCanvas extends GameMapCanvas {
         // Scale stage to fit map vertically
         this.stage.scale({ x: height / this.baseCanvasHeight, y: height / this.baseCanvasHeight });
 
-        // Set initial position
-        if (this.mapCanvasWidth <= this.stageWidth) {
-            this.setInitialPosition();
-        }
+        // Normalize position (if needed)
+        this.stage.x(this.normalizeX(this.stage.x()));
     }
 
     // Draw functions

@@ -30,7 +30,7 @@ m.change_field(6, 6, 1)
 
 m.change_field(0, 1, 1)
 m.change_field(0, 2, 1)
-m.change_field(0, 3, 1)
+m.change_field(0, 3, 6)
 m.change_field(0, 4, 1)
 m.change_field(0, 5, 1)
 

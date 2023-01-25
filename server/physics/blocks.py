@@ -193,11 +193,10 @@ class Mirror:
         # some code
         return (lines, end_point, end_angle, end_strength, exit_border)
 
-class Glass:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+class Glass(Block):
+    def __init__(self):
+        self.strength_factor = 0.8
 
     def get_laser_path(self, point, angle, strength, border):
-        # some code
-        return (lines, end_point, end_angle, end_strength, exit_border)
+        lines, end_point, angle, border = self.get_path(point, angle, border)
+        return (lines, end_point, angle, strength * self.strength_factor, border)

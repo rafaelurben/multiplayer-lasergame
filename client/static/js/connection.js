@@ -207,6 +207,10 @@ class GameSocket {
                 // f: Toggle soft full screen (toggle menubar)
                 event.preventDefault();
                 $("#menubar").toggleClass("hidden");
+
+                if (newthis.game.canvas) {
+                    newthis.game.canvas.resize();
+                }
             } else if (event.key === "F") {
                 // F: Toggle full screen
                 event.preventDefault();
@@ -214,6 +218,10 @@ class GameSocket {
                     document.documentElement.requestFullscreen();
                 } else {
                     document.exitFullscreen();
+                }
+
+                if (newthis.game.canvas) {
+                    newthis.game.canvas.resize();
                 }
             } else if (event.key === "l") {
                 // l: Leave room

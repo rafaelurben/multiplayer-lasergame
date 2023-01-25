@@ -1,18 +1,18 @@
 class GameMapCanvas {
-    constructor(containerId, mapWidth, mapHeight, canvasWidth, canvasHeight, mapOffsetX, mapOffsetY) {
+    constructor(containerId, mapWidth, mapHeight, baseCanvasWidth, baseCanvasHeight, mapOffsetX, mapOffsetY) {
         this.container = document.getElementById(containerId);
 
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
 
-        this.w = canvasWidth;
-        this.h = canvasHeight;
-        this.ratio = this.w / this.h;
+        this.baseCanvasWidth = baseCanvasWidth;
+        this.baseCanvasHeight = baseCanvasHeight;
+        this.baseCanvasRatio = this.baseCanvasWidth / this.baseCanvasHeight;
 
         this.stage = new Konva.Stage({
             container: containerId,
-            width: this.w,
-            height: this.h
+            width: this.baseCanvasWidth,
+            height: this.baseCanvasHeight
         })
 
         this.resize();
@@ -37,26 +37,49 @@ class GameMapCanvas {
         this.layer1.add(this.grp_overlay);
     }
 
-    resize() {
-        // Reset stage size to get correct container size
+    // Utils
+
+    get containerSize() {
+        // Set stage size to 0, get container size, reset stage size
+
+        let oldwidth = this.stage.width();
+        let oldheight = this.stage.height();
         this.stage.width(1);
         this.stage.height(1);
-
-        // Get container size
         let { width, height } = this.container.getBoundingClientRect();
+        this.stage.width(oldwidth);
+        this.stage.height(oldheight);
+        return { width, height }
+    }
+
+    get stageWidth() {
+        return this.stage.width();
+    }
+
+    get mapCanvasWidth() {
+        return this.mapWidth * this.stage.scaleX();
+    }
+
+    // Resize
+
+    resize() {
+        // Get container size
+        let { width, height } = this.containerSize;
 
         // Apply better orientation
-        if (width / height >= this.ratio) {
-            width = height * this.ratio;
+        if (width / height >= this.baseCanvasRatio) {
+            width = height * this.baseCanvasRatio;
         } else {
-            height = width / this.ratio;
+            height = width / this.baseCanvasRatio;
         }
 
         // Set stage size to container size and scale
         this.stage.width(width);
         this.stage.height(height);
-        this.stage.scale({ x: width / this.w, y: height / this.h });
+        this.stage.scale({ x: width / this.baseCanvasWidth, y: height / this.baseCanvasHeight });
     }
+
+    // Draw functions
 
     drawCoordinateSystem() {
         let c = 'rgba(255, 255, 255, 0.2)'; // color
@@ -208,15 +231,16 @@ class PlayerCanvas extends GameMapCanvas {
             // Define the dragging boundaries
             let offset = 24;
 
-            let mapWidthAbs = this.mapWidthAbs;
             let min_x, max_x;
 
-            if (mapWidthAbs > this.stage.width()) {
-                min_x = this.stage.width() - mapWidthAbs - offset;
+            if (this.mapCanvasWidth > this.stageWidth) {
+                // Small device (map is wider than screen)
+                min_x = this.stageWidth - this.mapCanvasWidth - offset;
                 max_x = 0;
             } else {
+                // Large device (map is smaller than screen)
                 min_x = 0;
-                max_x = this.stage.width() - mapWidthAbs - offset;
+                max_x = this.stageWidth - this.mapCanvasWidth - offset;
             }
 
             return {
@@ -230,24 +254,17 @@ class PlayerCanvas extends GameMapCanvas {
         this.setInitialPosition();
     }
 
-    // Utils
-
-    get mapWidthAbs() {
-        return this.mapWidth * this.stage.scaleY();
-    }
-
     // Position
 
     getInitialPositionX() {
         let offset = 24;
-        let mapWidthAbs = this.mapWidthAbs;
 
-        if (mapWidthAbs <= this.stage.width()) {
+        if (this.mapCanvasWidth <= this.stageWidth) {
             // Center map horizontally
-            return ((this.stage.width() - mapWidthAbs - offset) / 2);
+            return ((this.stageWidth - this.mapCanvasWidth - offset) / 2);
         } else if (this.player.team == 1) {
             // Show most right part of the map for team 1
-            return (this.stage.width() - mapWidthAbs - offset);
+            return (this.stageWidth - this.mapCanvasWidth - offset);
         }
     }
 
@@ -256,23 +273,19 @@ class PlayerCanvas extends GameMapCanvas {
     }
 
     resize() {
-        // Reset stage size to get correct container size
-        this.stage.width(1);
-        this.stage.height(1);
-
         // Get container size
-        let { width, height } = this.container.getBoundingClientRect();
+        let { width, height } = this.containerSize;
 
         // Set stage size to container size
         this.stage.width(width);
         this.stage.height(height);
 
         // Scale stage to fit map vertically
-        this.stage.scale({ x: height / this.h, y: height / this.h });
+        this.stage.scale({ x: height / this.baseCanvasHeight, y: height / this.baseCanvasHeight });
 
         // Set initial position
-        if (this.mapWidthAbs <= this.stage.width()) {
-            this.stage.x(this.getInitialPositionX());
+        if (this.mapCanvasWidth <= this.stageWidth) {
+            this.setInitialPosition();
         }
     }
 }

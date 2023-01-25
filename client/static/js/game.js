@@ -2,14 +2,16 @@ TEAMNAMES = ["Team\xa0Red", "Team\xa0Blue"];
 TEAMNAME_NONE = "No\xa0team";
 
 BLOCKNAMES = [
-    "Empty",
-    "Wall",
-    "Emitter",
-    "Receiver",
-    "Wood",
-    "Mirror",
-    "Glass",
+    "Empty",    // 0
+    "Wall",     // 1
+    "Emitter",  // 2
+    "Receiver", // 3
+    "Wood",     // 4
+    "Mirror",   // 5
+    "Glass",    // 6
 ];
+
+ROTATABLE_BLOCKS = [5];
 
 class Game {
     constructor() {
@@ -23,7 +25,7 @@ class Game {
             id: undefined,
         }
 
-        this.game_inventory_selected_item_id = undefined;
+        this.game_inventory_selected = {};
         this.game_inventory = [];
         this.game_map = [];
 
@@ -209,15 +211,12 @@ class Game {
         let inventoryelem = $("#player-inventory");
         inventoryelem.empty();
 
-        this.canvas.clearSelection();
-
         this.game_inventory.forEach(block => {
             let blockelem;
 
-            if (this.game_inventory_selected_item_id === block.id) {
+            if (this.game_inventory_selected.id === block.id) {
                 // Selected element
                 blockelem = $(`<button class="btn btn-primary"></button>`);
-                this.canvas.drawSelection(block.pos.x, block.pos.y)
             } else {
                 // Unselected element
                 blockelem = $(`<button class="btn btn-outline-primary"></button>`);
@@ -230,19 +229,52 @@ class Game {
             });
             inventoryelem.append(blockelem);
         });
+
+        // Selected block
+        if (this.game_inventory_selected.id !== undefined) {
+            let block = this.game_inventory_selected;
+            this.canvas.drawSelection(block.pos.x, block.pos.y)
+            this.playerControlsRender(block);
+        } else {
+            this.canvas.clearSelection();
+            this.playerControlsRender();
+        }
     }
 
     playerInventorySelect(block) {
         if (!(block.owner === this.player.id)) return;
         
-        if (this.game_inventory_selected_item_id === block.id) {
+        if (this.game_inventory_selected.id === block.id) {
             // Deselect
-            this.game_inventory_selected_item_id = null;
+            this.game_inventory_selected = {};
         } else {
             // Select
-            this.game_inventory_selected_item_id = block.id;
+            this.game_inventory_selected = block;
         }
         this.playerInventoryRender();
+    }
+
+    // Player controls
+
+    playerControlsPress(action) {
+        // Handle player controls (move, rotate, etc.)
+
+        // TODO: Implement
+    }
+
+    playerControlsRender(block) {
+        $("#player-controls button").prop('disabled', true);
+
+        if (!block || (block.id === undefined)) return;
+
+        // Disable buttons if there is a block in the way
+        $("#btn_move_up").prop('disabled', this.isBlockAt(block.pos.x, block.pos.y - 1));
+        $("#btn_move_down").prop('disabled', this.isBlockAt(block.pos.x, block.pos.y + 1));
+        $("#btn_move_left").prop('disabled', this.isBlockAt(block.pos.x - 1, block.pos.y));
+        $("#btn_move_right").prop('disabled', this.isBlockAt(block.pos.x + 1, block.pos.y));
+
+        // Disable buttons if the block is not a rotatable block
+        $("#btn_rotate_left, #btn_rotate_right").prop('disabled', !ROTATABLE_BLOCKS.includes(block.type));
     }
 
     // Player map
@@ -259,5 +291,9 @@ class Game {
 
     getBlockAt(x, y) {
         return this.game_map.find(b => b.pos.x === x && b.pos.y === y);
+    }
+
+    isBlockAt(x, y) {
+        return this.game_map.some(b => b.pos.x === x && b.pos.y === y);
     }
 }

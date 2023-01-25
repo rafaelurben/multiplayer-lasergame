@@ -93,13 +93,45 @@ class GameMapCanvas {
     }
 
     drawBlock(block) {
-        console.log('NOT IMPLEMENTED: draw block', block);
+        let url; // Image url
+        let baseurl = '/static/graphics/';
 
-        // TODO: Different block types
+        switch (block.type) {
+            case 0: { // Empty
+                break;
+            } 
+            case 1: { // Wall
+                break;
+            }
+            case 2: { // Emitter
+                url = baseurl + `emitter_${block.team}.svg`;
+                break;
+            }
+            case 3: { // Receiver
+                url = baseurl + `receiver_${block.team}.svg`;
+                break;
+            }
+            case 4: { // Wood
+                url = baseurl + 'wood.svg';
+                break;
+            }
+            case 5: { // Mirror
+                url = baseurl + 'mirror.svg';
+                break;
+            }
+            case 6: { // Glass
+                break;
+            }
+        }
 
-        Konva.Image.fromURL('/static/graphics/wood.svg', (image) => {
+        let rotation = block.rotation || 0; // Rotation in degrees
+
+        Konva.Image.fromURL(url, (image) => {
             image.size({ width: 1, height: 1 });
-            image.position({ x: block.pos.x, y: block.pos.y })
+            image.position(block.pos);
+            image.offset({ x: 0.5, y: 0.5 })
+            image.move({ x: 0.5, y: 0.5 })
+            image.rotation(rotation);
             this.grp_main.add(image);
         });
     }

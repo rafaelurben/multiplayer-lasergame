@@ -190,7 +190,35 @@ class GameSocket {
                         event.preventDefault();
                         newthis.action('toggle_teamlock');
                     }
+                } else if (event.key === "h") {
+                    // h: Shuffle teams
+                    if (newthis.game.state !== 'ingame') {
+                        event.preventDefault();
+                        newthis.action('shuffle_teams');
+                    }
+                } else if (event.key === "q") {
+                    // q: Show QR code
+                    event.preventDefault();
+                    $("#show_qrcode").click();
                 }
+            }
+
+            if (event.key === "f") {
+                // f: Toggle soft full screen (toggle menubar)
+                event.preventDefault();
+                $("#menubar").toggleClass("hidden");
+            } else if (event.key === "F") {
+                // F: Toggle full screen
+                event.preventDefault();
+                if (document.fullscreenElement === null) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            } else if (event.key === "l") {
+                // l: Leave room
+                event.preventDefault();
+                newthis.leave();
             }
         });
     }

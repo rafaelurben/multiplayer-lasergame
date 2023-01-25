@@ -168,6 +168,10 @@ class GameSocket {
                 // Ignore keybinds if ctrl/alt/meta is pressed
                 return;
             }
+            if ($("input").is(":focus")) {
+                // Ignore keybinds if input is focused
+                return;
+            }
 
             if (newthis.game.client.mode === 'master') {
                 if (event.key === "s") {

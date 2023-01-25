@@ -3,7 +3,6 @@ from copy import deepcopy
 
 class Block:
     def normalize(self, point, angle, border):
-        # print(angle)
         if "n" in border:
             start_point = [0, point[0]]
             angle += 0.5 * math.pi
@@ -65,8 +64,8 @@ class Empty(Block):
             if new_y < 0:
                 new_y = 0
                 new_x = start_point[1] / -math.tan(angle)
+
         end_point = [new_x, new_y]
-        # print(end_point)
 
 
         # denormalize output
@@ -93,31 +92,29 @@ class Wall(Block):
 
     def get_laser_path(self, point, angle, strength, border):
         exit_border = []
-        print(angle)
         if "n" in border:
-            angle *= -1
             end_point = [point[0], 1]
+            angle = 2 * math.pi - angle
             exit_border.append("s")
         if "e" in border:
-            angle = 0
             end_point = [0, point[1]]
+            angle = math.pi - angle
             exit_border.append("w")
         if "s" in border:
-            angle *= -1
             end_point = [point[0], 0]
+            angle = 2 * math.pi - angle
             exit_border.append("n")
         if "w" in border:
-            angle *= -1
             end_point = [1, point[1]]
+            angle = math.pi - angle
             exit_border.append("e")
 
         angle = (angle + (2*math.pi))%(2*math.pi)
-        print(angle)
 
         lines = []
         return (lines, end_point, angle, strength, exit_border)
 
-class Emitter:
+class Emitter(Empty):
     def __init__(self, angle=0, strength=10):
         self.angle = angle
         self.strength = strength
@@ -152,9 +149,6 @@ class Emitter:
 
         return ([lines], end_point, self.angle, self.strength, exit_border)
     
-    def get_laser_path(self, point, angle, strength, border):
-        lines =[]
-        return (lines, end_point, end_angle, end_strength, exit_border)
 
 
 

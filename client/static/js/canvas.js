@@ -26,19 +26,25 @@ class GameMapCanvas {
         this.stage.add(this.layer0);
         this.layer1 = new Konva.Layer();
         this.stage.add(this.layer1);
+        this.layer2 = new Konva.Layer();
+        this.stage.add(this.layer2);
         
         // Main group
         this.grp_main = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
         this.layer0.add(this.grp_main);
 
+        // Laser group
+        this.grp_laser = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
+        this.layer1.add(this.grp_laser);
+
         // Coordinate system group
         this.grp_coordsystem = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
-        this.layer1.add(this.grp_coordsystem);
+        this.layer2.add(this.grp_coordsystem);
         this.drawCoordinateSystem();
 
         // Overlay group
         this.grp_overlay = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
-        this.layer1.add(this.grp_overlay);
+        this.layer2.add(this.grp_overlay);
     }
 
     // Utils
@@ -153,7 +159,7 @@ class GameMapCanvas {
             }
         }
 
-        let rotation = block.rotation || 0; // Rotation in degrees
+        let rotation = -block.rotation || 0; // Rotation in degrees
 
         Konva.Image.fromURL(url, (image) => {
             image.size({ width: 1, height: 1 });
@@ -170,6 +176,27 @@ class GameMapCanvas {
 
         for (let block of blocks) {
             this.drawBlock(block);
+        }
+    }
+
+    drawLasers(lasers) {
+        let css = window.getComputedStyle(document.documentElement);
+
+        this.grp_laser.destroyChildren();
+
+        for (let laser of lasers) {
+            let c = css.getPropertyValue(`--col-team-${laser.team}`)
+
+            for (let line of laser.lines) {
+                this.grp_laser.add(
+                    new Konva.Line({
+                        points: line[0],
+                        stroke: c,
+                        strokeWidth: line[1]/5,
+                        lineCap: 'round',
+                    })
+                );
+            }
         }
     }
 }

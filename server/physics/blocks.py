@@ -255,16 +255,12 @@ class Mirror(Block):
                 border.append("w")
                 end_point = [0, p_w[1]]
 
-            lines = [[start_point, mirror_point], [[x3, y3], [x4, y4]], deepcopy([mirror_point, end_point])]
+            lines = [[start_point, mirror_point], deepcopy([mirror_point, end_point])]
             angle = mirror_angle
             angle = (angle + (2*math.pi))%(2*math.pi)
 
-            # lines.append([deepcopy(mirror_point), [mirror_point[0] + math.cos(mirror_angle), mirror_point[1] + math.sin(mirror_angle)]])
 
 
-
-        
-        print(lines, end_point, angle, strength, border)
         return (lines, end_point, angle, strength, border)
 
 class Glass(Block):

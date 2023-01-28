@@ -11,7 +11,7 @@ class Map:
         5 : Mirror,
         6 : Glass
     }
-    max_laser_bounces = 1
+    max_laser_bounces = 1000
 
     def __init__(self, mapwidth, mapheight):
         self.map = [[Empty() for x in range(mapwidth)] for y in range(mapheight)]
@@ -46,6 +46,7 @@ class Map:
                         if "w" in border:
                             x -= 1
                         
+                        
                         if y == len(self.map) or x == len(self.map[0]) or y == -1 or x == -1:
                             break
                         try:
@@ -62,6 +63,7 @@ class Map:
                             l[1][1] += y
                         laser_path += lines
                     self.lasers.append(laser_path)
+
 
 
     def get_data(self):

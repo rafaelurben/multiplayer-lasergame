@@ -191,6 +191,27 @@ class Mirror(Block):
     def update_state(self, new_state):
         self.angle = new_state[0]
 
+    def line_incersection(self, p1, p2, p3, p4):
+        x1 = p1[0]
+        y1 = p1[1]
+        x2 = p2[0]
+        y2 = p2[1]
+        x3 = p3[0]
+        y3 = p3[1]
+        x4 = p4[0]
+        y4 = p4[1]
+        
+        t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
+        u = (((x1 - x3) * (y1 - y2)) - ((y1 - y3) * (x1 - x2))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
+
+        if 0 < t < 1 and 0 < u < 1:
+            new_x = x1 + (t * (x2 - x1))
+            new_y = y1 + (t * (y2 - y1))
+            return True, [new_x, new_y]
+        else:
+            return False, None
+
+
     def get_laser_path(self, point, angle, strength, border):
         # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
         lines, end_point, angle, border = self.get_path(point, angle, border)
@@ -213,14 +234,37 @@ class Mirror(Block):
             new_y = y1 + (t * (y2 - y1))
 
             mirror_point = [new_x, new_y]
-            lines = [[start_point, mirror_point], [[x3, y3], [x4, y4]]]
             mirror_angle = angle - (2 * (angle - (self.angle)))
-            lines.append([deepcopy(mirror_point), [mirror_point[0] + math.cos(mirror_angle), mirror_point[1] + math.sin(mirror_angle)]])
+            outside_point = [mirror_point[0] + (2 * math.cos(mirror_angle)), mirror_point[1] + (2 * (math.sin(mirror_angle)))]
+            north, p_n = self.line_incersection(mirror_point, outside_point, [0,0], [1,0])
+            east, p_e = self.line_incersection(mirror_point, outside_point, [1,0], [1,1])
+            south, p_s = self.line_incersection(mirror_point, outside_point, [0,1], [1,1])
+            west, p_w = self.line_incersection(mirror_point, outside_point, [0,0], [0,1])
+
+            border = []
+            if north:
+                border.append("n")
+                end_point = [p_n[0], 0]
+            if east:
+                border.append("e")
+                end_point = [1, p_e[1]]
+            if south:
+                border.append("s")
+                end_point = [p_s[0], 1]
+            if west:
+                border.append("w")
+                end_point = [0, p_w[1]]
+
+            lines = [[start_point, mirror_point], [[x3, y3], [x4, y4]], deepcopy([mirror_point, end_point])]
+            angle = mirror_angle
+            angle = (angle + (2*math.pi))%(2*math.pi)
+
+            # lines.append([deepcopy(mirror_point), [mirror_point[0] + math.cos(mirror_angle), mirror_point[1] + math.sin(mirror_angle)]])
 
 
 
         
-
+        print(lines, end_point, angle, strength, border)
         return (lines, end_point, angle, strength, border)
 
 class Glass(Block):

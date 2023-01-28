@@ -6,6 +6,9 @@ class GameMapCanvas {
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
 
+        this.mapOffsetX = mapOffsetX;
+        this.mapOffsetY = mapOffsetY;
+
         this.baseCanvasWidth = baseCanvasWidth;
         this.baseCanvasHeight = baseCanvasHeight;
         this.baseCanvasRatio = this.baseCanvasWidth / this.baseCanvasHeight;
@@ -256,16 +259,17 @@ class PlayerCanvas extends GameMapCanvas {
 
     normalizeX(x) {
         // Normalize x position to prevent dragging the map out of view
-        let offset = 24;
+        let fullCanvasWidth = this.mapCanvasWidth * ((this.mapWidth+(2*this.mapOffsetX))/this.mapWidth);
+        let containerWidth = this.containerSize.width;
         
-        if (this.mapCanvasWidth > this.stageWidth) {
+        if (fullCanvasWidth > containerWidth) {
             // Small device (map is wider than screen)
-            let min_x = this.stageWidth - this.mapCanvasWidth - offset;
+            let min_x = containerWidth - fullCanvasWidth;
             return Math.min(Math.max(x, min_x), 0);
         } else {
             // Large device (map is smaller than screen)
             // Center map horizontally
-            return ((this.stageWidth - this.mapCanvasWidth - offset) / 2);
+            return ((containerWidth - fullCanvasWidth) / 2);
         }
     }
 

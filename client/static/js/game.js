@@ -108,9 +108,9 @@ class Game {
             this.canvas = undefined;
         } else if (this.state === "ingame" && this.canvas === undefined) {
             if (this.client.mode === "spectator" || this.client.mode === "master") {
-                this.canvas = new SpectatorCanvas(this, 'spectatorcanvascontainer', this.mapWidth, this.mapHeight);
+                this.canvas = new SpectatorCanvas(this, 'spectatorcanvascontainer', this.params.mapWidth, this.params.mapHeight);
             } else if (this.client.mode === "player") {
-                this.canvas = new PlayerCanvas(this, 'playercanvascontainer', this.mapWidth, this.mapHeight);
+                this.canvas = new PlayerCanvas(this, 'playercanvascontainer', this.params.mapWidth, this.params.mapHeight);
             }
         }
     }
@@ -262,7 +262,7 @@ class Game {
     playerControlsPress(action) {
         // Handle player controls (move, rotate, etc.)
 
-        // TODO: Implement
+        window.sock.action("player_controls", {key: action})
     }
 
     playerControlsRender(block) {

@@ -25,6 +25,11 @@ class GameServer(BasicServer):
 
         self.engine = None
 
+        self.game_params = {
+            'mapWidth': None,
+            'mapHeight': None,
+        }
+
         super().__init__()
 
     async def shuffle_teams(self, only_unassigned = False):
@@ -211,6 +216,7 @@ class GameServer(BasicServer):
             'joining_allowed': self.joining_allowed and self.in_lobby,
             'joining_allowed_reason': 'ingame' if not self.in_lobby else 'master',
             'public_url': self.public_url,
+            'game_params': self.game_params,
         })
 
     async def handle_reconnect(self, ws, wsid):
@@ -255,11 +261,13 @@ class GameServer(BasicServer):
 
     # Game logic
 
-    async def start_game(self, mapWidth=30, mapHeight=15, **kwargs):
+    async def start_game(self, **params):
         """Start the game"""
 
+        self.game_params = {**self.game_params, **params}
+
         await self.send_to_all({'action': 'joining_toggled', 'allowed': False, 'reason': 'ingame'})
-        await self.send_to_all({'action': 'game_params_set', 'mapWidth': mapWidth, 'mapHeight': mapHeight})
+        await self.send_to_all({'action': 'game_params_set', 'params': self.game_params})
         await self.shuffle_teams(only_unassigned=True)
         await self.send_to_joined({'action': 'state_changed', 'state': 'ingame'})
 

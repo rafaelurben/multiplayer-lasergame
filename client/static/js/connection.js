@@ -61,6 +61,7 @@ class GameSocket {
                 this.game.joining_allowed = json.joining_allowed;
                 this.game.joining_allowed_reason = json.joining_allowed_reason;
                 this.game.public_url = json.public_url;
+                this.game.params = json.game_params;
                 break;
             }
             case "room_joined": {
@@ -107,8 +108,7 @@ class GameSocket {
                 break;
             }
             case "game_params_set": {
-                this.game.mapWidth = json.mapWidth;
-                this.game.mapHeight = json.mapHeight;
+                this.game.params = json.params;
                 break;
             }
             default: {

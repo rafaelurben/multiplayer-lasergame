@@ -4,6 +4,7 @@ import cv2
 from playingfield import Map 
 from copy import deepcopy
 from random import randint
+import math
 
 width = 7
 height = 7
@@ -44,6 +45,8 @@ m.change_field(6, 5, 1)
 
 m.change_field(3, 3, 2)
 
+m.change_field(4, 3, 5)
+m.update_state(4, 3, [math.pi/4])
 
 
 

@@ -236,7 +236,8 @@ class Game {
         // Selected block
         if (this.game_inventory_selected.id !== undefined) {
             let block = this.game_inventory_selected;
-            this.canvas.drawSelection(block.pos.x, block.pos.y)
+            this.canvas.clearSelection();
+            this.canvas.drawSelection(block.pos.x, block.pos.y);
             this.playerControlsRender(block);
         } else {
             this.canvas.clearSelection();

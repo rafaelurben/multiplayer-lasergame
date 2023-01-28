@@ -184,14 +184,40 @@ class Wood(Block):
             lines, end_point, angle, border = self.get_path(point, angle, border)
             return (lines, end_point, angle, strength, border)
 
-class Mirror:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+class Mirror(Block):
+    def __init__(self, angle=0):
+        self.angle = angle
+
+    def update_state(self, new_state):
+        self.angle = new_state[0]
 
     def get_laser_path(self, point, angle, strength, border):
-        # some code
-        return (lines, end_point, end_angle, end_strength, exit_border)
+        # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+        lines, end_point, angle, border = self.get_path(point, angle, border)
+        start_point = lines[0][0]
+
+        x1 = start_point[0]
+        y1 = start_point[1]
+        x2 = end_point[0]
+        y2 = end_point[1]
+        x3 = 0.5 + 0.5 * (math.sin(self.angle))
+        y3 = 0.5 + 0.5 * (math.cos(self.angle))
+        x4 = 0.5 + 0.5 * (-math.sin(self.angle))
+        y4 = 0.5 + 0.5 * (-math.cos(self.angle))
+        
+        t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
+        u = (((x1 - x3) * (y1 - y2)) - ((y1 - y3) * (x1 - x2))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
+
+        if 0 < t < 1 and 0 < u < 1:
+            new_x = x1 + (t * (x2 - x1))
+            new_y = y1 + (t * (y2 - y1))
+
+            mirror_point = [new_x, new_y]
+            lines = [[start_point, mirror_point], [[x3, y3], [x4, y4]]]
+
+        
+
+        return (lines, end_point, angle, strength, border)
 
 class Glass(Block):
     def __init__(self):

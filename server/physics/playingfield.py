@@ -11,7 +11,7 @@ class Map:
         5 : Mirror,
         6 : Glass
     }
-    max_laser_bounces = 1000
+    max_laser_bounces = 5
 
     def __init__(self, mapwidth, mapheight):
         self.map = [[Empty() for x in range(mapwidth)] for y in range(mapheight)]

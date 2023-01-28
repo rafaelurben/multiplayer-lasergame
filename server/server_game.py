@@ -1,6 +1,7 @@
 import logging
 import os
 import random
+import asyncio
 from aiohttp import web
 
 from server_base import BasicServer
@@ -21,6 +22,8 @@ class GameServer(BasicServer):
 
         self.game_state = "lobby"
         self.joining_allowed = True
+
+        self.engine = None
 
         super().__init__()
 
@@ -138,9 +141,7 @@ class GameServer(BasicServer):
                 return await self.shuffle_teams()
         if self.in_game:
             if action == 'end_game':
-                self.game_state = 'lobby'
-                await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed, 'reason': 'master'})
-                return await self.send_to_joined({'action': 'state_changed', 'state': self.game_state})
+                return await self.end_game()
         return False
 
     async def handle_action_from_spectator(self, action, data, ws, wsid):
@@ -258,6 +259,47 @@ class GameServer(BasicServer):
         """Start the game"""
 
         await self.send_to_all({'action': 'joining_toggled', 'allowed': False, 'reason': 'ingame'})
+        await self.send_to_all({'action': 'game_params_set', 'mapWidth': mapWidth, 'mapHeight': mapHeight})
         await self.shuffle_teams(only_unassigned=True)
-        await self.send_to_joined({'action': 'game_params_set', 'mapWidth': mapWidth, 'mapHeight': mapHeight})
         await self.send_to_joined({'action': 'state_changed', 'state': 'ingame'})
+
+        # TODO: Initialize game engine
+
+        self.game_state = 'ingame'
+
+    async def end_game(self):
+        """End the game"""
+
+        self.engine = None
+        self.game_state = 'lobby'
+
+        await self.send_to_all({'action': 'joining_toggled', 'allowed': self.joining_allowed, 'reason': 'master'})
+        return await self.send_to_joined({'action': 'state_changed', 'state': 'lobby'})
+
+    async def tick(self, ticknum):
+        """Called every tick"""
+
+        # Don't do anything if the game isn't running
+        if not self.in_game:
+            return
+
+        # Log a warning if the game engine isn't initialized
+        if self.engine is None:
+            return log.warning("Game engine is not initialized!")
+
+        # Main actions
+        self.engine.tick()
+        
+        # TODO: Send game state to clients
+
+    async def gameloop(self):
+        """The main game loop"""
+
+        ticknum = 0
+
+        while True:
+            await asyncio.gather(
+                asyncio.sleep(1/10),
+                self.tick(ticknum=ticknum),
+            )
+            ticknum += 1

@@ -15,10 +15,9 @@ log.addHandler(stream)
 def main(*args, **kwargs):
     server = GameServer(*args, **kwargs)
 
-    loop.run_until_complete(server.start())
-
     try:
-        loop.run_forever()
+        loop.run_until_complete(server.start())
+        loop.run_until_complete(server.gameloop())
     except KeyboardInterrupt:
         loop.run_until_complete(server.stop())
         loop.close()

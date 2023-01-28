@@ -26,8 +26,8 @@ class GameServer(BasicServer):
         self.engine = None
 
         self.game_params = {
-            'mapWidth': None,
-            'mapHeight': None,
+            'mapWidth': 30,
+            'mapHeight': 15,
         }
 
         super().__init__()

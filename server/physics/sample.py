@@ -46,11 +46,11 @@ m.change_field(6, 5, 1)
 m.change_field(3, 3, 2)
 
 m.change_field(4, 3, 5)
-m.update_state(4, 3, [math.pi/4])
+m.update_state(4, 3, [0.25 * math.pi])
 
 
 
-bg = np.zeros((block_size * height + 100, block_size * width + 1000, 3))
+bg = np.zeros((block_size * height, block_size * width, 3))
 for w in range(width):
     start = [(w * block_size), 0]
     end = [(w * block_size), (height * block_size)]
@@ -66,9 +66,8 @@ angle = 0
 while True:
     data, lasers = m.step()
 
-
-    image = deepcopy(bg)
-    # image = bg
+    # image = deepcopy(bg)
+    image = bg
     for laser in lasers:
         for idx, line in enumerate(laser):
             start = [int(line[0][0] * block_size), int(line[0][1] * block_size)]
@@ -78,7 +77,7 @@ while True:
                 (0,255,0),
                 (0,0,255)
             ]
-            image = cv2.line(image, start, end, colors[2], 1)
+            image = cv2.line(image, start, end, colors[idx%3], 1)
     angle += 0.05
     m.update_state(3, 3, (angle, 10))
     cv2.imshow("test", image)

@@ -200,10 +200,10 @@ class Mirror(Block):
         y1 = start_point[1]
         x2 = end_point[0]
         y2 = end_point[1]
-        x3 = 0.5 + 0.5 * (math.sin(self.angle))
-        y3 = 0.5 + 0.5 * (math.cos(self.angle))
-        x4 = 0.5 + 0.5 * (-math.sin(self.angle))
-        y4 = 0.5 + 0.5 * (-math.cos(self.angle))
+        x3 = 0.5 + 0.5 * (math.cos(self.angle))
+        y3 = 0.5 + 0.5 * (math.sin(self.angle))
+        x4 = 0.5 + 0.5 * (-math.cos(self.angle))
+        y4 = 0.5 + 0.5 * (-math.sin(self.angle))
         
         t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
         u = (((x1 - x3) * (y1 - y2)) - ((y1 - y3) * (x1 - x2))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
@@ -214,6 +214,10 @@ class Mirror(Block):
 
             mirror_point = [new_x, new_y]
             lines = [[start_point, mirror_point], [[x3, y3], [x4, y4]]]
+            mirror_angle = angle - (2 * (angle - (self.angle)))
+            lines.append([deepcopy(mirror_point), [mirror_point[0] + math.cos(mirror_angle), mirror_point[1] + math.sin(mirror_angle)]])
+
+
 
         
 

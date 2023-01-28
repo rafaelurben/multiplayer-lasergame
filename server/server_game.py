@@ -119,10 +119,7 @@ class GameServer(BasicServer):
                 await self.send_to_one({'action': 'room_left'}, player_id)
                 return await self.send_to_one({'action': 'alert', 'message': '[Info] You have been kicked from the room!'}, player_id)
             if action == 'start_game':
-                self.game_state = 'ingame'
-                await self.send_to_all({'action': 'joining_toggled', 'allowed': False, 'reason': 'ingame'})
-                await self.shuffle_teams(only_unassigned=True) # assign unassigned players to teams
-                return await self.send_to_joined({'action': 'state_changed', 'state': self.game_state})
+                return await self.start_game(**data)
             if action == 'change_player_team':
                 player_id = str(data.get('id', None))
                 if not player_id.isdigit():
@@ -254,3 +251,13 @@ class GameServer(BasicServer):
             web.static(
                 '/static', os.path.join(self.clientdir, 'static')),
         ]
+
+    # Game logic
+
+    async def start_game(self, mapWidth=30, mapHeight=15, **kwargs):
+        """Start the game"""
+
+        await self.send_to_all({'action': 'joining_toggled', 'allowed': False, 'reason': 'ingame'})
+        await self.shuffle_teams(only_unassigned=True)
+        await self.send_to_joined({'action': 'game_params_set', 'mapWidth': mapWidth, 'mapHeight': mapHeight})
+        await self.send_to_joined({'action': 'state_changed', 'state': 'ingame'})

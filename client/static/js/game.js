@@ -25,6 +25,9 @@ class Game {
             id: undefined,
         }
 
+        this.mapWidth = undefined;
+        this.mapHeight = undefined;
+
         this.game_inventory_selected = {};
         this.game_inventory = [];
         this.game_map = [];
@@ -105,9 +108,9 @@ class Game {
             this.canvas = undefined;
         } else if (this.state === "ingame" && this.canvas === undefined) {
             if (this.client.mode === "spectator" || this.client.mode === "master") {
-                this.canvas = new SpectatorCanvas(this, 'spectatorcanvascontainer', 30, 15);
+                this.canvas = new SpectatorCanvas(this, 'spectatorcanvascontainer', this.mapWidth, this.mapHeight);
             } else if (this.client.mode === "player") {
-                this.canvas = new PlayerCanvas(this, 'playercanvascontainer', 30, 15);
+                this.canvas = new PlayerCanvas(this, 'playercanvascontainer', this.mapWidth, this.mapHeight);
             }
         }
     }

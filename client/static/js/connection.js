@@ -106,6 +106,11 @@ class GameSocket {
                 this.game.state = json.state;
                 break;
             }
+            case "game_params_set": {
+                this.game.mapWidth = json.mapWidth;
+                this.game.mapHeight = json.mapHeight;
+                break;
+            }
             default: {
                 console.warn("[WS] Unknown action received:", json);
             }

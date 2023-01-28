@@ -225,6 +225,24 @@ class GameSocket {
                         event.preventDefault();
                         $('#player-controls').toggleClass('userhidden');
                         if (newthis.game.canvas) newthis.game.canvas.resize();
+                    } else if (event.key === "ArrowUp" && $('#btn_move_up').is(':enabled')) {
+                        event.preventDefault();
+                        $('#btn_move_up').click();
+                    } else if (event.key === "ArrowDown" && $('#btn_move_down').is(':enabled')) {
+                        event.preventDefault();
+                        $('#btn_move_down').click();
+                    } else if (event.key === "ArrowLeft" && $('#btn_move_left').is(':enabled')) {
+                        event.preventDefault();
+                        $('#btn_move_left').click();
+                    } else if (event.key === "ArrowRight" && $('#btn_move_right').is(':enabled')) {
+                        event.preventDefault();
+                        $('#btn_move_right').click();
+                    } else if (event.key === "Home" && $('#btn_rotate_left').is(':enabled')) {
+                        event.preventDefault();
+                        $('#btn_rotate_left').click();
+                    } else if (event.key === "End" && $('#btn_rotate_right').is(':enabled')) {
+                        event.preventDefault();
+                        $('#btn_rotate_right').click();
                     }
                 }
             }

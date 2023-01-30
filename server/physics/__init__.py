@@ -1,0 +1,1 @@
+from .playingfield import Map

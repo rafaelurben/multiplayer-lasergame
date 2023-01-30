@@ -5,6 +5,7 @@ import asyncio
 from aiohttp import web
 
 from server_base import BasicServer
+from physics import Map
 
 log = logging.getLogger()
 
@@ -284,8 +285,11 @@ class GameServer(BasicServer):
         await self.shuffle_teams(only_unassigned=True)
         await self.send_to_joined({'action': 'state_changed', 'state': 'ingame'})
 
-        # TODO: Initialize game engine
-
+        self.engine = Map(
+            mapwidth=self.game_params['mapWidth'],
+            mapheight=self.game_params['mapHeight'],
+            players=self.players.values()
+        )
         self.game_state = 'ingame'
 
     async def end_game(self):
@@ -310,8 +314,19 @@ class GameServer(BasicServer):
 
         # Main actions
         self.engine.tick()
-        
-        # TODO: Send game state to clients
+
+        await self.send_to_joined({
+            'action': 'game_render_map',
+            'blocks': self.engine.getMap()
+        })
+        await self.send_to_joined({
+            'action': 'game_render_lasers',
+            'lasers': self.engine.getLasers()
+        })
+        await self.send_to_spectators({
+            'action': 'game_render_score',
+            'score': self.engine.getScore()
+        })
 
     async def gameloop(self):
         """The main game loop"""

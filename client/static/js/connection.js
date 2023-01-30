@@ -110,6 +110,18 @@ class GameSocket {
                 this.game.params = json.params;
                 break;
             }
+            case "game_render_map": {
+                this.game.setMap(json.blocks);
+                break;
+            }
+            case "game_render_lasers": {
+                this.game.canvas.drawLasers(json.lasers);
+                break;
+            }
+            case "game_render_score": {
+                this.game.canvas.drawScore(json.score);
+                break;
+            }
             default: {
                 console.warn("[WS] Unknown action received:", json);
             }

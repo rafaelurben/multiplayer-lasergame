@@ -96,14 +96,18 @@ class GameServer(BasicServer):
                 self.players[wsid]['team'] = team
             return await self.send_to_joined({'action': 'player_updated', 'id': wsid, 'player': self.players[wsid]})
         if action == 'player_controls' and self.game_state == 'ingame':
-            key = data.get('key', None)
-            if key is None:
+            button = data.get('button', None)
+            if button is None or button not in ['move_up', 'move_down', 'move_left', 'move_right', 'rotate_left', 'rotate_right']:
                 return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid control!'})
-            
+            blockid = data.get('blockid', None)
+            if blockid is None:
+                return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid block id!'})
+
+            print("Player controls: ", button, blockid)
             if self.engine is None:
                 return log.warning('Engine is not initialized!')
 
-            return await self.engine.handle_controls(playerid=wsid, key=key)
+            return await self.engine.handle_controls(playerid=wsid, blockid=blockid, button=button)
         return False
 
     async def handle_action_from_master(self, action, data, ws, wsid):

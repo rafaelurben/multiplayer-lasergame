@@ -263,7 +263,7 @@ class Game {
     playerControlsPress(action) {
         // Handle player controls (move, rotate, etc.)
 
-        window.sock.action("player_controls", {key: action})
+        window.sock.action("player_controls", {button: action, blockid: this.game_inventory_selected.id})
     }
 
     playerControlsRender(block) {

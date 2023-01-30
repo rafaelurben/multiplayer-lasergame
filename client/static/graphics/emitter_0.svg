@@ -1,70 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width="16.139584mm"
-   height="16.007292mm"
-   viewBox="0 0 16.139584 16.007292"
-   version="1.1"
-   id="svg5"
-   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
-   sodipodi:docname="roter Emitter.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview7"
-     pagecolor="#ffffff"
-     bordercolor="#000000"
-     borderopacity="0.25"
-     inkscape:showpageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1"
-     inkscape:document-units="mm"
-     showgrid="true"
-     showguides="true"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="29.344931"
-     inkscape:cy="23.157747"
-     inkscape:window-width="1920"
-     inkscape:window-height="974"
-     inkscape:window-x="-11"
-     inkscape:window-y="-11"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer1">
-    <inkscape:grid
-       type="xygrid"
-       id="grid1906" />
-    <sodipodi:guide
-       position="-5.1924481,7197.99"
-       orientation="1,0"
-       id="guide20812"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="-14.452865,7192.6983"
-       orientation="0,-1"
-       id="guide20814"
-       inkscape:locked="false" />
-  </sodipodi:namedview>
-  <defs
-     id="defs2" />
-  <g
-     inkscape:label="Ebene 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(0.09921859,0.13229149)">
-    <rect
-       style="fill:none;fill-opacity:0.936639;stroke:#000000;stroke-width:0.264583;stroke-opacity:0.969697"
-       id="rect1128"
-       width="15.875"
-       height="15.742708"
-       x="0.033072915"
-       y="0" />
-    <path
-       style="fill:#df0505;fill-opacity:0.936639;stroke:#000000;stroke-width:0.264583;stroke-opacity:0.969697"
-       d="M 0.03307292,5.2585937 9.2604166,5.2916666 5.2585937,6.5815103 v 2.6458333 l 3.9687499,1.3559894 -9.19427068,-0.06615 z"
-       id="path1858" />
-  </g>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="64px" height="64px" viewBox="0 0 65 65" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-69,0)">
+        <g transform="matrix(1,0,0,1,69.5287,0.524591)">
+            <rect id="emitter_0" x="0" y="0" width="64" height="64" style="fill:none;"/>
+            <g id="emitter_01" serif:id="emitter_0">
+                <g transform="matrix(-2.04948,-2.50989e-16,2.50989e-16,-2.04948,197.831,98.6585)">
+                    <path d="M78.836,37.82C78.782,37.833 78.726,37.839 78.671,37.839C77.602,37.839 76.734,35.458 76.734,32.525C76.734,29.591 77.602,27.21 78.671,27.21L81.265,27.21L81.265,27.229C80.273,27.46 79.494,29.745 79.494,32.525C79.494,35.305 80.273,37.589 81.265,37.82L78.836,37.82Z" style="fill:rgb(89,89,89);"/>
+                </g>
+                <g transform="matrix(3.16864,0,0,2.58627,-246.939,-55.8209)">
+                    <rect x="80.101" y="30.093" width="15.86" height="7.727" style="fill:url(#_Linear1);"/>
+                </g>
+                <g transform="matrix(1.88005,0,0,1.88005,-130.112,-29.148)">
+                    <ellipse cx="99.592" cy="32.525" rx="1.936" ry="5.315"/>
+                </g>
+                <g transform="matrix(1.88005,0,0,1.88005,-180.367,-29.148)">
+                    <ellipse cx="99.592" cy="32.525" rx="1.936" ry="5.315" style="fill:url(#_Linear2);"/>
+                </g>
+                <g transform="matrix(1.88005,0,0,1.88005,-137.392,-29.148)">
+                    <path d="M78.836,37.82C78.782,37.833 78.726,37.839 78.671,37.839C77.602,37.839 76.734,35.458 76.734,32.525C76.734,29.591 77.602,27.21 78.671,27.21L81.265,27.21L81.265,27.229C80.273,27.46 79.494,29.745 79.494,32.525C79.494,35.305 80.273,37.589 81.265,37.82L78.836,37.82Z" style="fill:rgb(244,67,54);"/>
+                </g>
+                <g transform="matrix(2.04948,0,0,2.04948,-129.908,-34.6585)">
+                    <path d="M78.836,37.82C78.782,37.833 78.726,37.839 78.671,37.839C77.602,37.839 76.734,35.458 76.734,32.525C76.734,29.591 77.602,27.21 78.671,27.21L81.265,27.21L81.265,27.229C80.273,27.46 79.494,29.745 79.494,32.525C79.494,35.305 80.273,37.589 81.265,37.82L78.836,37.82Z" style="fill:rgb(89,89,89);"/>
+                </g>
+                <g transform="matrix(1.88005,0,0,1.88005,-95.6543,-29.148)">
+                    <path d="M80.836,37.82C80.782,37.833 80.726,37.839 80.671,37.839C79.602,37.839 78.734,35.458 78.734,32.525C78.734,29.591 79.602,27.21 80.671,27.21L81.265,27.21L81.265,27.229C80.273,27.46 79.494,29.745 79.494,32.525C79.494,35.305 80.273,37.589 81.265,37.82L80.836,37.82Z" style="fill:rgb(244,67,54);"/>
+                </g>
+            </g>
+        </g>
+    </g>
+    <defs>
+        <linearGradient id="_Linear1" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(4.80521e-16,7.71303,-7.8475,4.72287e-16,88.7498,30.0931)"><stop offset="0" style="stop-color:black;stop-opacity:1"/><stop offset="0.5" style="stop-color:rgb(76,76,76);stop-opacity:1"/><stop offset="1" style="stop-color:black;stop-opacity:1"/></linearGradient>
+        <linearGradient id="_Linear2" x1="0" y1="0" x2="1" y2="0" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1.17329e-16,10.6103,-1.91612,6.49694e-16,99.7679,27.2098)"><stop offset="0" style="stop-color:black;stop-opacity:1"/><stop offset="0.5" style="stop-color:rgb(76,76,76);stop-opacity:1"/><stop offset="1" style="stop-color:black;stop-opacity:1"/></linearGradient>
+    </defs>
 </svg>

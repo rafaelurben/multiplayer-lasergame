@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width="16.139582mm"
-   height="16.139584mm"
-   viewBox="0 0 16.139582 16.139584"
-   version="1.1"
-   id="svg5"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs2" />
-  <g
-     id="layer1"
-     transform="translate(-0.00635327,-0.0147994)">
-    <rect
-       style="fill:#ab7c00;fill-opacity:1;stroke:#000000;stroke-width:0.264583;stroke-opacity:0.969697"
-       id="rect46789"
-       width="15.875"
-       height="15.875"
-       x="0.13864477"
-       y="0.1470909" />
-  </g>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="64px" height="64px" viewBox="0 0 65 65" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-139,0)">
+        <g transform="matrix(1,0,0,1,139.057,0.524591)">
+            <rect id="wood" x="0" y="0" width="64" height="64" style="fill:none;"/>
+            <clipPath id="_clip1">
+                <rect id="wood1" serif:id="wood" x="0" y="0" width="64" height="64"/>
+            </clipPath>
+            <g clip-path="url(#_clip1)">
+                <g id="texturelegno.svg" transform="matrix(1,-0,-0,1,-0.0574349,-0.524591)">
+                    <use xlink:href="#_Image2" x="0.057" y="0.525" width="64px" height="64px"/>
+                </g>
+                <g transform="matrix(1,0,0,1,-139.057,-0.524591)">
+                    <path d="M203.057,0.525L203.057,64.525L139.057,64.525L139.057,0.525L203.057,0.525ZM202.224,1.358L139.891,1.358L139.891,63.691L202.224,63.691L202.224,1.358Z"/>
+                </g>
+            </g>
+        </g>
+    </g>
+    <defs>
+        <image id="_Image2" width="64px" height="64px" xlink:href="data:image/jpeg;base64,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"/>
+    </defs>
 </svg>
-

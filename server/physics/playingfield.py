@@ -11,11 +11,24 @@ class Map:
         5 : Mirror,
         6 : Glass
     }
-    max_laser_bounces = 1000
+    max_laser_bounces = 100
 
-    def __init__(self, mapwidth, mapheight):
-        self.map = [[Empty() for x in range(mapwidth)] for y in range(mapheight)]
+    def __init__(self, mapwidth, mapheight, players):
+        self.width = mapwidth + 2
+        self.height = mapheight + 2
+        self.map = [[Empty() for x in range(self.width)] for y in range(self.height)]
         self.lasers = []
+        self.players = players
+        self.generate_map()
+
+    def generate_map(self):
+        # Border
+        for field_x in range(self.width):
+            for field_y in range(self.height):
+                if field_x == 0 or field_y == 0 or field_x == self.width - 1 or field_y == self.height - 1:
+                    self.change_field(field_x, field_y, 1)
+
+
 
     def step(self):
         self.update_lasers()
@@ -64,7 +77,8 @@ class Map:
                         laser_path += lines
                     self.lasers.append(laser_path)
 
-
+    # def handle_controls(self, player_id, block_id, button):
+    #     pass
 
     def get_data(self):
         return [self.map, self.lasers]
@@ -75,5 +89,13 @@ class Map:
     def update_state(self, field_x, field_y, new_state):
         self.map[field_x][field_y].update_state(new_state)
 
-    def move(self, field_x, field_y, direction):
-        pass
+    
+
+    # def getScore(self):
+    #     pass
+
+    # def getLasers(self):
+    #     pass
+
+    # def getMap(self):
+    #     pass

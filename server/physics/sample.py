@@ -9,37 +9,10 @@ import math
 width = 7
 height = 7
 
-block_size = 100
+block_size = 50
 
-m = Map(width, height)
+m = Map(width-2, height-2, None)
 
-m.change_field(0, 0, 1)
-m.change_field(1, 0, 1)
-m.change_field(2, 0, 1)
-m.change_field(3, 0, 1)
-m.change_field(4, 0, 1)
-m.change_field(5, 0, 1)
-m.change_field(6, 0, 1)
-
-m.change_field(0, 6, 1)
-m.change_field(1, 6, 1)
-m.change_field(2, 6, 1)
-m.change_field(3, 6, 1)
-m.change_field(4, 6, 1)
-m.change_field(5, 6, 1)
-m.change_field(6, 6, 1)
-
-m.change_field(0, 1, 1)
-m.change_field(0, 2, 1)
-m.change_field(0, 3, 6)
-m.change_field(0, 4, 1)
-m.change_field(0, 5, 1)
-
-m.change_field(6, 1, 1)
-m.change_field(6, 2, 1)
-m.change_field(6, 3, 4)
-m.change_field(6, 4, 1)
-m.change_field(6, 5, 1) 
 
 
 

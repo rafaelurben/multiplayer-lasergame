@@ -32,6 +32,8 @@ function map1(game) {
         { id: 11, type: 5, pos: { x: 11, y: 10 }, rotation: 315, owner: 2 },
         { id: 12, type: 5, pos: { x: 11, y: 0 }, rotation: 315, owner: 3 },
         { id: 13, type: 5, pos: { x: 25, y: 0 }, rotation: 45, owner: 4 },
+        { id: 14, type: 6, pos: { x: 8, y: 4 }, owner: 5 },
+        { id: 15, type: 1, pos: { x: 10, y: 12 } },
     ])
 
     game.canvas.drawLasers([

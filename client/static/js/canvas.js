@@ -136,6 +136,7 @@ class GameMapCanvas {
                 break;
             } 
             case 1: { // Wall
+                url = baseurl + 'wall.svg';
                 break;
             }
             case 2: { // Emitter
@@ -155,6 +156,7 @@ class GameMapCanvas {
                 break;
             }
             case 6: { // Glass
+                url = baseurl + 'glass.svg';
                 break;
             }
         }

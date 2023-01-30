@@ -91,11 +91,22 @@ class Map:
 
     
 
-    # def getScore(self):
-    #     pass
+    def getScore(self):
+        pass
 
-    # def getLasers(self):
-    #     pass
+    def getLasers(self):
+        pass
 
-    # def getMap(self):
-    #     pass
+    def getMap(self):
+        blocks = []
+        block = {
+            "id" : 0,
+            "team" : 0,
+            "owner" : 0,
+            "type" : 0,
+            "pos" : {
+                "x" : 0,
+                "y" : 0,
+            },
+            "rotation" : 0
+        }

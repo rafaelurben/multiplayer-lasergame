@@ -7,14 +7,14 @@
 ```json
 [
     {
-        'id': 0,
-        'name': 'Player 1',
-        'team': 0
+        "id": 0,
+        "name": "Player 1",
+        "team": 0
     },
     {
-        'id': 1,
-        'name': 'Player 2',
-        'team': 1
+        "id": 1,
+        "name": "Player 2",
+        "team": 1
     }
 ]
 ```
@@ -24,24 +24,25 @@
 ```json
 [
     {
-        'team': 0,
-        'owner': 3,
-        'type': 0,
-        'pos': {
-            'x': 0,
-            'y': 0
+        "id": 2,
+        "team": 0,
+        "owner": 3,
+        "type": 1,
+        "pos": {
+            "x": 0,
+            "y": 0
         },
-        'rotation': 180
+        "rotation": 180
     },
     {
-        'team': 1,
-        'owner': 1,
-        'type': 1,
-        'pos': {
-            'x': 10,
-            'y': 5
+        "id": 3,
+        "team": 1,
+        "owner": 1,
+        "type": 3,
+        "pos": {
+            "x": 10,
+            "y": 5
         },
-        'rotation': 0
     }
 ]
 ```
@@ -65,16 +66,16 @@
 ```json
 [
     {
-        'team': 0,
-        'lines': [
+        "team": 0,
+        "lines": [
             [[x1, y1, x2, y2], strength],
             [[x1, y1, x2, y2], strength],
             [[x1, y1, x2, y2], strength]
         ]
     },
     {
-        'team': 1,
-        'lines': [
+        "team": 1,
+        "lines": [
             [[x1, y1, x2, y2], strength],
             [[x1, y1, x2, y2], strength],
             [[x1, y1, x2, y2], strength]

@@ -206,9 +206,16 @@
 
     <!-- Scripts -->
     <script>
-        window.game = new Game();
-        window.sock = new GameSocket(window.game);
-        setupKeybinds(window.sock);
+        window.addEventListener("load", function() {
+            window.game = new Game();
+            window.sock = new GameSocket(window.game);
+            setupKeybinds(window.sock);
+    
+            // Debug mode
+            if (window.location.search.includes("debug")) {
+                $.getScript("/static/js/debug.js");
+            }
+        });
     </script>
 </body>
 

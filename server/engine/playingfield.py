@@ -37,7 +37,7 @@ class Map:
     def update_lasers(self):
         self.lasers = []
         print('')
-        
+
         for row in range(len(self.map)):
             for col in range(len(self.map[0])):
                 if type(self.map[row][col]) == Emitter:
@@ -77,8 +77,6 @@ class Map:
                         laser_path += lines
                     self.lasers.append(laser_path)
 
-    # def handle_controls(self, player_id, block_id, button):
-    #     pass
 
     def get_data(self):
         return [self.map, self.lasers]
@@ -89,15 +87,26 @@ class Map:
     def update_state(self, field_x, field_y, new_state):
         self.map[field_x][field_y].update_state(new_state)
 
-    
 
-    def getScore(self):
+    # Actions
+
+    def tick(self) -> None:
+        "Called every tick. Updates the score and lasers."
+
+    def handle_controls(self, player_id: int, block_id: int, button: str) -> bool:
+        """Returns True if the action was successful. Handles the controls of the player.
+        `button` is a string in ['move_up', 'move_down', 'move_left', 'move_right', 'rotate_left', 'rotate_right'].
+        """
+
+    # Queries
+
+    def get_score(self) -> float:
         pass
 
-    def getLasers(self):
+    def get_lasers(self) -> list:
         pass
 
-    def getMap(self):
+    def get_map(self) -> list:
         blocks = []
         block = {
             "id" : 0,

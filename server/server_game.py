@@ -5,7 +5,7 @@ import asyncio
 from aiohttp import web
 
 from server_base import BasicServer
-from physics import Map
+from engine import Map
 
 log = logging.getLogger()
 
@@ -24,7 +24,7 @@ class GameServer(BasicServer):
         self.game_state = "lobby"
         self.joining_allowed = True
 
-        self.engine = None
+        self.engine: Map = None
 
         self.game_params = {
             'mapWidth': 30,
@@ -317,15 +317,15 @@ class GameServer(BasicServer):
 
         await self.send_to_joined({
             'action': 'game_render_map',
-            'blocks': self.engine.getMap()
+            'blocks': self.engine.get_map()
         })
         await self.send_to_joined({
             'action': 'game_render_lasers',
-            'lasers': self.engine.getLasers()
+            'lasers': self.engine.get_lasers()
         })
         await self.send_to_spectators({
             'action': 'game_render_score',
-            'score': self.engine.getScore()
+            'score': self.engine.get_score()
         })
 
     async def gameloop(self):

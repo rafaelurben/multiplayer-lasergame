@@ -1,5 +1,6 @@
 from blocks import Empty, Wall, Emitter, Receiver, Wood, Mirror, Glass
 from copy import deepcopy
+import math
 
 class Map:
     block_id_dic = {
@@ -19,20 +20,48 @@ class Map:
         self.map = [[Empty() for x in range(self.width)] for y in range(self.height)]
         self.lasers = []
         self.players = players
+        self.teams = {}
+        for player in self.players:
+            if player["team"] in self.teams:
+                self.teams[player["team"]].append(player["id"])
+            else:
+                self.teams[player["team"]] = [player["id"]]
         self.generate_map()
 
     def generate_map(self):
+        factor_of_filled_blocks = 0.2
+        block_set = {
+            4 : 1,
+            5 : 1,
+            6 : 1
+        }
+
         # Border
         for field_x in range(self.width):
             for field_y in range(self.height):
                 if field_x == 0 or field_y == 0 or field_x == self.width - 1 or field_y == self.height - 1:
                     self.change_field(field_x, field_y, 1)
 
+        lcm = 1
+        for t in self.teams:
+            lcm = math.lcm(lcm, len(self.teams[t]))
 
+        expected_n_block_sets_per_team = int((self.width - 2) * (self.height - 2) * factor_of_filled_blocks)
+        n_block_sets_per_team = expected_n_block_sets_per_team + (lcm - (expected_n_block_sets_per_team % lcm))
+        
+        
+
+        
+
+
+
+    def change_field(self, field_x, field_y, block_id):
+        self.map[field_x][field_y] = self.block_id_dic[block_id]()
 
     def step(self):
         self.update_lasers()
         return self.get_data()
+
 
     def update_lasers(self):
         self.lasers = []
@@ -81,8 +110,6 @@ class Map:
     def get_data(self):
         return [self.map, self.lasers]
 
-    def change_field(self, field_x, field_y, block_id):
-        self.map[field_x][field_y] = self.block_id_dic[block_id]()
 
     def update_state(self, field_x, field_y, new_state):
         self.map[field_x][field_y].update_state(new_state)

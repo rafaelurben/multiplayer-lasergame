@@ -6,12 +6,40 @@ from copy import deepcopy
 import random
 import math
 
-width = 7
-height = 7
+width = 20
+height = 20
 
 block_size = 50
 
-m = Map(width-2, height-2, None)
+players = [
+    {
+        "id": 0,
+        "name": "Player 1",
+        "team": 0
+    },
+    {
+        "id": 1,
+        "name": "Player 2",
+        "team": 0
+    },
+    {
+        "id": 2,
+        "name": "Player 2",
+        "team": 1
+    },
+    {
+        "id": 3,
+        "name": "Player 2",
+        "team": 1
+    },
+    {
+        "id": 4,
+        "name": "Player 2",
+        "team": 1
+    }
+]
+
+m = Map(width-2, height-2, players)
 
 
 

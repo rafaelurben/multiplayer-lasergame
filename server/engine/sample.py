@@ -67,8 +67,8 @@ angle = 0
 while True:
     data, lasers = m.step()
 
-    image = deepcopy(bg)
-    # image = bg
+    # image = deepcopy(bg)
+    image = bg
     for laser in lasers:
         for idx, line in enumerate(laser):
             start = [int(line[0][0] * block_size), int(line[0][1] * block_size)]

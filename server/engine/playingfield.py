@@ -1,6 +1,7 @@
 from blocks import Empty, Wall, Emitter, Receiver, Wood, Mirror, Glass
 from copy import deepcopy
 import math
+import random
 
 class Map:
     block_id_dic = {
@@ -29,7 +30,7 @@ class Map:
         self.generate_map()
 
     def generate_map(self):
-        factor_of_filled_blocks = 0.2
+        factor_of_filled_blocks = 0.1
         block_set = {
             4 : 1,
             5 : 1,
@@ -49,14 +50,27 @@ class Map:
         expected_n_block_sets_per_team = int((self.width - 2) * (self.height - 2) * factor_of_filled_blocks)
         n_block_sets_per_team = expected_n_block_sets_per_team + (lcm - (expected_n_block_sets_per_team % lcm))
         
+        empty_cords = []
+        for field_x in range(1, self.width - 1):
+            for field_y in range(1, self.height - 1):
+                empty_cords.append((field_x, field_y))
+
+        for t in self.teams:
+            team = self.teams[t]
+            sets_per_player = int(n_block_sets_per_team / len(team))
+
+            for player in team:
+                for set in range(sets_per_player):
+                    for block_id in block_set:
+                        for block in range(block_set[block_id]):
+                            field_x, field_y = empty_cords.pop(random.randint(0, len(empty_cords) - 1))
+                            self.change_field(field_x, field_y, block_id, t, player)
+            
         
 
-        
-
-
-
-    def change_field(self, field_x, field_y, block_id):
+    def change_field(self, field_x, field_y, block_id, team=None, owner=None):
         self.map[field_x][field_y] = self.block_id_dic[block_id]()
+        print(team, owner)
 
     def step(self):
         self.update_lasers()

@@ -2,6 +2,10 @@ import math
 from copy import deepcopy
 
 class Block:
+    def __init__(self):
+        self.team = None
+        self.owner = None
+
     def normalize(self, point, angle, border):
         if "n" in border:
             start_point = [0, point[0]]
@@ -160,11 +164,7 @@ class Emitter(Block):
 
 
 
-class Receiver:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
+class Receiver(Block):
     def get_laser_path(self, point, angle, strength, border):
         # some code
         return (lines, end_point, end_angle, end_strength, exit_border)

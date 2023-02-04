@@ -69,8 +69,11 @@ class Map:
         
 
     def change_field(self, field_x, field_y, block_id, team=None, owner=None):
-        self.map[field_x][field_y] = self.block_id_dic[block_id]()
-        print(team, owner)
+        new_block = self.map[field_x][field_y] = self.block_id_dic[block_id]()
+        if not team == None:
+            new_block.team = team
+        if not owner == None:
+            new_block.owner = owner
 
     def step(self):
         self.update_lasers()

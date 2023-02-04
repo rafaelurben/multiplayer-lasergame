@@ -3,8 +3,23 @@ from copy import deepcopy
 
 class Block:
     def __init__(self):
-        self.team = None
+        self.id = None
         self.owner = None
+        self.team = None
+        self.type = None
+        self.pos = None
+        self.angle = 0
+
+    def get_data(self):
+        data = {
+            "id" : self.id,
+            "team" : self.team,
+            "owner" : self.owner,
+            "type" : self.type,
+            "pos" : self.pos,
+            "rotation" : self.angle
+        }
+        return data
 
     def normalize(self, point, angle, border):
         if "n" in border:
@@ -87,17 +102,11 @@ class Block:
 
 
 class Empty(Block):
-    def __init__(self):
-        pass
-
     def get_laser_path(self, point, angle, strength, border):
         lines, end_point, angle, border = self.get_path(point, angle, border)
         return (lines, end_point, angle, strength, border)
 
 class Wall(Block):
-    def __init__(self):
-        pass
-
     def get_laser_path(self, point, angle, strength, border):
         exit_border = []
         if "n" in border:
@@ -123,9 +132,7 @@ class Wall(Block):
         return (lines, end_point, angle, strength, exit_border)
 
 class Emitter(Block):
-    def __init__(self, angle=0, strength=10):
-        self.angle = angle
-        self.strength = strength
+    strength = 1
 
     def update_state(self, new_state):
         self.angle = new_state[0]
@@ -171,7 +178,8 @@ class Receiver(Block):
 
 class Wood(Block):
     def __init__(self):
-        self.hp = 1000
+        super().__init__()
+        self.hp = 1000000
         self.cooldown = 100
 
     def get_laser_path(self, point, angle, strength, border):
@@ -185,9 +193,6 @@ class Wood(Block):
             return (lines, end_point, angle, strength, border)
 
 class Mirror(Block):
-    def __init__(self, angle=0):
-        self.angle = angle
-
     def update_state(self, new_state):
         self.angle = new_state[0]
 
@@ -225,6 +230,9 @@ class Mirror(Block):
         y3 = 0.5 + 0.5 * (math.sin(self.angle))
         x4 = 0.5 + 0.5 * (-math.cos(self.angle))
         y4 = 0.5 + 0.5 * (-math.sin(self.angle))
+
+        if (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0 or (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0:
+            return (lines, end_point, angle, strength, border)
         
         t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
         u = (((x1 - x3) * (y1 - y2)) - ((y1 - y3) * (x1 - x2))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
@@ -264,9 +272,7 @@ class Mirror(Block):
         return (lines, end_point, angle, strength, border)
 
 class Glass(Block):
-    def __init__(self):
-        self.strength_factor = 0.8
-
+    strength_factor = 0.8
     def get_laser_path(self, point, angle, strength, border):
         lines, end_point, angle, border = self.get_path(point, angle, border)
         return (lines, end_point, angle, strength * self.strength_factor, border)

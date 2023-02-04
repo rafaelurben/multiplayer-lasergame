@@ -22,6 +22,7 @@ class Map:
         self.lasers = []
         self.players = players
         self.teams = {}
+        self.unused_id = 0
         for player in self.players:
             if player["team"] in self.teams:
                 self.teams[player["team"]].append(player["id"])
@@ -70,10 +71,18 @@ class Map:
 
     def change_field(self, field_x, field_y, block_id, team=None, owner=None):
         new_block = self.map[field_x][field_y] = self.block_id_dic[block_id]()
-        if not team == None:
-            new_block.team = team
-        if not owner == None:
-            new_block.owner = owner
+
+        new_block.id = self.unused_id
+        new_block.owner = owner
+        new_block.team = team
+        new_block.type = block_id
+        new_block.pos = {
+            "x" : field_x - 1,
+            "y" : field_y - 1
+        }
+
+        self.unused_id += 1
+
 
     def step(self):
         self.update_lasers()
@@ -139,6 +148,7 @@ class Map:
 
     def handle_controls(self, player_id: int, block_id: int, button: str) -> bool:
         """Returns True if the action was successful. Handles the controls of the player.
+
         `button` is a string in ['move_up', 'move_down', 'move_left', 'move_right', 'rotate_left', 'rotate_right'].
         """
 
@@ -152,14 +162,9 @@ class Map:
 
     def get_map(self) -> list:
         blocks = []
-        block = {
-            "id" : 0,
-            "team" : 0,
-            "owner" : 0,
-            "type" : 0,
-            "pos" : {
-                "x" : 0,
-                "y" : 0,
-            },
-            "rotation" : 0
-        }
+        for field_x in range(1, self.width - 1):
+            for field_y in range(1, self.height - 1):
+                if not type(self.map[field_x][field_y]) == Empty:
+                    blocks.append(self.map[field_x, field_y].get_data())
+        return blocks
+        

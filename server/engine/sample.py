@@ -79,10 +79,10 @@ while True:
                 (0,0,255)
             ]
             image = cv2.line(image, start, end, colors[2], 1)
-    angle += 0.05
+    angle += 1e-3
     m.update_state(3, 3, (angle, 10))
     cv2.imshow("test", image)
-    cv2.waitKey(0)
+    cv2.waitKey(1)
 
 
 

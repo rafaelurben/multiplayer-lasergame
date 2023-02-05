@@ -31,7 +31,7 @@ class Map:
         self.generate_map()
 
     def generate_map(self):
-        factor_of_filled_blocks = 0.1
+        factor_of_filled_blocks = 0.02
         block_set = {
             4 : 1,
             5 : 1,
@@ -77,7 +77,7 @@ class Map:
                     for block_id in block_set:
                         for block in range(block_set[block_id]):
                             field_x, field_y = empty_cords.pop(random.randint(0, len(empty_cords) - 1))
-                            # self.change_field(field_x, field_y, block_id, t, player)
+                            self.change_field(field_x, field_y, block_id, t, player)
             
         
 
@@ -95,11 +95,6 @@ class Map:
         new_block.angle = angle + (math.pi / 2)
 
         self.unused_id += 1
-
-
-    def step(self):
-        self.update_lasers()
-        # return self.get_data()
 
 
     def update_lasers(self):
@@ -132,6 +127,7 @@ class Map:
                             break
                         try:
                             lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border, self.map[row][col].team)
+                            # print(lines)
                         except Exception as e:
                             print(e)
                             break
@@ -172,6 +168,49 @@ class Map:
 
         `button` is a string in ['move_up', 'move_down', 'move_left', 'move_right', 'rotate_left', 'rotate_right'].
         """
+        rotation_angle = math.pi / 8
+        for field_x in range(1, self.width - 1):
+            for field_y in range(1, self.height - 1):
+                if self.map[field_x][field_y].id == block_id:
+                    x = field_x
+                    y = field_y
+                    block = deepcopy(self.map[field_x][field_y])
+                    if not block.owner == player_id:
+                        return False
+        if button == "move_up":
+            if type(self.map[x][y-1]) == Empty:
+                block.pos["y"] -= 1
+                self.map[x][y-1] = block
+                self.map[x][y] = Empty()
+                return True
+        elif button == "move_down":
+            if type(self.map[x][y+1]) == Empty:
+                block.pos["y"] += 1
+                self.map[x][y+1] = block
+                self.map[x][y] = Empty()
+                return True
+        elif button == "move_left":
+            if type(self.map[x-1][y]) == Empty:
+                block.pos["x"] -= 1
+                self.map[x-1][y] = block
+                self.map[x][y] = Empty()
+                return True
+        elif button == "move_right":
+            if type(self.map[x+1][y]) == Empty:
+                block.pos["x"] += 1
+                self.map[x+1][y] = block
+                self.map[x][y] = Empty()
+                return True
+        elif button == "rotate_left":
+            self.map[x][y].angle += rotation_angle
+            return True
+        elif button == "rotate_right":
+            self.map[x][y].angle -= rotation_angle
+            return True
+        
+        return False
+        
+
 
     # Queries
 

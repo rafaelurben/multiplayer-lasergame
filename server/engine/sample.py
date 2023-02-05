@@ -66,6 +66,10 @@ for h in range(height):
 
 blocks = m.get_map()
 for block in blocks:
+    m.handle_controls(block["owner"], block["id"], "rotate_right")
+
+blocks = m.get_map()
+for block in blocks:
     colors = [
                 (255,0,0), 
                 (0,255,0),
@@ -95,6 +99,7 @@ while True:
                 (0,255,0),
                 (0,0,255)
             ]
+            # print(start, end)
             image = cv2.line(image, start, end, colors[laser["team"]], s)
     angle += 1e-2
     m.update_state(3, 3, (angle, 1))

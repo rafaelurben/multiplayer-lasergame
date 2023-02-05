@@ -37,7 +37,7 @@ class Block:
         angle = (angle + (2*math.pi))%(2*math.pi)
 
         return start_point, angle
-    
+
     def denormalize(self, start_point, end_point, angle, border):
         if "n" in border:
             start_point = [start_point[1], 1]
@@ -54,11 +54,11 @@ class Block:
             start_point = [1, 1 - start_point[1]]
             end_point = [1 - end_point[0], 1 - end_point[1]]
             angle -= math.pi
-        
+
         angle = (angle + (2*math.pi))%(2*math.pi)
 
         return start_point, end_point, angle
-    
+
     def get_path(self, point, angle, border, strength):
         lines = []
 
@@ -96,7 +96,7 @@ class Block:
         if end_point[1] == 1:
             border.append("s")
 
-       
+
         lines = [start_point, end_point, strength]
         return ([lines], deepcopy(end_point), angle, border)
 
@@ -167,7 +167,7 @@ class Emitter(Block):
         lines = [line]
 
         return (lines, end_point, self.angle, self.strength, exit_border)
-        
+
     def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         return (lines, end_point, angle, strength, border)
@@ -223,7 +223,7 @@ class Wood(Block):
             return ([], [0,0], angle, strength, [])
         else:
             lines, end_point, angle, border = self.get_path(point, angle, border, strength)
-            
+
             return (lines, end_point, angle, strength, border)
 
 class Mirror(Block):
@@ -239,7 +239,7 @@ class Mirror(Block):
         y3 = p3[1]
         x4 = p4[0]
         y4 = p4[1]
-        
+
         t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
         u = (((x1 - x3) * (y1 - y2)) - ((y1 - y3) * (x1 - x2))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
 
@@ -267,7 +267,7 @@ class Mirror(Block):
 
         if (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0 or (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0:
             return (lines, end_point, angle, strength, border)
-        
+
         t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
         u = (((x1 - x3) * (y1 - y2)) - ((y1 - y3) * (x1 - x2))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
 

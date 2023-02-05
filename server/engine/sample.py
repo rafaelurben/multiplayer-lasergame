@@ -7,7 +7,7 @@ import random
 import math
 
 width = 20
-height = 20
+height = 10
 
 block_size = 50
 
@@ -39,15 +39,15 @@ players = [
     }
 ]
 
-m = Map(width-2, height-2, players)
+m = Map(width, height, players)
 
 
 
 
 m.change_field(3, 3, 2)
 
-m.change_field(4, 3, 5)
-m.update_state(4, 3, [2 * random.random() * math.pi])
+# m.change_field(4, 3, 5)
+# m.update_state(4, 3, [2 * random.random() * math.pi])
 
 
 
@@ -59,29 +59,34 @@ for w in range(width):
     bg = cv2.line(bg, start, end, (255,255,255), 1)
 for h in range(height):
     start = [0, (h * block_size)]
-    end = [(height*block_size), (h * block_size)]
+    end = [(width*block_size), (h * block_size)]
 
     bg = cv2.line(bg, start, end, (255,255,255), 1)
 
+blocks = m.get_map()
+for block in blocks:
+    bg = cv2.circle(bg, (int((block["pos"]["x"] * block_size) + (0.5 * block_size)), int((block["pos"]["y"] * block_size) + (0.5 * block_size))), 20, 5)
+
+
 angle = 0
 while True:
-    data, lasers = m.step()
+    m.step()
+    lasers = m.get_lasers()
 
     image = deepcopy(bg)
     # image = bg
-    print(lasers)
     for laser in lasers:
-        for idx, line in enumerate(laser):
+        for idx, line in enumerate(laser["lines"]):
             start = [int(line[0][0] * block_size), int(line[0][1] * block_size)]
-            end = [int(line[1][0] * block_size), int(line[1][1] * block_size)]
-            s = max(1, int(line[2] * 10))
+            end = [int(line[0][2] * block_size), int(line[0][3] * block_size)]
+            s = max(1, int(line[1] * 10))
             colors = [
                 (255,0,0), 
                 (0,255,0),
                 (0,0,255)
             ]
-            image = cv2.line(image, start, end, colors[2], s)
-    angle += 1e-2
+            image = cv2.line(image, start, end, colors[2], 1)
+    angle += 1e-1
     m.update_state(3, 3, (angle, 1))
     cv2.imshow("test", image)
     cv2.waitKey(0)

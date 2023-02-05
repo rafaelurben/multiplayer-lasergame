@@ -8,7 +8,7 @@ class Block:
         self.team = None
         self.type = None
         self.pos = None
-        self.angle = 0
+        self.angle = None
 
     def get_data(self):
         data = {
@@ -181,7 +181,7 @@ class Receiver(Block):
 class Wood(Block):
     def __init__(self):
         super().__init__()
-        self.hp = 1000000
+        self.hp = 10
         self.cooldown = 100
 
     def get_laser_path(self, point, angle, strength, border):

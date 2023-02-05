@@ -18,7 +18,7 @@ class Map:
     def __init__(self, mapwidth, mapheight, players):
         self.width = mapwidth + 2
         self.height = mapheight + 2
-        self.map = [[Empty() for x in range(self.width)] for y in range(self.height)]
+        self.map = [[Empty() for y in range(self.height)] for x in range(self.width)]
         self.lasers = []
         self.players = players
         self.teams = {}
@@ -44,6 +44,14 @@ class Map:
                 if field_x == 0 or field_y == 0 or field_x == self.width - 1 or field_y == self.height - 1:
                     self.change_field(field_x, field_y, 1)
 
+        # receivers and emitters
+        y_emitter = int(self.height * (1 / 3))
+        y_receiver = int(self.height * (2 / 3))
+        self.change_field(field_x=1, field_y=y_emitter, block_id=2, team=0, angle=0)
+        self.change_field(field_x=self.width-2, field_y=y_emitter, block_id=2, team=1, angle=math.pi)
+
+
+
         lcm = 1
         for t in self.teams:
             lcm = math.lcm(lcm, len(self.teams[t]))
@@ -54,7 +62,8 @@ class Map:
         empty_cords = []
         for field_x in range(1, self.width - 1):
             for field_y in range(1, self.height - 1):
-                empty_cords.append((field_x, field_y))
+                if type(self.map[field_x][field_y]) == Empty:
+                    empty_cords.append((field_x, field_y))
 
         for t in self.teams:
             team = self.teams[t]
@@ -69,7 +78,7 @@ class Map:
             
         
 
-    def change_field(self, field_x, field_y, block_id, team=None, owner=None):
+    def change_field(self, field_x, field_y, block_id, team=None, owner=None, angle=0):
         new_block = self.map[field_x][field_y] = self.block_id_dic[block_id]()
 
         new_block.id = self.unused_id
@@ -80,13 +89,14 @@ class Map:
             "x" : field_x - 1,
             "y" : field_y - 1
         }
+        new_block.angle = angle + (math.pi / 2)
 
         self.unused_id += 1
 
 
     def step(self):
         self.update_lasers()
-        return self.get_data()
+        # return self.get_data()
 
 
     def update_lasers(self):
@@ -158,13 +168,25 @@ class Map:
         pass
 
     def get_lasers(self) -> list:
-        pass
+        lasers = []
+        for laser in self.lasers:
+            team = None
+            lines = []
+            for line in laser:
+                cords = [line[0][1]-1, line[0][0]-1, line[1][1]-1, line[1][0]-1]
+                strength = line[2]
+                lines.append([cords, strength])
+            lasers.append({
+                "team" : team,
+                "lines" : lines
+            })
+        return lasers
 
     def get_map(self) -> list:
         blocks = []
         for field_x in range(1, self.width - 1):
             for field_y in range(1, self.height - 1):
                 if not type(self.map[field_x][field_y]) == Empty:
-                    blocks.append(self.map[field_x, field_y].get_data())
+                    blocks.append(self.map[field_x][field_y].get_data())
         return blocks
         

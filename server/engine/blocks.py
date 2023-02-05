@@ -177,8 +177,25 @@ class Emitter(Block):
 
 class Receiver(Block):
     def get_laser_path(self, point, angle, strength, border):
-        # some code
-        return (lines, end_point, end_angle, end_strength, exit_border)
+        lines, end_point, angle, border = self.get_path(point, angle, border, strength)
+        if ((math.pi / 4) * 7) <= self.angle or self.angle <= (math.pi / 4):
+            if end_point[0] == 0 and 0.25 <= end_point[1] <= 0.75:
+                print("hit")
+                border = []
+        if (math.pi / 4) <= self.angle <= ((math.pi / 4) * 3):
+            if 0.25 <= end_point[0] <= 0.75 and end_point[1] == 0:
+                print("hit")
+                border = []
+        if ((math.pi / 4) * 3) <= self.angle <= ((math.pi / 4) * 5):
+            if end_point[0] == 1 and 0.25 <= end_point[1] <= 0.75:
+                print("hit")
+                border = []
+        if ((math.pi / 4) * 5) <= self.angle <= ((math.pi / 4) * 7):
+            if 0.25 <= end_point[0] <= 0.75 and end_point[1] == 1:
+                print("hit")
+                border = []
+
+        return (lines, end_point, angle, strength, border)
 
 class Wood(Block):
     def __init__(self):

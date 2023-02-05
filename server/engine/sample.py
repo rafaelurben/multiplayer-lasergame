@@ -89,14 +89,14 @@ while True:
         for idx, line in enumerate(laser["lines"]):
             start = [int(line[0][0] * block_size), int(line[0][1] * block_size)]
             end = [int(line[0][2] * block_size), int(line[0][3] * block_size)]
-            s = max(1, int(line[1] * 5))
+            s = min(max(1, int(line[1] * 5)), 1)
             colors = [
                 (255,0,0), 
                 (0,255,0),
                 (0,0,255)
             ]
             image = cv2.line(image, start, end, colors[laser["team"]], s)
-    angle += 1e-1
+    angle += 1e-2
     m.update_state(3, 3, (angle, 1))
     cv2.imshow("test", image)
     cv2.waitKey(0)

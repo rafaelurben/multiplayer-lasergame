@@ -50,6 +50,9 @@ class Map:
         self.change_field(field_x=1, field_y=y_emitter, block_id=2, team=0, angle=0)
         self.change_field(field_x=self.width-2, field_y=y_emitter, block_id=2, team=1, angle=math.pi)
 
+        self.change_field(field_x=1, field_y=y_receiver, block_id=3, team=0, angle=0)
+        self.change_field(field_x=self.width-2, field_y=y_receiver, block_id=3, team=1, angle=math.pi)
+
 
 
         lcm = 1
@@ -74,7 +77,7 @@ class Map:
                     for block_id in block_set:
                         for block in range(block_set[block_id]):
                             field_x, field_y = empty_cords.pop(random.randint(0, len(empty_cords) - 1))
-                            self.change_field(field_x, field_y, block_id, t, player)
+                            # self.change_field(field_x, field_y, block_id, t, player)
             
         
 
@@ -132,14 +135,14 @@ class Map:
                         except Exception as e:
                             print(e)
                             break
-                        if len(border) == 0:
-                            break
                         for l in lines:
                             l[0][1] += y
                             l[0][0] += x
                             l[1][0] += x
                             l[1][1] += y
                         laser_path += lines
+                        if len(border) == 0:
+                            break
                     self.lasers.append({
                         "team" : self.map[row][col].team,
                         "laser" : laser_path

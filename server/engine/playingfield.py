@@ -140,7 +140,10 @@ class Map:
                             l[1][0] += x
                             l[1][1] += y
                         laser_path += lines
-                    self.lasers.append(laser_path)
+                    self.lasers.append({
+                        "team" : self.map[row][col].team,
+                        "laser" : laser_path
+                    })
 
 
     def get_data(self):
@@ -170,9 +173,9 @@ class Map:
     def get_lasers(self) -> list:
         lasers = []
         for laser in self.lasers:
-            team = None
+            team = laser["team"]
             lines = []
-            for line in laser:
+            for line in laser["laser"]:
                 cords = [line[0][1]-1, line[0][0]-1, line[1][1]-1, line[1][0]-1]
                 strength = line[2]
                 lines.append([cords, strength])

@@ -44,7 +44,8 @@ m = Map(width, height, players)
 
 
 
-m.change_field(3, 3, 2)
+x = m.change_field(3, 3, 2, team=2)
+
 
 # m.change_field(4, 3, 5)
 # m.update_state(4, 3, [2 * random.random() * math.pi])
@@ -65,7 +66,16 @@ for h in range(height):
 
 blocks = m.get_map()
 for block in blocks:
-    bg = cv2.circle(bg, (int((block["pos"]["x"] * block_size) + (0.5 * block_size)), int((block["pos"]["y"] * block_size) + (0.5 * block_size))), 20, 5)
+    colors = [
+                (255,0,0), 
+                (0,255,0),
+                (0,0,255),
+                (255,255,0), 
+                (0,255,255),
+                (255,0,255),
+                (255,255,255)
+            ]
+    bg = cv2.circle(bg, (int((block["pos"]["x"] * block_size) + (0.5 * block_size)), int((block["pos"]["y"] * block_size) + (0.5 * block_size))), 20, colors[block["type"]], 5)
 
 
 angle = 0
@@ -85,7 +95,7 @@ while True:
                 (0,255,0),
                 (0,0,255)
             ]
-            image = cv2.line(image, start, end, colors[2], 1)
+            image = cv2.line(image, start, end, colors[laser["team"]], s)
     angle += 1e-1
     m.update_state(3, 3, (angle, 1))
     cv2.imshow("test", image)

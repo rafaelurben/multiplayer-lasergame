@@ -104,12 +104,12 @@ class Block:
         pass
 
 class Empty(Block):
-    def get_laser_path(self, point, angle, strength, border):
+    def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         return (lines, end_point, angle, strength, border)
 
 class Wall(Block):
-    def get_laser_path(self, point, angle, strength, border):
+    def get_laser_path(self, point, angle, strength, border, laser_team):
         exit_border = []
         if "n" in border:
             end_point = [point[0], 1]
@@ -168,7 +168,7 @@ class Emitter(Block):
 
         return (lines, end_point, self.angle, self.strength, exit_border)
         
-    def get_laser_path(self, point, angle, strength, border):
+    def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         return (lines, end_point, angle, strength, border)
 
@@ -176,24 +176,32 @@ class Emitter(Block):
 
 
 class Receiver(Block):
-    def get_laser_path(self, point, angle, strength, border):
+    def __init__(self):
+        super().__init__()
+        self.damage = 0
+
+    def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
+        hit = False
         if ((math.pi / 4) * 7) <= self.angle or self.angle <= (math.pi / 4):
             if end_point[0] == 0 and 0.25 <= end_point[1] <= 0.75:
-                print("hit")
+                hit = True
                 border = []
         if (math.pi / 4) <= self.angle <= ((math.pi / 4) * 3):
             if 0.25 <= end_point[0] <= 0.75 and end_point[1] == 0:
-                print("hit")
+                hit = True
                 border = []
         if ((math.pi / 4) * 3) <= self.angle <= ((math.pi / 4) * 5):
             if end_point[0] == 1 and 0.25 <= end_point[1] <= 0.75:
-                print("hit")
+                hit = True
                 border = []
         if ((math.pi / 4) * 5) <= self.angle <= ((math.pi / 4) * 7):
             if 0.25 <= end_point[0] <= 0.75 and end_point[1] == 1:
-                print("hit")
+                hit = True
                 border = []
+        if hit:
+            if not laser_team == self.team:
+                self.damage += strength
 
         return (lines, end_point, angle, strength, border)
 
@@ -207,7 +215,7 @@ class Wood(Block):
     def tick(self):
         self.hp += self.regeneration
 
-    def get_laser_path(self, point, angle, strength, border):
+    def get_laser_path(self, point, angle, strength, border, laser_team):
         if self.hp > 0:
             self.hp -= strength
             if self.hp < 0:
@@ -243,7 +251,7 @@ class Mirror(Block):
             return False, None
 
 
-    def get_laser_path(self, point, angle, strength, border):
+    def get_laser_path(self, point, angle, strength, border, laser_team):
         # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         start_point = lines[0][0]
@@ -299,6 +307,6 @@ class Mirror(Block):
 
 class Glass(Block):
     strength_factor = 0.8
-    def get_laser_path(self, point, angle, strength, border):
+    def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         return (lines, end_point, angle, strength * self.strength_factor, border)

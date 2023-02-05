@@ -131,7 +131,7 @@ class Map:
                         if y == len(self.map) or x == len(self.map[0]) or y == -1 or x == -1:
                             break
                         try:
-                            lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border)
+                            lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border, self.map[row][col].team)
                         except Exception as e:
                             print(e)
                             break
@@ -165,6 +165,7 @@ class Map:
             for field_y in range(1, self.height - 1):
                 self.map[field_x][field_y].tick()
         self.update_lasers()
+        #update_score missing
 
     def handle_controls(self, player_id: int, block_id: int, button: str) -> bool:
         """Returns True if the action was successful. Handles the controls of the player.

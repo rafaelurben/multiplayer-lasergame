@@ -100,6 +100,8 @@ class Block:
         lines = [start_point, end_point, strength]
         return ([lines], deepcopy(end_point), angle, border)
 
+    def tick(self):
+        pass
 
 class Empty(Block):
     def get_laser_path(self, point, angle, strength, border):
@@ -182,7 +184,11 @@ class Wood(Block):
     def __init__(self):
         super().__init__()
         self.hp = 10
-        self.cooldown = 100
+        self.regeneration = 0.1
+        self.cooldown = 5
+
+    def tick(self):
+        self.hp += self.regeneration
 
     def get_laser_path(self, point, angle, strength, border):
         if self.hp > 0:

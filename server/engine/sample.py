@@ -80,7 +80,7 @@ for block in blocks:
 
 angle = 0
 while True:
-    m.step()
+    m.tick()
     lasers = m.get_lasers()
 
     image = deepcopy(bg)
@@ -89,7 +89,7 @@ while True:
         for idx, line in enumerate(laser["lines"]):
             start = [int(line[0][0] * block_size), int(line[0][1] * block_size)]
             end = [int(line[0][2] * block_size), int(line[0][3] * block_size)]
-            s = max(1, int(line[1] * 10))
+            s = max(1, int(line[1] * 5))
             colors = [
                 (255,0,0), 
                 (0,255,0),

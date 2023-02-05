@@ -158,6 +158,10 @@ class Map:
 
     def tick(self) -> None:
         "Called every tick. Updates the score and lasers."
+        for field_x in range(1, self.width - 1):
+            for field_y in range(1, self.height - 1):
+                self.map[field_x][field_y].tick()
+        self.update_lasers()
 
     def handle_controls(self, player_id: int, block_id: int, button: str) -> bool:
         """Returns True if the action was successful. Handles the controls of the player.

@@ -59,7 +59,7 @@ class Block:
 
         return start_point, end_point, angle
     
-    def get_path(self, point, angle, border):
+    def get_path(self, point, angle, border, strength):
         lines = []
 
         # normalize
@@ -97,13 +97,13 @@ class Block:
             border.append("s")
 
        
-        lines = [start_point, end_point]
+        lines = [start_point, end_point, strength]
         return ([lines], deepcopy(end_point), angle, border)
 
 
 class Empty(Block):
     def get_laser_path(self, point, angle, strength, border):
-        lines, end_point, angle, border = self.get_path(point, angle, border)
+        lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         return (lines, end_point, angle, strength, border)
 
 class Wall(Block):
@@ -139,7 +139,7 @@ class Emitter(Block):
         self.strength = new_state[1]
 
     def create_laser_path(self):
-        lines = [[0.5, 0.5]]
+        line = [[0.5, 0.5]]
 
         dy = 0.5 * math.tan(self.angle)
         dx = 0.5 * math.tan((math.pi / 2) - self.angle)
@@ -160,12 +160,14 @@ class Emitter(Block):
             end_point = [0.5 - dx, 0]
 
 
-        lines.append(deepcopy(end_point))
+        line.append(deepcopy(end_point))
+        line.append(self.strength)
+        lines = [line]
 
-        return ([lines], end_point, self.angle, self.strength, exit_border)
+        return (lines, end_point, self.angle, self.strength, exit_border)
         
     def get_laser_path(self, point, angle, strength, border):
-        lines, end_point, angle, border = self.get_path(point, angle, border)
+        lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         return (lines, end_point, angle, strength, border)
 
 
@@ -189,7 +191,8 @@ class Wood(Block):
                 self.hp = -self.cooldown
             return ([], [0,0], angle, strength, [])
         else:
-            lines, end_point, angle, border = self.get_path(point, angle, border)
+            lines, end_point, angle, border = self.get_path(point, angle, border, strength)
+            
             return (lines, end_point, angle, strength, border)
 
 class Mirror(Block):
@@ -219,7 +222,7 @@ class Mirror(Block):
 
     def get_laser_path(self, point, angle, strength, border):
         # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
-        lines, end_point, angle, border = self.get_path(point, angle, border)
+        lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         start_point = lines[0][0]
 
         x1 = start_point[0]
@@ -263,7 +266,7 @@ class Mirror(Block):
                 border.append("w")
                 end_point = [0, p_w[1]]
 
-            lines = [[start_point, mirror_point], deepcopy([mirror_point, end_point])]
+            lines = [[start_point, mirror_point, strength], deepcopy([mirror_point, end_point, strength])]
             angle = mirror_angle
             angle = (angle + (2*math.pi))%(2*math.pi)
 
@@ -274,5 +277,5 @@ class Mirror(Block):
 class Glass(Block):
     strength_factor = 0.8
     def get_laser_path(self, point, angle, strength, border):
-        lines, end_point, angle, border = self.get_path(point, angle, border)
+        lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         return (lines, end_point, angle, strength * self.strength_factor, border)

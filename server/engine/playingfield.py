@@ -1,4 +1,4 @@
-from blocks import Empty, Wall, Emitter, Receiver, Wood, Mirror, Glass
+from .blocks import Empty, Wall, Emitter, Receiver, Wood, Mirror, Glass
 from copy import deepcopy
 import math
 import random

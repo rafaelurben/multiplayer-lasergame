@@ -1,7 +1,7 @@
-from blocks import Emitter
+from engine.blocks import Emitter
 import numpy as np
 import cv2
-from playingfield import Map 
+from engine.playingfield import Map 
 from copy import deepcopy
 import random
 import math

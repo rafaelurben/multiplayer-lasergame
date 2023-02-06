@@ -28,7 +28,7 @@ class Game {
         this.mapWidth = undefined;
         this.mapHeight = undefined;
 
-        this.game_inventory_selected = {};
+        this.game_inventory_selected_id = null;
         this.game_inventory = [];
         this.game_map = [];
 
@@ -217,7 +217,7 @@ class Game {
         this.game_inventory.forEach(block => {
             let blockelem;
 
-            if (this.game_inventory_selected.id === block.id) {
+            if (this.game_inventory_selected_id === block.id) {
                 // Selected element
                 blockelem = $(`<button class="btn btn-primary"></button>`);
             } else {
@@ -234,8 +234,8 @@ class Game {
         });
 
         // Selected block
-        if (this.game_inventory_selected.id !== undefined) {
-            let block = this.game_inventory_selected;
+        if (this.game_inventory_selected_id !== undefined) {
+            let block = this.playerInventoryGetSelectedBlock();
             this.canvas.clearSelection();
             this.canvas.drawSelection(block.pos.x, block.pos.y);
             this.playerControlsRender(block);
@@ -248,14 +248,23 @@ class Game {
     playerInventorySelect(block) {
         if (!(block.owner === this.player.id)) return;
         
-        if (this.game_inventory_selected.id === block.id) {
+        if (this.game_inventory_selected_id === block.id) {
             // Deselect
-            this.game_inventory_selected = {};
+            this.game_inventory_selected_id = null;
         } else {
             // Select
-            this.game_inventory_selected = block;
+            this.game_inventory_selected_id = block.id;
         }
         this.playerInventoryRender();
+    }
+
+    playerInventoryGetSelectedBlock() {
+        for (let block of this.game_inventory) {
+            if (block.id === this.game_inventory_selected_id) {
+                return block;
+            }
+        }
+        return null;
     }
 
     // Player controls
@@ -263,7 +272,7 @@ class Game {
     playerControlsPress(action) {
         // Handle player controls (move, rotate, etc.)
 
-        window.sock.action("player_controls", {button: action, blockid: this.game_inventory_selected.id})
+        window.sock.action("player_controls", {button: action, blockid: this.game_inventory_selected_id})
     }
 
     playerControlsRender(block) {
@@ -291,6 +300,8 @@ class Game {
             this.game_inventory = blocks.filter(b => b.owner === this.player.id);
             this.playerInventoryRender();
         }
+
+        this.playerControlsRender(this.playerInventoryGetSelectedBlock());
     }
 
     getBlockAt(x, y) {

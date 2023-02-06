@@ -99,16 +99,16 @@ class GameServer(BasicServer):
         if action == 'player_controls' and self.game_state == 'ingame':
             button = data.get('button', None)
             if button is None or button not in ['move_up', 'move_down', 'move_left', 'move_right', 'rotate_left', 'rotate_right']:
-                return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid control!'})
+                return await ws.send_json({'action': 'alert', 'message': '[Error] Something went wrong! (invalid control button)'})
             blockid = data.get('blockid', None)
             if blockid is None:
-                return await ws.send_json({'action': 'alert', 'message': '[Error] Invalid block id!'})
+                return await ws.send_json({'action': 'alert', 'message': "[Error] Something went wrong! (no block id)"})
 
-            print("Player controls: ", button, blockid)
             if self.engine is None:
                 return log.warning('Engine is not initialized!')
 
-            return self.engine.handle_controls(player_id=wsid, block_id=blockid, button=button)
+            self.engine.handle_controls(player_id=wsid, block_id=blockid, button=button)
+            return True
         return False
 
     async def handle_action_from_master(self, action, data, ws, wsid):

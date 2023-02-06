@@ -161,14 +161,14 @@ class GameMapCanvas {
             }
         }
 
-        let rotation = -block.rotation || 0; // Rotation in degrees
+        let rotation = -block.rotation || 0; // Rotation in radians
 
         Konva.Image.fromURL(url, (image) => {
             image.size({ width: 1, height: 1 });
             image.position(block.pos);
             image.offset({ x: 0.5, y: 0.5 })
             image.move({ x: 0.5, y: 0.5 })
-            image.rotation(rotation);
+            image.rotation(rotation * 180 / Math.PI);
             this.grp_main.add(image);
         });
     }

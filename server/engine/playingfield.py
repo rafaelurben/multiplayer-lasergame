@@ -102,7 +102,7 @@ class Map:
 
     def update_lasers(self):
         self.lasers = []
-        print('')
+        # print('')
 
         for row in range(len(self.map)):
             for col in range(len(self.map[0])):
@@ -229,7 +229,7 @@ class Map:
     def get_score(self) -> float:
         return self.score
 
-    def get_lasers(self) -> list:
+    def get_lasers(self):
         lasers = []
         for laser in self.lasers:
             team = laser["team"]
@@ -244,12 +244,12 @@ class Map:
             })
 
         if lasers == self.last_lasers:
-            return False, []
+            return [], False
         else:
             self.last_lasers = deepcopy(lasers)
-            return True, lasers
+            return lasers, True
 
-    def get_map(self) -> list:
+    def get_map(self):
         blocks = []
         for field_x in range(1, self.width - 1):
             for field_y in range(1, self.height - 1):
@@ -257,8 +257,8 @@ class Map:
                     blocks.append(self.map[field_x][field_y].get_data())
                     
         if blocks == self.last_blocks:
-            return False, []
+            return [], False
         else:
             self.last_blocks = deepcopy(blocks)
-            return True, blocks
+            return blocks, True
         

@@ -30,6 +30,8 @@ class Map:
                 self.teams[player["team"]] = [player["id"]]
         self.generate_map()
         self.score = 0.5
+        self.last_blocks = None
+        self.last_lasers = None
 
     def generate_map(self):
         factor_of_filled_blocks = 0.02
@@ -240,7 +242,12 @@ class Map:
                 "team" : team,
                 "lines" : lines
             })
-        return lasers
+
+        if lasers == self.last_lasers:
+            return False, []
+        else:
+            self.last_lasers = deepcopy(lasers)
+            return True, lasers
 
     def get_map(self) -> list:
         blocks = []
@@ -248,5 +255,10 @@ class Map:
             for field_y in range(1, self.height - 1):
                 if not type(self.map[field_x][field_y]) == Empty:
                     blocks.append(self.map[field_x][field_y].get_data())
-        return blocks
+                    
+        if blocks == self.last_blocks:
+            return False, []
+        else:
+            self.last_blocks = deepcopy(blocks)
+            return True, blocks
         

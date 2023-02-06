@@ -3,6 +3,8 @@ class GameMapCanvas {
         this.game = game;
         this.container = document.getElementById(containerId);
 
+        this._mapCache = {};
+
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
 
@@ -128,6 +130,19 @@ class GameMapCanvas {
     }
 
     drawBlock(block) {
+        // Check if the block is in cache
+
+        if (this._mapCache[block.id] !== undefined) {
+            let oldblock = this._mapCache[block.id].data;
+
+            // Skip if the block hasn't changed
+            if (JSON.stringify(oldblock) === JSON.stringify(block)) return;
+
+            // Remove old block
+            this._mapCache[block.id].konva.destroy();
+            delete this._mapCache[block.id];
+        }
+
         let url; // Image url
         let baseurl = '/static/graphics/';
 
@@ -170,12 +185,16 @@ class GameMapCanvas {
             image.move({ x: 0.5, y: 0.5 })
             image.rotation(rotation * 180 / Math.PI);
             this.grp_main.add(image);
+
+            // Add to cache
+            this._mapCache[block.id] = {
+                data: block,
+                konva: image,
+            }
         });
     }
 
     drawMap(blocks) {
-        this.grp_main.destroyChildren();
-
         for (let block of blocks) {
             this.drawBlock(block);
         }

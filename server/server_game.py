@@ -108,7 +108,7 @@ class GameServer(BasicServer):
             if self.engine is None:
                 return log.warning('Engine is not initialized!')
 
-            return await self.engine.handle_controls(playerid=wsid, blockid=blockid, button=button)
+            return self.engine.handle_controls(player_id=wsid, block_id=blockid, button=button)
         return False
 
     async def handle_action_from_master(self, action, data, ws, wsid):
@@ -315,14 +315,21 @@ class GameServer(BasicServer):
         # Main actions
         self.engine.tick()
 
-        await self.send_to_joined({
-            'action': 'game_render_map',
-            'blocks': self.engine.get_map()
-        })
-        await self.send_to_joined({
-            'action': 'game_render_lasers',
-            'lasers': self.engine.get_lasers()
-        })
+        # Send updates
+        game_map, has_changed = self.engine.get_map()
+        if has_changed:
+            await self.send_to_joined({
+                'action': 'game_render_map',
+                'blocks': game_map
+            })
+
+        lasers, has_changed = self.engine.get_lasers()
+        if has_changed:
+            await self.send_to_joined({
+                'action': 'game_render_lasers',
+                'lasers': lasers
+            })
+    
         await self.send_to_spectators({
             'action': 'game_render_score',
             'score': self.engine.get_score()

@@ -29,6 +29,7 @@ class Map:
             else:
                 self.teams[player["team"]] = [player["id"]]
         self.generate_map()
+        self.score = 0.5
 
     def generate_map(self):
         factor_of_filled_blocks = 0.02
@@ -161,7 +162,16 @@ class Map:
             for field_y in range(1, self.height - 1):
                 self.map[field_x][field_y].tick()
         self.update_lasers()
-        #update_score missing
+
+        for field_x in range(1, self.width - 1):
+            for field_y in range(1, self.height - 1):
+                if type(self.map[field_x][field_y]) == Receiver:
+                    if self.map[field_x][field_y].team == 0:
+                        self.score += self.map[field_x][field_y].damage
+                    else:
+                        self.score -= self.map[field_x][field_y].damage
+                    self.map[field_x][field_y].damage = 0
+        self.score = min(1, max(self.score, 0))
 
     def handle_controls(self, player_id: int, block_id: int, button: str) -> bool:
         """Returns True if the action was successful. Handles the controls of the player.
@@ -215,7 +225,7 @@ class Map:
     # Queries
 
     def get_score(self) -> float:
-        pass
+        return self.score
 
     def get_lasers(self) -> list:
         lasers = []

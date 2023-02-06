@@ -301,6 +301,16 @@ class PlayerCanvas extends GameMapCanvas {
                 this.game.playerInventorySelect(block);
             }
         });
+        this.stage.on('touchstart', (e) => {
+            // Get the clicked block
+            let pos = this.grp_main.getRelativePointerPosition();
+            let { x, y } = { x: Math.floor(pos.x), y: Math.floor(pos.y) };
+            let block = this.game.getBlockAt(x, y);
+
+            if (block) {
+                this.game.playerInventorySelect(block);
+            }
+        });
     }
 
     // Position

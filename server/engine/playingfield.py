@@ -229,7 +229,7 @@ class Map:
     def get_score(self) -> float:
         return self.score
 
-    def get_lasers(self):
+    def get_lasers(self, no_changes: bool = False):
         lasers = []
         for laser in self.lasers:
             team = laser["team"]
@@ -243,19 +243,25 @@ class Map:
                 "lines" : lines
             })
 
+        if no_changes:
+            return lasers, None
+
         if lasers == self.last_lasers:
             return [], False
         else:
             self.last_lasers = deepcopy(lasers)
             return lasers, True
 
-    def get_map(self):
+    def get_map(self, no_changes: bool = False):
         blocks = []
         for field_x in range(1, self.width - 1):
             for field_y in range(1, self.height - 1):
                 if not type(self.map[field_x][field_y]) == Empty:
                     blocks.append(self.map[field_x][field_y].get_data())
-                    
+
+        if no_changes:
+            return blocks, None
+
         if blocks == self.last_blocks:
             return [], False
         else:

@@ -240,10 +240,13 @@ class Game {
 
         // Selected block
         if (this.game_inventory_selected_id !== undefined) {
-            let block = this.playerInventoryGetSelectedBlock();
             this.canvas.clearSelection();
-            this.canvas.drawSelection(block.pos.x, block.pos.y);
+
+            let block = this.playerInventoryGetSelectedBlock();
             this.playerControlsRender(block);
+            if (block !== null) {
+                this.canvas.drawSelection(block.pos.x, block.pos.y);
+            }
         } else {
             this.canvas.clearSelection();
             this.playerControlsRender();
@@ -283,7 +286,7 @@ class Game {
     playerControlsRender(block) {
         $("#player-controls button").prop('disabled', true);
 
-        if (!block || (block.id === undefined)) return;
+        if (!block || block === undefined) return;
 
         // Disable buttons if there is a block in the way
         $("#btn_move_up").prop('disabled', this.isBlockAt(block.pos.x, block.pos.y - 1));

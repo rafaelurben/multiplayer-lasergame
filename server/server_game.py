@@ -243,6 +243,25 @@ class GameServer(BasicServer):
             mode = 'master' if wsid == self.master_id else 'spectator' if wsid in self.spectator_ids else 'player'
             await ws.send_json({'action': 'room_joined', 'id': wsid, 'mode': mode, 'players': self.players, 'game_state': self.game_state})
 
+            if self.in_game:
+                game_map, _ = self.engine.get_map(no_changes=True)
+                await ws.send_json({
+                    'action': 'game_render_map',
+                    'blocks': game_map
+                })
+
+                lasers, _ = self.engine.get_lasers(no_changes=True)
+                await ws.send_json({
+                    'action': 'game_render_lasers',
+                    'lasers': lasers
+                })
+
+                if wsid in self.spectator_ids:
+                    await ws.send_json({
+                        'action': 'game_render_score',
+                        'score': self.engine.get_score()
+                    })
+
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
 

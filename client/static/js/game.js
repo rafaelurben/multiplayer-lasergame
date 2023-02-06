@@ -1,3 +1,5 @@
+// Constants
+
 TEAMNAMES = ["Team\xa0Red", "Team\xa0Blue"];
 TEAMNAME_NONE = "No\xa0team";
 
@@ -12,6 +14,17 @@ BLOCKNAMES = [
 ];
 
 ROTATABLE_BLOCKS = [5];
+
+// Page load
+
+window.addEventListener('load', () => {
+    // Add team select buttons
+
+    let teamselectcontainer = $("#teamselectcontainer");
+    for (let team in TEAMNAMES) {
+        teamselectcontainer.append($(`<button class="btn t${team}-bg fs-2" onclick="sock.selectTeam(${team})">${TEAMNAMES[team]}</button>`))
+    }
+})
 
 class Game {
     constructor() {
@@ -41,14 +54,6 @@ class Game {
         this.canvas = undefined;
 
         this.public_url = undefined;
-
-        // On page load: add team select buttons
-        window.addEventListener('load', () => {
-            let teamselectcontainer = $("#teamselectcontainer");
-            for (let team in TEAMNAMES) {
-                teamselectcontainer.append($(`<button class="btn t${team}-bg fs-2" onclick="sock.selectTeam(${team})">${TEAMNAMES[team]}</button>`))
-            }
-        })
     }
 
     get state() { return this.__state; }

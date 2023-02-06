@@ -64,6 +64,8 @@ class GameServer(BasicServer):
         "Returns True if the game is in a game state"
         return self.game_state == 'ingame'
 
+    # Websocket actions
+
     async def send_to_spectators(self, data):
         """Send data to all spectators"""
 
@@ -81,6 +83,8 @@ class GameServer(BasicServer):
         unjoined_ids = set(self.websockets.keys()) - \
             set(self.players.keys()) - set(self.spectator_ids)
         await self.send_to_ids(data, ids=unjoined_ids)
+
+    # Websocket handlers
 
     async def handle_action_from_player(self, action, data, ws, wsid):
         """Handle action sent from a joined player"""
@@ -191,7 +195,9 @@ class GameServer(BasicServer):
                     self.master_id = wsid
                     mode = 'master'
                     log.info('[WS] #%s is now the game master!', wsid)
-            return await ws.send_json({'action': 'room_joined', 'id': wsid, 'mode': mode, 'players': self.players, 'game_state': self.game_state})
+
+            await self.on_join(ws, wsid, mode)
+            return True
         return False
 
     async def handle_message_json(self, data, ws, wsid):
@@ -241,26 +247,7 @@ class GameServer(BasicServer):
 
         if wsid in self.players or wsid in self.spectator_ids:
             mode = 'master' if wsid == self.master_id else 'spectator' if wsid in self.spectator_ids else 'player'
-            await ws.send_json({'action': 'room_joined', 'id': wsid, 'mode': mode, 'players': self.players, 'game_state': self.game_state})
-
-            if self.in_game:
-                game_map, _ = self.engine.get_map(no_changes=True)
-                await ws.send_json({
-                    'action': 'game_render_map',
-                    'blocks': game_map
-                })
-
-                lasers, _ = self.engine.get_lasers(no_changes=True)
-                await ws.send_json({
-                    'action': 'game_render_lasers',
-                    'lasers': lasers
-                })
-
-                if wsid in self.spectator_ids:
-                    await ws.send_json({
-                        'action': 'game_render_score',
-                        'score': self.engine.get_score()
-                    })
+            await self.on_join(ws, wsid, mode)
 
     async def handle_disconnect(self, ws, wsid):
         """Handle client disconnection."""
@@ -279,6 +266,8 @@ class GameServer(BasicServer):
                     '[WS] Master disconnected! The next spectator will become the new game master!')
                 self.master_id = None
 
+    # Config
+
     def get_routes(self) -> list:
         """Get the routes for the http server"""
 
@@ -293,6 +282,24 @@ class GameServer(BasicServer):
         ]
 
     # Game logic
+
+    async def on_join(self, ws, wsid, mode):
+        await ws.send_json({'action': 'room_joined', 'id': wsid, 'mode': mode, 'players': self.players, 'game_state': self.game_state})
+
+        if self.in_game:
+            await ws.send_json({
+                'action': 'game_render_map',
+                'blocks': self.engine.get_map(no_changes=True)[0]
+            })
+            await ws.send_json({
+                'action': 'game_render_lasers',
+                'lasers': self.engine.get_lasers(no_changes=True)[0]
+            })
+            if wsid in self.spectator_ids:
+                await ws.send_json({
+                    'action': 'game_render_score',
+                    'score': self.engine.get_score()
+                })
 
     async def start_game(self, **params):
         """Start the game"""

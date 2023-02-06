@@ -38,8 +38,7 @@ class Game {
             id: undefined,
         }
 
-        this.mapWidth = undefined;
-        this.mapHeight = undefined;
+        this.params = { mapWidth: undefined, mapHeight: undefined };
 
         this.game_inventory_selected_id = null;
         this.game_inventory = [];
@@ -312,11 +311,16 @@ class Game {
         this.playerControlsRender(this.playerInventoryGetSelectedBlock());
     }
 
+    isInsideMap(x, y) {
+        return x >= 0 && x < this.params.mapWidth && y >= 0 && y < this.params.mapHeight;
+    }
+
     getBlockAt(x, y) {
         return this.game_map.find(b => b.pos.x === x && b.pos.y === y);
     }
 
     isBlockAt(x, y) {
+        if (!this.isInsideMap(x, y)) return true;
         return this.game_map.some(b => b.pos.x === x && b.pos.y === y);
     }
 }

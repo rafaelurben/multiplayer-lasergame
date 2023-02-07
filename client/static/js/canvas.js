@@ -129,7 +129,7 @@ class GameMapCanvas {
         }
     }
 
-    drawBlock(block, isowner, isowningteam) {
+    drawBlock(block, isplayer, isowner, isowningteam) {
         // Check if the block is in cache
 
         if (this._mapCache[block.id] !== undefined) {
@@ -181,7 +181,7 @@ class GameMapCanvas {
         // Create group to hold image and markers
         let group = new Konva.Group({
             position: block.pos,
-            opacity: isowningteam ? 1 : 0.5,
+            opacity: !isplayer || isowningteam ? 1 : 0.5,
         });
         this.grp_main.add(group);
         this._mapCache[block.id] = {
@@ -212,7 +212,7 @@ class GameMapCanvas {
 
     drawMap(blocks, playerid, teamid) {
         for (let block of blocks) {
-            this.drawBlock(block, block.owner === playerid, block.team === teamid);
+            this.drawBlock(block, playerid !== undefined, block.owner === playerid, block.team === teamid);
         }
     }
 

@@ -115,7 +115,7 @@ class GameSocket {
                 break;
             }
             case "game_render_lasers": {
-                this.game.canvas.drawLasers(json.lasers);
+                this.game.canvas.drawLasers(json.lasers, this.game.client.mode !== 'player');
                 break;
             }
             case "game_render_score": {

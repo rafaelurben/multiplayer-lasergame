@@ -300,15 +300,16 @@ class Game {
     // Player map
 
     setMap(blocks) {
-        this.game_map = blocks;
-        this.canvas.drawMap(this.game_map);
+        this.game_map = blocks.sort((a, b) => a.id - b.id);
         
         if (this.client.mode === "player") {
+            this.canvas.drawMap(this.game_map, this.player.id, this.player.team);
             this.game_inventory = blocks.filter(b => b.owner === this.player.id);
             this.playerInventoryRender();
+            this.playerControlsRender(this.playerInventoryGetSelectedBlock());
+        } else {
+            this.canvas.drawMap(this.game_map);
         }
-
-        this.playerControlsRender(this.playerInventoryGetSelectedBlock());
     }
 
     isInsideMap(x, y) {

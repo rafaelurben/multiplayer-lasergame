@@ -129,7 +129,7 @@ class GameMapCanvas {
         }
     }
 
-    drawBlock(block) {
+    drawBlock(block, isowner, isowningteam) {
         // Check if the block is in cache
 
         if (this._mapCache[block.id] !== undefined) {
@@ -178,29 +178,45 @@ class GameMapCanvas {
 
         let rotation = -block.rotation || 0; // Rotation in radians
 
+        // Create group to hold image and markers
+        let group = new Konva.Group({
+            position: block.pos,
+            opacity: isowningteam ? 1 : 0.5,
+        });
+        this.grp_main.add(group);
+        this._mapCache[block.id] = {
+            data: block,
+            konva: group,
+        }
+
         Konva.Image.fromURL(url, (image) => {
             image.size({ width: 1, height: 1 });
-            image.position(block.pos);
             image.offset({ x: 0.5, y: 0.5 })
             image.move({ x: 0.5, y: 0.5 })
             image.rotation(rotation * 180 / Math.PI);
-            this.grp_main.add(image);
+            group.add(image);
 
-            // Add to cache
-            this._mapCache[block.id] = {
-                data: block,
-                konva: image,
+            // Draw markers after image is loaded
+            if (isowner) {
+                console.log('draw marker')
+                let marker = new Konva.Rect({
+                    width: .2,
+                    height: .2,
+                    fill: '#00ff00',
+                    strokeWidth: 0.05,
+                });
+                group.add(marker);
             }
         });
     }
 
-    drawMap(blocks) {
+    drawMap(blocks, playerid, teamid) {
         for (let block of blocks) {
-            this.drawBlock(block);
+            this.drawBlock(block, block.owner === playerid, block.team === teamid);
         }
     }
 
-    drawLasers(lasers) {
+    drawLasers(lasers, isspectator) {
         let css = window.getComputedStyle(document.documentElement);
 
         this.grp_laser.destroyChildren();
@@ -215,6 +231,7 @@ class GameMapCanvas {
                         stroke: c,
                         strokeWidth: line[1]/5,
                         lineCap: 'round',
+                        opacity: isspectator ? 1 : 0.25,
                     })
                 );
             }
@@ -354,14 +371,15 @@ class PlayerCanvas extends GameMapCanvas {
 
     drawSelection(x, y) {
         let c = '#00ff00'; // stroke color
+        let sw = 0.05 // stroke width
 
         let rect = new Konva.Rect({
-            x: x,
-            y: y,
-            width: 1,
-            height: 1,
+            x: x+(sw/2),
+            y: y+(sw/2),
+            width: 1-sw,
+            height: 1-sw,
             stroke: c,
-            strokeWidth: 0.05,
+            strokeWidth: sw,
         });
         this.grp_overlay.add(rect);
     }

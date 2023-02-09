@@ -6,8 +6,8 @@ from copy import deepcopy
 import random
 import math
 
-width = 20
-height = 10
+width = 30
+height = 15
 
 block_size = 50
 
@@ -44,9 +44,9 @@ m = Map(width, height, players)
 
 
 
-x = m.change_field(3, 3, 2, team=2)
+m.change_field(3, 3, 2, team=2)
 
-x = m.change_field(3, 4, 5, team=2, angle=(math.pi/8)*11)
+m.change_field(24, 5, 5, team=2, angle=(math.pi/8)*9)
 # m.change_field(4, 3, 5)
 # m.update_state(4, 3, [2 * random.random() * math.pi])
 

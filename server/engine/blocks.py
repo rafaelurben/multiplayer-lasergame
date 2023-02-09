@@ -260,6 +260,7 @@ class Mirror(Block):
 
     def get_laser_path(self, point, angle, strength, border, laser_team):
         # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+        self.angle = self.angle % math.pi
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         start_point = lines[0][0]
 

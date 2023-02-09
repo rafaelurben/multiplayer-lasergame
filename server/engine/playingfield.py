@@ -128,6 +128,8 @@ class Map:
                         
                         if y == len(self.map) or x == len(self.map[0]) or y == -1 or x == -1:
                             break
+                        # lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border, self.map[row][col].team)
+
                         try:
                             lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border, self.map[row][col].team)
                             # print(lines)

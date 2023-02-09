@@ -46,7 +46,7 @@ m = Map(width, height, players)
 
 x = m.change_field(3, 3, 2, team=2)
 
-
+x = m.change_field(3, 4, 5, team=2, angle=(math.pi/8)*2)
 # m.change_field(4, 3, 5)
 # m.update_state(4, 3, [2 * random.random() * math.pi])
 
@@ -64,11 +64,11 @@ for h in range(height):
 
     bg = cv2.line(bg, start, end, (255,255,255), 1)
 
-blocks = m.get_map()
-for block in blocks:
-    m.handle_controls(block["owner"], block["id"], "rotate_right")
+# blocks = m.get_map()
+# for block in blocks:
+#     m.handle_controls(block["owner"], block["id"], "rotate_right")
 
-blocks = m.get_map()
+blocks, changes = m.get_map()
 for block in blocks:
     colors = [
                 (255,0,0), 
@@ -85,7 +85,7 @@ for block in blocks:
 angle = 0
 while True:
     m.tick()
-    lasers = m.get_lasers()
+    lasers, changes = m.get_lasers()
 
     image = deepcopy(bg)
     # image = bg

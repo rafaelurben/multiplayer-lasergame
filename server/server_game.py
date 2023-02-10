@@ -13,7 +13,7 @@ log = logging.getLogger()
 class GameServer(BasicServer):
     "Game server"
 
-    def __init__(self, clientdir, public_url = None) -> None:
+    def __init__(self, clientdir, public_url = None, allow_reconnect = False) -> None:
         self.clientdir = clientdir
         self.public_url = public_url
 
@@ -31,7 +31,7 @@ class GameServer(BasicServer):
             'mapHeight': 15,
         }
 
-        super().__init__()
+        super().__init__(allow_reconnect=allow_reconnect)
 
     async def shuffle_teams(self, only_unassigned = False):
         """Randomly assign teams to all players"""

@@ -9,12 +9,12 @@ log = logging.getLogger()
 class BasicServer:
     "Basic websocket and http server"
 
-    def __init__(self) -> None:
+    def __init__(self, allow_reconnect: bool = False) -> None:
         self.app = self.create_app()
         self.websockets = {}
         self._last_id = 0
 
-        self.allow_reconnect = "--allow-reconnect" in sys.argv
+        self.allow_reconnect = allow_reconnect
         self._reconnectable_ids = []
 
     def get_next_id(self) -> int:

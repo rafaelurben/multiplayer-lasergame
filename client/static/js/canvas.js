@@ -33,11 +33,11 @@ class GameMapCanvas {
         
         // Main group
         this.grp_main = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
-        this.layer0.add(this.grp_main);
+        this.layer1.add(this.grp_main);
 
         // Laser group
         this.grp_laser = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
-        this.layer1.add(this.grp_laser);
+        this.layer0.add(this.grp_laser);
 
         // Coordinate system group
         this.grp_coordsystem = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });

@@ -215,12 +215,10 @@ class Wood(Block):
             return (lines, end_point, angle, strength, border)
 
 class Mirror(Block):
-    def update_state(self, new_state):
-        self.angle = new_state[0]
-
     def get_laser_path(self, point, angle, strength, border, laser_team):
         # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
-        self.angle = self.angle % math.pi
+        mirror_angle = (-self.angle + (math.pi / 2)) % math.pi
+
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         start_point = lines[0][0]
 
@@ -228,10 +226,10 @@ class Mirror(Block):
         y1 = start_point[1]
         x2 = end_point[0]
         y2 = end_point[1]
-        x3 = 0.5 + 0.5 * (math.cos(self.angle))
-        y3 = 0.5 + 0.5 * (math.sin(self.angle))
-        x4 = 0.5 + 0.5 * (-math.cos(self.angle))
-        y4 = 0.5 + 0.5 * (-math.sin(self.angle))
+        x3 = 0.5 + 0.5 * (math.cos(mirror_angle))
+        y3 = 0.5 + 0.5 * (math.sin(mirror_angle))
+        x4 = 0.5 + 0.5 * (-math.cos(mirror_angle))
+        y4 = 0.5 + 0.5 * (-math.sin(mirror_angle))
 
         if (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0 or (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0:
             return (lines, end_point, angle, strength, border)
@@ -244,7 +242,7 @@ class Mirror(Block):
             new_y = y1 + (t * (y2 - y1))
 
             mirror_point = [new_x, new_y]
-            mirror_angle = angle - (2 * (angle - (self.angle)))
+            mirror_angle = angle - (2 * (angle - (mirror_angle)))
             outside_point = [mirror_point[0] + (2 * math.cos(mirror_angle)), mirror_point[1] + (2 * (math.sin(mirror_angle)))]
             north, p_n = self.line_incersection(mirror_point, outside_point, [0,0], [1,0])
             east, p_e = self.line_incersection(mirror_point, outside_point, [1,0], [1,1])

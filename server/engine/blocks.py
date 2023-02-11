@@ -85,7 +85,6 @@ class Block:
 
 
         lines = [[point, end_point, strength]]
-        print(exit_border)
 
         return (lines, deepcopy(end_point), angle, exit_border)
 

@@ -95,7 +95,7 @@ class Map:
             "x" : field_x - 1,
             "y" : field_y - 1
         }
-        new_block.angle = angle + (math.pi / 2)
+        new_block.angle = angle
 
         self.unused_id += 1
 
@@ -108,7 +108,7 @@ class Map:
             for col in range(len(self.map[0])):
                 if type(self.map[row][col]) == Emitter:
                     lines, point, angle, strength, border = self.map[row][col].create_laser_path()
-                    y, x = row, col
+                    x, y = row, col
                     for l in lines:
                         l[0][1] += y
                         l[0][0] += x
@@ -126,12 +126,12 @@ class Map:
                             x -= 1
                         
                         
-                        if y == len(self.map) or x == len(self.map[0]) or y == -1 or x == -1:
+                        if x == len(self.map) or y == len(self.map[0]) or x == -1 or y == -1:
                             break
-                        # lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border, self.map[row][col].team)
+                        # lines, point, angle, strength, border = self.map[x][y].get_laser_path(point, angle, strength, border, self.map[row][col].team)
 
                         try:
-                            lines, point, angle, strength, border = self.map[y][x].get_laser_path(point, angle, strength, border, self.map[row][col].team)
+                            lines, point, angle, strength, border = self.map[x][y].get_laser_path(point, angle, strength, border, self.map[row][col].team)
                             # print(lines)
                         except Exception as e:
                             print(e)
@@ -237,7 +237,7 @@ class Map:
             team = laser["team"]
             lines = []
             for line in laser["laser"]:
-                cords = [line[0][1]-1, line[0][0]-1, line[1][1]-1, line[1][0]-1]
+                cords = [line[0][0]-1, line[0][1]-1, line[1][0]-1, line[1][1]-1]
                 strength = line[2]
                 lines.append([cords, strength])
             lasers.append({

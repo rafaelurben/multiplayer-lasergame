@@ -20,85 +20,74 @@ class Block:
             "rotation" : self.angle
         }
         return data
+    
+    def line_incersection(self, p1, p2, p3, p4):
+        x1 = p1[0]
+        y1 = p1[1]
+        x2 = p2[0]
+        y2 = p2[1]
+        x3 = p3[0]
+        y3 = p3[1]
+        x4 = p4[0]
+        y4 = p4[1]
 
-    def normalize(self, point, angle, border):
+        if (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0 or (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0:
+            return False, None
+
+        t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
+        u = (((x1 - x3) * (y1 - y2)) - ((y1 - y3) * (x1 - x2))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
+        t = round(t, 2)
+        u = round(u, 2)
+        if 0 <= t <= 1 and 0 <= u <= 1:
+            new_x = x1 + (t * (x2 - x1))
+            new_y = y1 + (t * (y2 - y1))
+            return True, [new_x, new_y]
+        else:
+            return False, None
+
+
+    def normalize(self, point, border):
         if "n" in border:
-            start_point = [0, point[0]]
-            angle += 0.5 * math.pi
+            point = [point[0], 1]
         if "e" in border:
-            start_point = [0, point[1]]
+            point = [0, point[1]]
         if "s" in border:
-            start_point = [0, 1 - point[0]]
-            angle += 1.5 * math.pi
+            point = [point[0], 0]
         if "w" in border:
-            start_point = [0, 1 - point[1]]
-            angle += math.pi
-
-        angle = (angle + (2*math.pi))%(2*math.pi)
-
-        return start_point, angle
-
-    def denormalize(self, start_point, end_point, angle, border):
-        if "n" in border:
-            start_point = [start_point[1], 1]
-            end_point = [end_point[1], 1 - end_point[0]]
-            angle -= 0.5 * math.pi
-        if "e" in border:
-            start_point = start_point
-            end_point = end_point
-        if "s" in border:
-            start_point = [1 - start_point[1], 0]
-            end_point = [1 - end_point[1], end_point[0]]
-            angle -= 1.5 * math.pi
-        if "w" in border:
-            start_point = [1, 1 - start_point[1]]
-            end_point = [1 - end_point[0], 1 - end_point[1]]
-            angle -= math.pi
-
-        angle = (angle + (2*math.pi))%(2*math.pi)
-
-        return start_point, end_point, angle
+            point = [1, point[1]]
+        return point
 
     def get_path(self, point, angle, border, strength):
-        lines = []
-
-        # normalize
-        start_point, angle = self.normalize(point, angle, border)
-
-        # get output
-        if angle < (math.pi / 2):
-            new_y = start_point[1] + math.tan(angle)
-            new_x = 1
-            if new_y > 1:
-                new_y = 1
-                new_x = (1-start_point[1]) / math.tan(angle)
-        else:
-            new_y = start_point[1] + math.tan(angle)
-            new_x = 1
-            if new_y < 0:
-                new_y = 0
-                new_x = start_point[1] / -math.tan(angle)
-
-        end_point = [new_x, new_y]
-
-
-        # denormalize output
-        start_point, end_point, angle = self.denormalize(start_point, end_point, angle, border)
-
-        # get output border
-        border = []
-        if end_point[0] == 0:
-            border.append("w")
-        if end_point[1] == 0:
-            border.append("n")
-        if end_point[0] == 1:
-            border.append("e")
-        if end_point[1] == 1:
-            border.append("s")
+        point = self.normalize(point, border)
+        outside_point = [point[0] + (2 * math.cos(angle)), point[1] + (2 * (math.sin(angle)))]
+        exit_border = []
+        if not "s" in border:
+            north, p_n = self.line_incersection(point, outside_point, [0,0], [1,0])
+            if north:
+                exit_border.append("n")
+                end_point = [p_n[0], 0]
+        if not "w" in border:
+            east, p_e = self.line_incersection(point, outside_point, [1,0], [1,1])
+            if east:
+                exit_border.append("e")
+                end_point = [1, p_e[1]]
+        if not "n" in border:
+            south, p_s = self.line_incersection(point, outside_point, [0,1], [1,1])
+            if south:
+                exit_border.append("s")
+                end_point = [p_s[0], 1]
+        if not "e" in border:
+            west, p_w = self.line_incersection(point, outside_point, [0,0], [0,1])
+            if west:
+                exit_border.append("w")
+                end_point = [0, p_w[1]]
 
 
-        lines = [start_point, end_point, strength]
-        return ([lines], deepcopy(end_point), angle, border)
+
+        lines = [[point, end_point, strength]]
+        print(exit_border)
+
+        return (lines, deepcopy(end_point), angle, exit_border)
 
     def tick(self):
         pass
@@ -141,32 +130,28 @@ class Emitter(Block):
         self.strength = new_state[1]
 
     def create_laser_path(self):
-        line = [[0.5, 0.5]]
+        point = [0.5, 0.5]
+        outside_point = [point[0] + (2 * math.cos(self.angle)), point[1] + (2 * (math.sin(self.angle)))]
+        north, p_n = self.line_incersection(point, outside_point, [0,0], [1,0])
+        east, p_e = self.line_incersection(point, outside_point, [1,0], [1,1])
+        south, p_s = self.line_incersection(point, outside_point, [0,1], [1,1])
+        west, p_w = self.line_incersection(point, outside_point, [0,0], [0,1])
+        border = []
+        if north:
+            border.append("n")
+            end_point = [p_n[0], 0]
+        if east:
+            border.append("e")
+            end_point = [1, p_e[1]]
+        if south:
+            border.append("s")
+            end_point = [p_s[0], 1]
+        if west:
+            border.append("w")
+            end_point = [0, p_w[1]]
 
-        dy = 0.5 * math.tan(self.angle)
-        dx = 0.5 * math.tan((math.pi / 2) - self.angle)
-
-        exit_border = []
-        self.angle = ((self.angle + (math.pi * 2)) % (math.pi * 2))
-        if ((math.pi / 4) * 7) <= self.angle or self.angle <= (math.pi / 4):
-            exit_border.append("e")
-            end_point = [1, dy + 0.5]
-        if (math.pi / 4) <= self.angle <= ((math.pi / 4) * 3):
-            exit_border.append("s")
-            end_point = [dx + 0.5, 1]
-        if ((math.pi / 4) * 3) <= self.angle <= ((math.pi / 4) * 5):
-            exit_border.append("w")
-            end_point = [0, 0.5 - dy]
-        if ((math.pi / 4) * 5) <= self.angle <= ((math.pi / 4) * 7):
-            exit_border.append("n")
-            end_point = [0.5 - dx, 0]
-
-
-        line.append(deepcopy(end_point))
-        line.append(self.strength)
-        lines = [line]
-
-        return (lines, end_point, self.angle, self.strength, exit_border)
+        lines = [[point, end_point, self.strength]]
+        return (lines, deepcopy(end_point), self.angle, self.strength, border)
 
     def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
@@ -234,30 +219,6 @@ class Mirror(Block):
     def update_state(self, new_state):
         self.angle = new_state[0]
 
-    def line_incersection(self, p1, p2, p3, p4):
-        x1 = p1[0]
-        y1 = p1[1]
-        x2 = p2[0]
-        y2 = p2[1]
-        x3 = p3[0]
-        y3 = p3[1]
-        x4 = p4[0]
-        y4 = p4[1]
-
-        if (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0 or (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4))) == 0:
-            return False, None
-
-        t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
-        u = (((x1 - x3) * (y1 - y2)) - ((y1 - y3) * (x1 - x2))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
-
-        if 0 < t < 1 and 0 < u < 1:
-            new_x = x1 + (t * (x2 - x1))
-            new_y = y1 + (t * (y2 - y1))
-            return True, [new_x, new_y]
-        else:
-            return False, None
-
-
     def get_laser_path(self, point, angle, strength, border, laser_team):
         # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
         self.angle = self.angle % math.pi
@@ -308,7 +269,6 @@ class Mirror(Block):
             lines = [[start_point, mirror_point, strength], deepcopy([mirror_point, end_point, strength])]
             angle = mirror_angle
             angle = (angle + (2*math.pi))%(2*math.pi)
-
 
 
         return (lines, end_point, angle, strength, border)

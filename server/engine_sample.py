@@ -46,7 +46,7 @@ m = Map(width, height, players)
 
 m.change_field(3, 3, 2, team=2)
 
-m.change_field(24, 5, 5, team=2, angle=(math.pi/8)*9)
+m.change_field(24, 5, 5, team=2, angle=(math.pi/8)*5)
 # m.change_field(4, 3, 5)
 # m.update_state(4, 3, [2 * random.random() * math.pi])
 
@@ -101,7 +101,7 @@ while True:
             ]
             # print(start, end)
             image = cv2.line(image, start, end, colors[laser["team"]], s)
-    angle += 1e-2
+    angle += math.pi/8
     m.update_state(3, 3, (angle, 1))
     cv2.imshow("test", image)
     cv2.waitKey(0)

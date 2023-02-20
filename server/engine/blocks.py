@@ -192,16 +192,16 @@ class Receiver(Block):
 class Wood(Block):
     def __init__(self):
         super().__init__()
-        self.max_hp = 100
+        self.max_hp = 1
         self.hp = self.max_hp
-        self.regeneration = 0.5
+        self.regeneration = 0.005
         self.down = False
 
     def tick(self):
         self.hp += self.regeneration
         self.hp = min(self.max_hp, self.hp)
         if self.max_hp == self.hp:
-            self.down = True
+            self.down = False
 
     def get_laser_path(self, point, angle, strength, border, laser_team):
         if not self.down:

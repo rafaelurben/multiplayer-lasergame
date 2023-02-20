@@ -122,7 +122,7 @@ class Wall(Block):
         return (lines, end_point, angle, strength, exit_border)
 
 class Emitter(Block):
-    strength = 1
+    strength = 0.001
 
     def update_state(self, new_state):
         self.angle = new_state[0]
@@ -192,9 +192,9 @@ class Receiver(Block):
 class Wood(Block):
     def __init__(self):
         super().__init__()
-        self.max_hp = 1
+        self.max_hp = 0.1
         self.hp = self.max_hp
-        self.regeneration = 0.005
+        self.regeneration = 0.00025
         self.down = False
 
     def tick(self):

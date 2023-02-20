@@ -219,6 +219,11 @@ class GameMapCanvas {
     drawLasers(lasers, isspectator) {
         let css = window.getComputedStyle(document.documentElement);
 
+        let widthBase = 0.001; // Same as in server
+        let widthMin = 0.05;
+        let widthMax = 0.2;
+        let widthScale = 1/(widthBase) * widthMax;
+
         this.grp_laser.destroyChildren();
 
         for (let laser of lasers) {
@@ -229,7 +234,7 @@ class GameMapCanvas {
                     new Konva.Line({
                         points: line[0],
                         stroke: c,
-                        strokeWidth: line[1]/5,
+                        strokeWidth: Math.min(Math.max(line[1]*widthScale, widthMin), widthMax),
                         lineCap: 'round',
                         opacity: isspectator ? 1 : 0.25,
                     })

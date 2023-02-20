@@ -182,7 +182,7 @@ class Map:
 
         `button` is a string in ['move_up', 'move_down', 'move_left', 'move_right', 'rotate_left', 'rotate_right'].
         """
-        rotation_angle = math.pi / 8
+        rotation_angle = math.pi / 16
         for field_x in range(1, self.width - 1):
             for field_y in range(1, self.height - 1):
                 if self.map[field_x][field_y].id == block_id:

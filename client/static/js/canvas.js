@@ -219,10 +219,10 @@ class GameMapCanvas {
     drawLasers(lasers, isspectator) {
         let css = window.getComputedStyle(document.documentElement);
 
-        let widthBase = 0.001; // Same as in server
+        let strengthBase = 0.001; // Same as in server
         let widthMin = 0.05;
         let widthMax = 0.2;
-        let widthScale = 1/(widthBase) * widthMax;
+        let widthScale = 1/(strengthBase) * widthMax;
 
         this.grp_laser.destroyChildren();
 

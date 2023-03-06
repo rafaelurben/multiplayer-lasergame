@@ -30,6 +30,8 @@ class Map:
                 self.teams[player["team"]] = [player["id"]]
         self.generate_map()
         self.score = 0.5
+
+        self.last_score = None
         self.last_blocks = None
         self.last_lasers = None
 
@@ -227,8 +229,15 @@ class Map:
 
     # Queries
 
-    def get_score(self) -> float:
-        return self.score
+    def get_score(self, no_changes: bool = False):
+        if no_changes:
+            return self.score, None
+        
+        if self.score == self.last_score:
+            return self.score, False
+        else:
+            self.last_score = self.score
+            return self.score, True
 
     def get_lasers(self, no_changes: bool = False):
         lasers = []

@@ -297,7 +297,7 @@ class GameServer(BasicServer):
             })
             await ws.send_json({
                 'action': 'game_render_score',
-                'score': self.engine.get_score()
+                'score': self.engine.get_score(no_changes=True)[0]
             })
 
     async def start_game(self, **params):
@@ -354,11 +354,13 @@ class GameServer(BasicServer):
                 'action': 'game_render_lasers',
                 'lasers': lasers
             })
-    
-        await self.send_to_joined({
-            'action': 'game_render_score',
-            'score': self.engine.get_score()
-        })
+
+        score, has_changed = self.engine.get_score()
+        if has_changed:
+            await self.send_to_joined({
+                'action': 'game_render_score',
+                'score': score
+            })
 
     async def gameloop(self):
         """The main game loop"""

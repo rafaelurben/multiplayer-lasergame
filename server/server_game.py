@@ -162,7 +162,7 @@ class GameServer(BasicServer):
                 return await self.send_to_joined({'action': 'player_updated', 'id': player_id, 'player': self.players[player_id]})
             if action == 'shuffle_teams':
                 return await self.shuffle_teams()
-        if self.in_game:
+        if self.in_game or self.game_state == 'leaderboard':
             if action == 'end_game':
                 return await self.end_game()
         return False
@@ -361,6 +361,10 @@ class GameServer(BasicServer):
                 'action': 'game_render_score',
                 'score': score
             })
+
+            if score == 0 or score == 1:
+                self.game_state = 'leaderboard'
+                await self.send_to_joined({'action': 'state_changed', 'state': 'leaderboard'})
 
     async def gameloop(self):
         """The main game loop"""

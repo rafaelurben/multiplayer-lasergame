@@ -15,7 +15,7 @@ function setupKeybinds(socket) {
             if (event.key === "s") {
                 // s: Start/stop game
                 event.preventDefault();
-                if (socket.game.state === 'ingame') {
+                if (socket.game.state === 'ingame' || socket.game.state === 'leaderboard') {
                     socket.action('end_game');
                 } else {
                     socket.action('start_game');

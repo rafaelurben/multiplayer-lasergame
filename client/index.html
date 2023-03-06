@@ -143,6 +143,11 @@
                         </div>
                     </div>
                 </div>
+                <!-- Game end / leaderboard -->
+                <div class="stateblock state_leaderboard m-2 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+                    <h4>Game ended</h4>
+                    <span class="text-gray">Look up to see the leaderboard.</span>
+                </div>
                 <!-- Team selection buttons -->
                 <div id="teamselectcontainer" class="stateblock state_lobby row gap-2 m-2 flex-grow-1">
                     <!-- Teamselect-buttons are created in game.js on page load -->
@@ -157,6 +162,24 @@
                 <!-- Game -->
                 <div id="spectatorcanvascontainer" class="stateblock state_ingame flex-grow-1 d-flex justify-content-center">
                     <!-- Canvas is created by konvajs -->
+                </div>
+                <!-- Game end / leaderboard -->
+                <div class="stateblock state_leaderboard d-flex flex-column flex-grow-1">
+                    <!-- Leaderboard screen -->
+                    <div id="leaderboard" class="gap-2 m-2 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+                        <!-- TODO: fill with JS -->
+                        <h4>Leaderboard</h4>
+                        <p class="text-gray text-center">
+                            This feature has not yet been implemented. ;)<br>
+                            All I can tell is that the game has ended and a team has won!<br><br>
+                            <b>Congratulations!</b>
+                        </p>
+                    </div>
+                    <!-- Master control bar -->
+                    <div class="modeblock mode_master d-flex flex-row flex-wrap gap-2 p-2">
+                        <span class="flex-grow-1"></span>
+                        <button class="btn btn-light" onclick="sock.action('end_game')">Return to lobby</button>
+                    </div>
                 </div>
                 <!-- Lobby -->
                 <div class="stateblock state_lobby state_lobby_teamlock d-flex flex-column flex-grow-1">

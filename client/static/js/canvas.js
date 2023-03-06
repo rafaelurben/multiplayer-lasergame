@@ -39,6 +39,10 @@ class GameMapCanvas {
         this.grp_laser = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
         this.layer0.add(this.grp_laser);
 
+        // Score group
+        this.grp_score = new Konva.Group({ x: 0.5, y: 0.5 });
+        this.layer0.add(this.grp_score);
+
         // Coordinate system group
         this.grp_coordsystem = new Konva.Group({ x: mapOffsetX, y: mapOffsetY });
         this.layer2.add(this.grp_coordsystem);
@@ -242,17 +246,6 @@ class GameMapCanvas {
             }
         }
     }
-}
-
-class SpectatorCanvas extends GameMapCanvas {
-    constructor(game, containerId, mapWidth, mapHeight) {
-        super(game, containerId, mapWidth, mapHeight, mapWidth+1, mapHeight+2.5, 0.5, 1.5);
-
-        // Score group
-        this.grp_score = new Konva.Group({ x: 0.5, y: 0.5 });
-        this.layer0.add(this.grp_score);
-        this.drawScore(0.5);
-    }
 
     drawScore(score) {
         let css = window.getComputedStyle(document.documentElement);
@@ -293,9 +286,16 @@ class SpectatorCanvas extends GameMapCanvas {
     }
 }
 
+class SpectatorCanvas extends GameMapCanvas {
+    constructor(game, containerId, mapWidth, mapHeight) {
+        super(game, containerId, mapWidth, mapHeight, mapWidth+1, mapHeight+2.5, 0.5, 1.5);
+
+    }
+}
+
 class PlayerCanvas extends GameMapCanvas {
     constructor(game, containerId, mapWidth, mapHeight) {
-        super(game, containerId, mapWidth, mapHeight, mapWidth+1, mapHeight+1, 0.5, 0.5);
+        super(game, containerId, mapWidth, mapHeight, mapWidth+1, mapHeight+2.5, 0.5, 1.5);
 
         // Draggable stage
         this.stage.draggable(true);

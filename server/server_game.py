@@ -295,11 +295,10 @@ class GameServer(BasicServer):
                 'action': 'game_render_lasers',
                 'lasers': self.engine.get_lasers(no_changes=True)[0]
             })
-            if wsid in self.spectator_ids:
-                await ws.send_json({
-                    'action': 'game_render_score',
-                    'score': self.engine.get_score()
-                })
+            await ws.send_json({
+                'action': 'game_render_score',
+                'score': self.engine.get_score()
+            })
 
     async def start_game(self, **params):
         """Start the game"""
@@ -356,7 +355,7 @@ class GameServer(BasicServer):
                 'lasers': lasers
             })
     
-        await self.send_to_spectators({
+        await self.send_to_joined({
             'action': 'game_render_score',
             'score': self.engine.get_score()
         })

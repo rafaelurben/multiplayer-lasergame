@@ -53,8 +53,8 @@ class Map:
         self.change_field(field_x=1, field_y=y_emitter, block_id=2, team=0, angle=0)
         self.change_field(field_x=self.width-2, field_y=y_emitter, block_id=2, team=1, angle=math.pi)
 
-        self.change_field(field_x=1, field_y=y_receiver, block_id=3, team=0, angle=0)
-        self.change_field(field_x=self.width-2, field_y=y_receiver, block_id=3, team=1, angle=math.pi)
+        self.change_field(field_x=1, field_y=y_receiver, block_id=3, team=1, angle=0)
+        self.change_field(field_x=self.width-2, field_y=y_receiver, block_id=3, team=0, angle=math.pi)
 
 
 

@@ -195,9 +195,8 @@ class Receiver(Block):
             if 0.25 <= end_point[0] <= 0.75 and end_point[1] == 1:
                 hit = True
                 border = []
-        if hit:
-            if not laser_team == self.team:
-                self.damage += strength
+        if hit and laser_team == self.team:
+            self.damage += strength
 
         return (lines, end_point, angle, strength, border)
 

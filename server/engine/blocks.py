@@ -1,6 +1,8 @@
 import math
 from copy import deepcopy
 
+HP_STAGES = 4
+
 class Block:
     def __init__(self):
         self.id = None
@@ -216,7 +218,7 @@ class Wood(Block):
             "type" : self.type,
             "pos" : self.pos,
             "rotation" : self.angle,
-            "hp" : self.hp,
+            "hp" : int(self.hp / self.max_hp * HP_STAGES),
             "alive" : not self.down 
         }
         return data

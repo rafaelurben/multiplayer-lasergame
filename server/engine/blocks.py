@@ -164,6 +164,18 @@ class Receiver(Block):
         super().__init__()
         self.damage = 0
 
+    def get_data(self):
+        data = {
+            "id" : self.id,
+            "team" : self.team,
+            "owner" : self.owner,
+            "type" : self.type,
+            "pos" : self.pos,
+            "rotation" : self.angle,
+            "hit_strength" : self.damage
+        }
+        return data
+
     def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         hit = False
@@ -196,6 +208,19 @@ class Wood(Block):
         self.hp = self.max_hp
         self.regeneration = 0.00025
         self.down = False
+    
+    def get_data(self):
+        data = {
+            "id" : self.id,
+            "team" : self.team,
+            "owner" : self.owner,
+            "type" : self.type,
+            "pos" : self.pos,
+            "rotation" : self.angle,
+            "hp" : self.hp,
+            "alive" : not self.down 
+        }
+        return data
 
     def tick(self):
         self.hp += self.regeneration

@@ -164,7 +164,7 @@ class Emitter(Block):
 class Receiver(Block):
     def __init__(self):
         super().__init__()
-        self.damage = 0
+        self.hp_diff = 0
 
     def get_data(self):
         data = {
@@ -174,9 +174,13 @@ class Receiver(Block):
             "type" : self.type,
             "pos" : self.pos,
             "rotation" : self.angle,
-            "hit_strength" : self.damage
+            "is_hit" : self.hp_diff > 0
         }
         return data
+
+    def tick(self):
+        # reset hp_diff (will be updated by get_laser_path)
+        self.hp_diff = 0
 
     def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
@@ -198,7 +202,7 @@ class Receiver(Block):
                 hit = True
                 border = []
         if hit and laser_team == self.team:
-            self.damage += strength
+            self.hp_diff += strength
 
         return (lines, end_point, angle, strength, border)
 

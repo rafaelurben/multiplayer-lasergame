@@ -171,10 +171,9 @@ class Map:
             for field_y in range(1, self.height - 1):
                 if type(self.map[field_x][field_y]) == Receiver:
                     if self.map[field_x][field_y].team == 0:
-                        self.score += self.map[field_x][field_y].damage
+                        self.score += self.map[field_x][field_y].hp_diff
                     else:
-                        self.score -= self.map[field_x][field_y].damage
-                    self.map[field_x][field_y].damage = 0
+                        self.score -= self.map[field_x][field_y].hp_diff
         self.score = min(1, max(self.score, 0))
 
     def handle_controls(self, player_id: int, block_id: int, button: str) -> bool:

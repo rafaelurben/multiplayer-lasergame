@@ -247,7 +247,8 @@ class GameMapCanvas {
                         points: line[0],
                         stroke: c,
                         strokeWidth: Math.min(Math.max(line[1]*widthScale, widthMin), widthMax),
-                        lineCap: 'round',
+                        lineCap: 'butt',
+                        lineJoin: 'butt',
                         opacity: isspectator ? 1 : 0.25,
                     })
                 );

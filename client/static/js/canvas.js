@@ -103,13 +103,14 @@ class GameMapCanvas {
         this.grp_coordsystem.destroyChildren();
 
         // Draw outline
+        let ow = 0.1;
         let outline = new Konva.Rect({
-            x: 0,
-            y: 0,
-            width: this.mapWidth,
-            height: this.mapHeight,
+            x: -ow/2,
+            y: -ow/2,
+            width: this.mapWidth + ow,
+            height: this.mapHeight + ow,
             stroke: 'white',
-            strokeWidth: 0.1,
+            strokeWidth: ow,
         });
         this.grp_coordsystem.add(outline);
 

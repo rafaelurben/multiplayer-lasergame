@@ -207,6 +207,8 @@ class Receiver(Block):
         return (lines, end_point, angle, strength, border)
 
 class Wood(Block):
+    strength_factor = 0.8
+
     def __init__(self):
         super().__init__()
         self.max_hp = 0.1
@@ -242,7 +244,7 @@ class Wood(Block):
         else:
             lines, end_point, angle, border = self.get_path(point, angle, border, strength)
 
-            return (lines, end_point, angle, strength, border)
+            return (lines, end_point, angle, strength * self.strength_factor, border)
 
 class Mirror(Block):
     def get_laser_path(self, point, angle, strength, border, laser_team):

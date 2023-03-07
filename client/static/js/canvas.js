@@ -163,11 +163,19 @@ class GameMapCanvas {
                 break;
             }
             case 3: { // Receiver
-                url = baseurl + `receiver_${block.team}.svg`;
+                if (block.is_hit) {
+                    url = baseurl + `receiver_${block.team}_hit.svg`;
+                } else {
+                    url = baseurl + `receiver_${block.team}.svg`;
+                }
                 break;
             }
             case 4: { // Wood
-                url = baseurl + 'wood.svg';
+                if (block.alive) {
+                    url = baseurl + `wood_alive_${block.hp}.svg`;
+                } else {
+                    url = baseurl + `wood_down_${block.hp}.svg`;
+                }
                 break;
             }
             case 5: { // Mirror
@@ -202,7 +210,6 @@ class GameMapCanvas {
 
             // Draw markers after image is loaded
             if (isowner) {
-                console.log('draw marker')
                 let marker = new Konva.Rect({
                     width: .2,
                     height: .2,

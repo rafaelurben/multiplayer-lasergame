@@ -245,9 +245,16 @@ class Map:
             team = laser["team"]
             lines = []
             for line in laser["laser"]:
-                cords = [line[0][0]-1, line[0][1]-1, line[1][0]-1, line[1][1]-1]
-                strength = line[2]
-                lines.append([cords, strength])
+                
+                x1, y1, x2, y2, strength = line[0][0]-1, line[0][1]-1, line[1][0]-1, line[1][1]-1, line[2]
+                coords = [x1, y1, x2, y2]
+                
+                if len(lines) > 0 and lines[-1][1] == strength and lines[-1][0][-2:] == [x1, y1]:
+                    # If the last line has the same strength and end and start point match, we can merge them together
+
+                    lines[-1][0] += [x2, y2]
+                else:
+                    lines.append([coords, strength])
             lasers.append({
                 "team" : team,
                 "lines" : lines

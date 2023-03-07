@@ -212,6 +212,21 @@ class Game {
         }
     }
 
+    renderLeaderboard(winning_team_id, winning_team_players) {
+        let elem_team = $("#leaderboard-winning-team");
+        let elem_players = $("#leaderboard-winning-players");
+
+        let team_name = TEAMNAMES[winning_team_id] || TEAMNAME_NONE;
+
+        elem_team.text(team_name);   
+
+        let player_names = [];
+        for (let player of winning_team_players) {
+            player_names.push(player.name);
+        }
+        elem_players.text(player_names.join(", "));     
+    }
+
     // Player inventory
 
     playerInventoryRender() {

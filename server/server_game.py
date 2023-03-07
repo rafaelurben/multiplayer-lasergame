@@ -299,6 +299,13 @@ class GameServer(BasicServer):
                 'action': 'game_render_score',
                 'score': self.engine.get_score(no_changes=True)[0]
             })
+        if self.game_state == 'leaderboard':
+            teamid = 0 if self.engine.score == 1 else 1
+            await ws.send_json({
+                'action': 'game_render_leaderboard',
+                'winning_team_id': teamid,
+                'winning_team_players': [p for p in self.players.values() if p['team'] == teamid],
+            })
 
     async def start_game(self, **params):
         """Start the game"""
@@ -362,9 +369,15 @@ class GameServer(BasicServer):
                 'score': score
             })
 
-            if score == 0 or score == 1:
+            if score in [0, 1]:
                 self.game_state = 'leaderboard'
                 await self.send_to_joined({'action': 'state_changed', 'state': 'leaderboard'})
+                teamid = 0 if self.engine.score == 1 else 1
+                await self.send_to_spectators({
+                    'action': 'game_render_leaderboard',
+                    'winning_team_id': teamid,
+                    'winning_team_players': [p for p in self.players.values() if p['team'] == teamid],
+                })
 
     async def gameloop(self):
         """The main game loop"""

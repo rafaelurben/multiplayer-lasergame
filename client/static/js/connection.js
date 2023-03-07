@@ -122,6 +122,10 @@ class GameSocket {
                 this.game.canvas.drawScore(json.score);
                 break;
             }
+            case "game_render_leaderboard": {
+                this.game.renderLeaderboard(json.winning_team_id, json.winning_team_players);
+                break;
+            }
             default: {
                 console.warn("[WS] Unknown action received:", json);
             }

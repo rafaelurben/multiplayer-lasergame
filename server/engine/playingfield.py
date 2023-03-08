@@ -1,4 +1,5 @@
 from .blocks import Empty, Wall, Emitter, Receiver, Wood, Mirror, Glass
+from .utils import same_inclination
 from copy import deepcopy
 import math
 import random
@@ -249,10 +250,21 @@ class Map:
                 x1, y1, x2, y2, strength = line[0][0]-1, line[0][1]-1, line[1][0]-1, line[1][1]-1, line[2]
                 coords = [x1, y1, x2, y2]
                 
-                if len(lines) > 0 and lines[-1][1] == strength and lines[-1][0][-2:] == [x1, y1]:
-                    # If the last line has the same strength and end and start point match, we can merge them together
+                if len(lines) > 0 and lines[-1][1] == strength:
+                    # If the last line has the same strength, we can merge them together
 
-                    lines[-1][0] += [x2, y2]
+                    if not lines[-1][0][-2:] == [x1, y1]:
+                        # Check if the last line ends at the same point as the new one starts
+                        # This should technically never happen if the engine is working properly
+                        print("Error: Laser path is not continuous!")
+
+                    if same_inclination(lines[-1][0][-4:], coords):
+                        # If the lines have the same inclination, we replace the last end point with the new one
+                        lines[-1][0][-2] = x2
+                        lines[-1][0][-1] = y2
+                    else:
+                        # If the lines have different inclinations, we can add the new end point to the last line
+                        lines[-1][0] += [x2, y2]
                 else:
                     lines.append([coords, strength])
             lasers.append({

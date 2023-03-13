@@ -194,7 +194,7 @@ class GameMapCanvas {
         // Create group to hold image and markers
         let group = new Konva.Group({
             position: block.pos,
-            opacity: !isplayer || isowningteam ? 1 : 0.5,
+            opacity: !isplayer || isowningteam ? 1 : 0.25,
         });
         this.grp_main.add(group);
         this._mapCache[block.id] = {
@@ -214,7 +214,7 @@ class GameMapCanvas {
                 let marker = new Konva.Rect({
                     width: .2,
                     height: .2,
-                    fill: '#00ff00',
+                    fill: '#f47702',
                     strokeWidth: 0.05,
                 });
                 group.add(marker);
@@ -228,7 +228,7 @@ class GameMapCanvas {
         }
     }
 
-    drawLasers(lasers, isspectator) {
+    drawLasers(lasers, isspectator, teamid) {
         let css = window.getComputedStyle(document.documentElement);
 
         let strengthBase = 0.001; // Same as in server
@@ -249,7 +249,7 @@ class GameMapCanvas {
                         strokeWidth: Math.min(Math.max(line[1]*widthScale, widthMin), widthMax),
                         lineCap: 'butt',
                         lineJoin: 'bevel',
-                        opacity: isspectator ? 1 : 0.25,
+                        opacity: (isspectator || laser.team === teamid) ? 1 : 0.25,
                     })
                 );
             }
@@ -384,7 +384,7 @@ class PlayerCanvas extends GameMapCanvas {
     }
 
     drawSelection(x, y) {
-        let c = '#00ff00'; // stroke color
+        let c = '#f47702'; // stroke color
         let sw = 0.05 // stroke width
 
         let rect = new Konva.Rect({

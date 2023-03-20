@@ -166,8 +166,14 @@ class GameMapCanvas {
             case 3: { // Receiver
                 if (block.is_hit) {
                     url = baseurl + `receiver_${block.team}_hit.svg`;
+                    if (!isowningteam) {
+                        document.getElementById('block-player-game').classList.add('under-attack')
+                    }
                 } else {
                     url = baseurl + `receiver_${block.team}.svg`;
+                    if (!isowningteam) {
+                        document.getElementById('block-player-game').classList.remove('under-attack')
+                    }
                 }
                 break;
             }

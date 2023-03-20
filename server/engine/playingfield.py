@@ -61,6 +61,38 @@ class Map:
 
 
 
+        self.cords_blocked_0 = [
+            [1, y_emitter + 1],
+            [1 + 1, y_emitter + 1],
+            [1 + 1, y_emitter],
+            [1 + 1, y_emitter - 1],
+            [1, y_emitter - 1],
+            [self.width-2, y_receiver + 1],
+            [self.width-3, y_receiver + 1],
+            [self.width-3, y_receiver],
+            [self.width-3, y_receiver - 1],
+            [self.width-2, y_receiver - 1],
+        ]
+        self.cords_blocked_1 = [
+            [self.width-2, y_emitter + 1],
+            [self.width-3, y_emitter + 1],
+            [self.width-3, y_emitter],
+            [self.width-3, y_emitter - 1],
+            [self.width-2, y_emitter - 1],
+            [1, y_receiver + 1],
+            [1 + 1, y_receiver + 1],
+            [1 + 1, y_receiver],
+            [1 + 1, y_receiver - 1],
+            [1, y_receiver - 1],
+        ]
+
+        for cord in self.cords_blocked_0:
+            self.map[cord[0]][cord[1]].team = 0
+
+        for cord in self.cords_blocked_1:
+            self.map[cord[0]][cord[1]].team = 1
+
+
         lcm = 1
         for t in self.teams:
             lcm = math.lcm(lcm, len(self.teams[t]))
@@ -71,19 +103,39 @@ class Map:
         empty_cords = []
         for field_x in range(1, self.width - 1):
             for field_y in range(1, self.height - 1):
-                if type(self.map[field_x][field_y]) == Empty:
+                if type(self.map[field_x][field_y]) == Empty and self.map[field_x][field_y].team != 1:
                     empty_cords.append((field_x, field_y))
 
-        for t in self.teams:
-            team = self.teams[t]
-            sets_per_player = int(n_block_sets_per_team / len(team))
 
-            for player in team:
-                for set in range(sets_per_player):
-                    for block_id in block_set:
-                        for block in range(block_set[block_id]):
-                            field_x, field_y = empty_cords.pop(random.randint(0, len(empty_cords) - 1))
-                            self.change_field(field_x, field_y, block_id, t, player)
+        t = 0
+        team = self.teams[t]
+        sets_per_player = int(n_block_sets_per_team / len(team))
+
+        for player in team:
+            for set in range(sets_per_player):
+                for block_id in block_set:
+                    for block in range(block_set[block_id]):
+                        field_x, field_y = empty_cords.pop(random.randint(0, len(empty_cords) - 1))
+                        self.change_field(field_x, field_y, block_id, t, player)
+        
+
+
+        empty_cords = []
+        for field_x in range(1, self.width - 1):
+            for field_y in range(1, self.height - 1):
+                if type(self.map[field_x][field_y]) == Empty and self.map[field_x][field_y].team != 0:
+                    empty_cords.append((field_x, field_y))
+
+        t = 1
+        team = self.teams[t]
+        sets_per_player = int(n_block_sets_per_team / len(team))
+
+        for player in team:
+            for set in range(sets_per_player):
+                for block_id in block_set:
+                    for block in range(block_set[block_id]):
+                        field_x, field_y = empty_cords.pop(random.randint(0, len(empty_cords) - 1))
+                        self.change_field(field_x, field_y, block_id, t, player)
             
         
 
@@ -185,6 +237,11 @@ class Map:
         `button` is a string in ['move_up', 'move_down', 'move_left', 'move_right', 'rotate_left', 'rotate_right'].
         """
         rotation_angle = math.pi / 16
+        if player_id in self.teams[0]:
+            team = 0
+        else:
+            team = 1
+
         for field_x in range(1, self.width - 1):
             for field_y in range(1, self.height - 1):
                 if self.map[field_x][field_y].id == block_id:
@@ -194,28 +251,57 @@ class Map:
                     if not block.owner == player_id:
                         return False
         if button == "move_up":
-            if type(self.map[x][y-1]) == Empty:
+            if type(self.map[x][y-1]) == Empty and self.map[x][y-1] and (self.map[x][y-1].team == team or self.map[x][y-1].team == None):
                 block.pos["y"] -= 1
                 self.map[x][y-1] = block
-                self.map[x][y] = Empty()
+                if [x, y] in self.cords_blocked_0:
+                    self.map[x][y] = Empty()
+                    self.map[x][y].team = 0
+                elif [x, y] in self.cords_blocked_1:
+                    self.map[x][y] = Empty()
+                    self.map[x][y].team = 1
+                else:
+                    self.map[x][y] = Empty()
+                    
                 return True
         elif button == "move_down":
-            if type(self.map[x][y+1]) == Empty:
+            if type(self.map[x][y+1]) == Empty and (self.map[x][y+1].team == team or self.map[x][y+1].team == None):
                 block.pos["y"] += 1
                 self.map[x][y+1] = block
-                self.map[x][y] = Empty()
+                if [x, y] in self.cords_blocked_0:
+                    self.map[x][y] = Empty()
+                    self.map[x][y].team = 0
+                elif [x, y] in self.cords_blocked_1:
+                    self.map[x][y] = Empty()
+                    self.map[x][y].team = 1
+                else:
+                    self.map[x][y] = Empty()
                 return True
         elif button == "move_left":
-            if type(self.map[x-1][y]) == Empty:
+            if type(self.map[x-1][y]) == Empty and (self.map[x-1][y].team == team or self.map[x-1][y].team == None):
                 block.pos["x"] -= 1
                 self.map[x-1][y] = block
-                self.map[x][y] = Empty()
+                if [x, y] in self.cords_blocked_0:
+                    self.map[x][y] = Empty()
+                    self.map[x][y].team = 0
+                elif [x, y] in self.cords_blocked_1:
+                    self.map[x][y] = Empty()
+                    self.map[x][y].team = 1
+                else:
+                    self.map[x][y] = Empty()
                 return True
         elif button == "move_right":
-            if type(self.map[x+1][y]) == Empty:
+            if type(self.map[x+1][y]) == Empty and (self.map[x+1][y].team == team or self.map[x+1][y].team == None):
                 block.pos["x"] += 1
                 self.map[x+1][y] = block
-                self.map[x][y] = Empty()
+                if [x, y] in self.cords_blocked_0:
+                    self.map[x][y] = Empty()
+                    self.map[x][y].team = 0
+                elif [x, y] in self.cords_blocked_1:
+                    self.map[x][y] = Empty()
+                    self.map[x][y].team = 1
+                else:
+                    self.map[x][y] = Empty()
                 return True
         elif button == "rotate_left":
             self.map[x][y].angle += rotation_angle

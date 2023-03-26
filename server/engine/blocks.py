@@ -23,6 +23,12 @@ class Block:
         }
         return data
     
+    def round_point(self, point):
+        decimals = 1
+        point[0] = round(point[0], decimals)
+        point[1] = round(point[1], decimals)
+        return point
+
     def line_incersection(self, p1, p2, p3, p4):
         x1 = p1[0]
         y1 = p1[1]
@@ -38,8 +44,7 @@ class Block:
 
         t = (((x1 - x3) * (y3 - y4)) - ((y1 - y3) * (x3 - x4))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
         u = (((x1 - x3) * (y1 - y2)) - ((y1 - y3) * (x1 - x2))) / (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)))
-        t = round(t, 2)
-        u = round(u, 2)
+
         if 0 <= t <= 1 and 0 <= u <= 1:
             new_x = x1 + (t * (x2 - x1))
             new_y = y1 + (t * (y2 - y1))
@@ -49,44 +54,65 @@ class Block:
 
 
     def normalize(self, point, border):
-        if "n" in border:
-            point = [point[0], 1]
-        if "e" in border:
-            point = [0, point[1]]
-        if "s" in border:
-            point = [point[0], 0]
-        if "w" in border:
-            point = [1, point[1]]
+        # print(point)
+        point[1] = round(point[1], 1)
+        point[0] = round(point[0], 1)
+        if point[0] == 0:
+            point[0] = 1
+        elif point[0] == 1:
+            point[0] = 0
+        if point[1] == 0:
+            point[1] = 1
+        elif point[1] == 1:
+            point[1] = 0
+        # if "n" in border:
+        #     point = [point[0], 1]
+        # if "e" in border:
+        #     point = [0, point[1]]
+        # if "s" in border:
+        #     point = [point[0], 0]
+        # if "w" in border:
+        #     point = [1, point[1]]
+        # print(point)
         return point
 
     def get_path(self, point, angle, border, strength):
         point = self.normalize(point, border)
         outside_point = [point[0] + (2 * math.cos(angle)), point[1] + (2 * (math.sin(angle)))]
-        exit_border = []
-        if not "s" in border:
+        if not point[1] == 0:
             north, p_n = self.line_incersection(point, outside_point, [0,0], [1,0])
             if north:
-                exit_border.append("n")
+                # exit_border.append("n")
                 end_point = [p_n[0], 0]
-        if not "w" in border:
+        if not point[0] == 1:
             east, p_e = self.line_incersection(point, outside_point, [1,0], [1,1])
             if east:
-                exit_border.append("e")
+                # exit_border.append("e")
                 end_point = [1, p_e[1]]
-        if not "n" in border:
+        if not point[1] == 1:
             south, p_s = self.line_incersection(point, outside_point, [0,1], [1,1])
             if south:
-                exit_border.append("s")
+                # exit_border.append("s")
                 end_point = [p_s[0], 1]
-        if not "e" in border:
+        if not point[0] == 0:
             west, p_w = self.line_incersection(point, outside_point, [0,0], [0,1])
             if west:
-                exit_border.append("w")
+                # exit_border.append("w")
                 end_point = [0, p_w[1]]
 
-
+        exit_border = []
+        end_point = self.round_point(end_point)
+        if end_point[0] == 0:
+            exit_border.append("w")
+        if end_point[1] == 0:
+            exit_border.append("n")
+        if end_point[0] == 1:
+            exit_border.append("e")
+        if end_point[1] == 1:
+            exit_border.append("s")
 
         lines = [[point, end_point, strength]]
+        # print("empty", lines, end_point, angle, strength, exit_border)
 
         return (lines, deepcopy(end_point), angle, exit_border)
 
@@ -101,26 +127,32 @@ class Empty(Block):
 class Wall(Block):
     def get_laser_path(self, point, angle, strength, border, laser_team):
         exit_border = []
-        if "n" in border:
-            end_point = [point[0], 1]
-            angle = 2 * math.pi - angle
-            exit_border.append("s")
-        if "e" in border:
-            end_point = [0, point[1]]
-            angle = math.pi - angle
-            exit_border.append("w")
-        if "s" in border:
-            end_point = [point[0], 0]
-            angle = 2 * math.pi - angle
-            exit_border.append("n")
-        if "w" in border:
-            end_point = [1, point[1]]
-            angle = math.pi - angle
-            exit_border.append("e")
+        # print(border, self.angle)
+        if self.angle == 0:
+            if "e" in border:
+                end_point = [0, point[1]]
+                angle = math.pi - angle
+                exit_border.append("w")
+            if "w" in border:
+                end_point = [1, point[1]]
+                angle = math.pi - angle
+                exit_border.append("e")
+        elif self.angle == 1:
+            if "n" in border:
+                end_point = [point[0], 1]
+                angle = 2 * math.pi - angle
+                exit_border.append("s")
+            if "s" in border:
+                end_point = [point[0], 0]
+                angle = 2 * math.pi - angle
+                exit_border.append("n")
+        else:
+            return ([], [0, 0], angle, strength, [])
 
         angle = (angle + (2*math.pi))%(2*math.pi)
 
         lines = []
+        # print("wall", point, end_point, angle, exit_border)
         return (lines, end_point, angle, strength, exit_border)
 
 class Emitter(Block):
@@ -137,22 +169,33 @@ class Emitter(Block):
         east, p_e = self.line_incersection(point, outside_point, [1,0], [1,1])
         south, p_s = self.line_incersection(point, outside_point, [0,1], [1,1])
         west, p_w = self.line_incersection(point, outside_point, [0,0], [0,1])
-        border = []
+        # border = []
         if north:
-            border.append("n")
+            # border.append("n")
             end_point = [p_n[0], 0]
         if east:
-            border.append("e")
+            # border.append("e")
             end_point = [1, p_e[1]]
         if south:
-            border.append("s")
+            # border.append("s")
             end_point = [p_s[0], 1]
         if west:
-            border.append("w")
+            # border.append("w")
             end_point = [0, p_w[1]]
 
+        exit_border = []
+        end_point = self.round_point(end_point)
+        if end_point[0] == 0:
+            exit_border.append("w")
+        if end_point[1] == 0:
+            exit_border.append("n")
+        if end_point[0] == 1:
+            exit_border.append("e")
+        if end_point[1] == 1:
+            exit_border.append("s")
+
         lines = [[point, end_point, self.strength]]
-        return (lines, deepcopy(end_point), self.angle, self.strength, border)
+        return (lines, deepcopy(end_point), self.angle, self.strength, exit_border)
 
     def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
@@ -251,7 +294,7 @@ class Mirror(Block):
         # https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
         mirror_angle = (-self.angle + (math.pi / 2)) % math.pi
 
-        lines, end_point, angle, border = self.get_path(point, angle, border, strength)
+        lines, end_point, angle, exit_border = self.get_path(point, angle, border, strength)
         start_point = lines[0][0]
 
         x1 = start_point[0]
@@ -281,29 +324,43 @@ class Mirror(Block):
             south, p_s = self.line_incersection(mirror_point, outside_point, [0,1], [1,1])
             west, p_w = self.line_incersection(mirror_point, outside_point, [0,0], [0,1])
 
-            border = []
+            # border = []
             if north:
-                border.append("n")
+                # border.append("n")
                 end_point = [p_n[0], 0]
             if east:
-                border.append("e")
+                # border.append("e")
                 end_point = [1, p_e[1]]
             if south:
-                border.append("s")
+                # border.append("s")
                 end_point = [p_s[0], 1]
             if west:
-                border.append("w")
+                # border.append("w")
                 end_point = [0, p_w[1]]
+
+            exit_border = []
+            end_point = self.round_point(end_point)
+            if end_point[0] == 0:
+                exit_border.append("w")
+            if end_point[1] == 0:
+                exit_border.append("n")
+            if end_point[0] == 1:
+                exit_border.append("e")
+            if end_point[1] == 1:
+                exit_border.append("s")
 
             lines = [[start_point, mirror_point, strength], deepcopy([mirror_point, end_point, strength])]
             angle = mirror_angle
             angle = (angle + (2*math.pi))%(2*math.pi)
 
 
-        return (lines, end_point, angle, strength, border)
+        return (lines, end_point, angle, strength, exit_border)
 
 class Glass(Block):
     strength_factor = 0.8
     def get_laser_path(self, point, angle, strength, border, laser_team):
         lines, end_point, angle, border = self.get_path(point, angle, border, strength)
         return (lines, end_point, angle, strength * self.strength_factor, border)
+
+
+

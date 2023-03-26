@@ -3,7 +3,7 @@ from .utils import same_inclination
 from copy import deepcopy
 import math
 import random
-
+import traceback
 class Map:
     block_id_dic = {
         0 : Empty,
@@ -47,8 +47,12 @@ class Map:
         # Border
         for field_x in range(self.width):
             for field_y in range(self.height):
-                if field_x == 0 or field_y == 0 or field_x == self.width - 1 or field_y == self.height - 1:
-                    self.change_field(field_x, field_y, 1)
+                if (field_x == 0 or field_x == self.width - 1) and (field_y == 0 or field_y == self.height - 1):
+                    self.change_field(field_x, field_y, 1, angle=2)
+                elif field_x == 0 or field_x == self.width - 1:
+                    self.change_field(field_x, field_y, 1, angle=0)
+                elif field_y == 0 or field_y == self.height - 1:
+                    self.change_field(field_x, field_y, 1, angle=1)
 
         # receivers and emitters
         y_emitter = int(self.height * (1 / 3))
@@ -186,10 +190,11 @@ class Map:
                         # lines, point, angle, strength, border = self.map[x][y].get_laser_path(point, angle, strength, border, self.map[row][col].team)
 
                         try:
+                            # print(x, y)
                             lines, point, angle, strength, border = self.map[x][y].get_laser_path(point, angle, strength, border, self.map[row][col].team)
                             # print(lines)
-                        except Exception as e:
-                            print(e)
+                        except Exception:
+                            print(traceback.format_exc())
                             break
                         for l in lines:
                             l[0][1] += y

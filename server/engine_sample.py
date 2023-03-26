@@ -102,8 +102,8 @@ while True:
             ]
             # print(start, end)
             image = cv2.line(image, start, end, colors[laser["team"]], s)
-    angle += math.pi/8
-    m.update_state(3, 3, (angle, 1))
+    angle += math.pi/16
+    m.update_state(3, 3, (angle, 1)) 
     cv2.imshow("test", image)
     cv2.waitKey(0)
 

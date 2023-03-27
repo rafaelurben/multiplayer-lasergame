@@ -156,7 +156,11 @@ class Wall(Block):
         return (lines, end_point, angle, strength, exit_border)
 
 class Emitter(Block):
+    strength_factor = 1.0005
     strength = 0.001
+
+    def tick(self):
+        self.strength *= self.strength_factor
 
     def update_state(self, new_state):
         self.angle = new_state[0]
@@ -274,7 +278,7 @@ class Wood(Block):
 
     def tick(self):
         self.hp += self.regeneration
-        self.hp = min(self.max_hp, self.hp)
+        self.hp = min(self.max_hp, max(0, self.hp))
         if self.max_hp == self.hp:
             self.down = False
 

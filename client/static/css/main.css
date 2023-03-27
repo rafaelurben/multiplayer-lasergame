@@ -14,6 +14,16 @@
 .t0-bg { background-color: var(--col-team-0); }
 .t1-bg { background-color: var(--col-team-1); }
 
+/* Team select */
+
+#teamselectcontainer > button {
+    transition: all 0.25s;
+}
+
+#teamselectcontainer > button.selected {
+    border: 0.5rem solid white;
+}
+
 /* Utils */
 
 * {

@@ -22,7 +22,7 @@ window.addEventListener('load', () => {
 
     let teamselectcontainer = $("#teamselectcontainer");
     for (let team in TEAMNAMES) {
-        teamselectcontainer.append($(`<button class="btn t${team}-bg fs-2" onclick="sock.selectTeam(${team})">${TEAMNAMES[team]}</button>`))
+        teamselectcontainer.append($(`<button class="btn t${team} t${team}-bg fs-2" onclick="sock.selectTeam(${team})">${TEAMNAMES[team]}</button>`))
     }
 })
 
@@ -84,6 +84,8 @@ class Game {
         } else
         if (this.client.mode === "player") {
             $("#header_status").text(`Playing as ${this.player.name}\xa0(#${this.client.id})`);
+
+            if (this.state === 'lobby') this.renderPlayerLobby();
         } else
         if (this.client.mode === "spectator" || this.client.mode === "master") {
             if (this.client.mode === "master") {
@@ -116,6 +118,13 @@ class Game {
             } else if (this.client.mode === "player") {
                 this.canvas = new PlayerCanvas(this, 'playercanvascontainer', this.params.mapWidth, this.params.mapHeight);
             }
+        }
+    }
+
+    renderPlayerLobby() {
+        for (let team in TEAMNAMES) {
+            let selectbtn = $(`#teamselectcontainer > button.t${team}`);
+            selectbtn.toggleClass("selected", this.player.team === parseInt(team));
         }
     }
 

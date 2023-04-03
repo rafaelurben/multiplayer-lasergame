@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import random
 import asyncio
 from aiohttp import web
@@ -63,6 +64,20 @@ class GameServer(BasicServer):
     def in_game(self):
         "Returns True if the game is in a game state"
         return self.game_state == 'ingame'
+
+    def name_check(self, name: str) -> bool:
+        "Check if a name is valid"
+
+        # Check for duplicate names
+        for player in self.players.values():
+            if player['name'] == name:
+                return False
+
+        # Validate name
+        if not re.match(r'^[a-zA-Z0-9_\- ]{3,20}$', name):
+            return False
+
+        return True
 
     # Websocket actions
 
@@ -184,6 +199,9 @@ class GameServer(BasicServer):
             if mode == 'player':
                 if not self.in_lobby:
                     return await ws.send_json({'action': 'alert', 'message': '[Error] Game already started!'})
+                if not self.name_check(data['name']):
+                    return await ws.send_json({'action': 'alert', 'message': 'Invalid name! Only alphanumeric characters, spaces, underscores and dashes are allowed. (min 3, max 20 characters)'})
+                
                 name = data['name']
                 self.players[wsid] = {'name': name, 'team': None, 'id': wsid}
                 log.info('[WS] #%s joined as player "%s"', wsid, name)

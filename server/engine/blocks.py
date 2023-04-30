@@ -65,15 +65,6 @@ class Block:
             point[1] = 1
         elif point[1] == 1:
             point[1] = 0
-        # if "n" in border:
-        #     point = [point[0], 1]
-        # if "e" in border:
-        #     point = [0, point[1]]
-        # if "s" in border:
-        #     point = [point[0], 0]
-        # if "w" in border:
-        #     point = [1, point[1]]
-        # print(point)
         return point
 
     def get_path(self, point, angle, border, strength):
@@ -112,7 +103,6 @@ class Block:
             exit_border.append("s")
 
         lines = [[point, end_point, strength]]
-        # print("empty", lines, end_point, angle, strength, exit_border)
 
         return (lines, deepcopy(end_point), angle, exit_border)
 
@@ -152,7 +142,6 @@ class Wall(Block):
         angle = (angle + (2*math.pi))%(2*math.pi)
 
         lines = []
-        # print("wall", point, end_point, angle, exit_border)
         return (lines, end_point, angle, strength, exit_border)
 
 class Emitter(Block):
@@ -173,18 +162,13 @@ class Emitter(Block):
         east, p_e = self.line_incersection(point, outside_point, [1,0], [1,1])
         south, p_s = self.line_incersection(point, outside_point, [0,1], [1,1])
         west, p_w = self.line_incersection(point, outside_point, [0,0], [0,1])
-        # border = []
         if north:
-            # border.append("n")
             end_point = [p_n[0], 0]
         if east:
-            # border.append("e")
             end_point = [1, p_e[1]]
         if south:
-            # border.append("s")
             end_point = [p_s[0], 1]
         if west:
-            # border.append("w")
             end_point = [0, p_w[1]]
 
         exit_border = []
@@ -328,18 +312,13 @@ class Mirror(Block):
             south, p_s = self.line_incersection(mirror_point, outside_point, [0,1], [1,1])
             west, p_w = self.line_incersection(mirror_point, outside_point, [0,0], [0,1])
 
-            # border = []
             if north:
-                # border.append("n")
                 end_point = [p_n[0], 0]
             if east:
-                # border.append("e")
                 end_point = [1, p_e[1]]
             if south:
-                # border.append("s")
                 end_point = [p_s[0], 1]
             if west:
-                # border.append("w")
                 end_point = [0, p_w[1]]
 
             exit_border = []

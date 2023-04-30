@@ -161,7 +161,6 @@ class Map:
 
     def update_lasers(self):
         self.lasers = []
-        # print('')
 
         for row in range(len(self.map)):
             for col in range(len(self.map[0])):
@@ -187,12 +186,9 @@ class Map:
                         
                         if x == len(self.map) or y == len(self.map[0]) or x == -1 or y == -1:
                             break
-                        # lines, point, angle, strength, border = self.map[x][y].get_laser_path(point, angle, strength, border, self.map[row][col].team)
 
                         try:
-                            # print(x, y)
                             lines, point, angle, strength, border = self.map[x][y].get_laser_path(point, angle, strength, border, self.map[row][col].team)
-                            # print(lines)
                         except Exception:
                             print(traceback.format_exc())
                             break

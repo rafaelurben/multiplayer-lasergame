@@ -1,4 +1,4 @@
-# multiplayergame
+# Multiplayer laser game
 
 A simple 2-team laser game. Made to be played with friends in the same room.
 

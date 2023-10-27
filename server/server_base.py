@@ -111,7 +111,7 @@ class BasicServer:
         is_reconnected = False
 
         if self.allow_reconnect:
-            old_wsid = request.cookies.get("multiplayergame_wsid", "")
+            old_wsid = request.cookies.get("multiplayer_lasergame_wsid", "")
             if old_wsid.isdigit():
                 old_wsid = int(old_wsid)
                 log.info('[WS] #%s: Trying to reconnect...', old_wsid)
@@ -129,7 +129,7 @@ class BasicServer:
         if not is_reconnected:
             wsid = self.get_next_id()
 
-        ws_current.set_cookie("multiplayergame_wsid", str(wsid), samesite="Strict")
+        ws_current.set_cookie("multiplayer_lasergame_wsid", str(wsid), samesite="Strict")
         await ws_current.prepare(request)
 
         # Reconnect or connect

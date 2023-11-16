@@ -160,7 +160,7 @@ class GameSocket {
             console.error("[WS] Already joined!");
             return;
         }
-        this.send({"action": "join_room", "mode": "spectator"})
+        this.send({"action": "join_room", "mode": location.search === "?master" ? "master" : "spectator"})
     }
 
     leave() {

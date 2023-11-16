@@ -136,8 +136,7 @@ class GameServer(BasicServer):
         if action == 'leave_room':
             self.spectator_ids.remove(wsid)
             self.master_id = None
-            log.info(
-                '[WS] #%s: The game master left the room! The next spectator will become the new game master!', wsid)
+            log.info('[WS] #%s: The game master left the room!', wsid)
             return await ws.send_json({'action': 'room_left'})
         if self.in_lobby:
             if action == 'toggle_joining':
@@ -209,10 +208,11 @@ class GameServer(BasicServer):
             else:
                 self.spectator_ids.append(wsid)
                 log.info('[WS] #%s started spectating!', wsid)
-                if self.master_id is None:
+                if self.master_id is None and mode == 'master':
                     self.master_id = wsid
-                    mode = 'master'
                     log.info('[WS] #%s is now the game master!', wsid)
+                else:
+                    mode = "spectator"
 
             await self.on_join(ws, wsid, mode)
             return True

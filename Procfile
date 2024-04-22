@@ -1,1 +1,1 @@
-web: cd server && python server.py --no-ngrok
+web: cd server && python main.py --no-ngrok

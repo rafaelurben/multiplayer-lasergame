@@ -2,9 +2,11 @@ import aiohttp
 import logging
 import json
 import sys
+import os
 from aiohttp import web
 
 log = logging.getLogger()
+
 
 class BasicServer:
     "Basic websocket and http server"
@@ -34,7 +36,8 @@ class BasicServer:
         try:
             await ws.send_json(data)
         except ConnectionError:
-            log.warning('[WS] #%s: Connection reset; failed to send message!', wsid)
+            log.warning('[WS] #%s: Connection reset; failed to send message!',
+                        wsid)
             await self._handle_disconnect(ws, wsid)
 
     async def send_to_ids(self, data, ids):
@@ -98,7 +101,8 @@ class BasicServer:
             except json.JSONDecodeError:
                 await self.handle_message(msg.data, ws, wsid)
         else:
-            raise RuntimeError("[WS] #%s Unsupported message type: %s" % (wsid, msg.type))
+            raise RuntimeError(
+                "[WS] #%s Unsupported message type: %s" % (wsid, msg.type))
 
     async def websocket_handler(self, request):
         """Handle incoming websocket connections."""
@@ -129,7 +133,8 @@ class BasicServer:
         if not is_reconnected:
             wsid = self.get_next_id()
 
-        ws_current.set_cookie("multiplayer_lasergame_wsid", str(wsid), samesite="Strict")
+        ws_current.set_cookie("multiplayer_lasergame_wsid", str(wsid),
+                              samesite="Strict")
         await ws_current.prepare(request)
 
         # Reconnect or connect
@@ -146,7 +151,8 @@ class BasicServer:
                 msg = await ws_current.receive()
 
                 if msg.type == aiohttp.WSMsgType.ERROR:
-                    log.warning('[WS] #%s: Connection closed with exception %s', wsid, ws_current.exception())
+                    log.warning('[WS] #%s: Connection closed with exception %s',
+                                wsid, ws_current.exception())
                     break
                 if msg.type == aiohttp.WSMsgType.CLOSE:
                     log.warning('[WS] #%s: Connection closed!', wsid)
@@ -185,19 +191,19 @@ class BasicServer:
 
         app = web.Application()
         app.add_routes([
-            web.get('/ws', self.websocket_handler),
-        ] + self.get_routes())
+                           web.get('/ws', self.websocket_handler),
+                       ] + self.get_routes())
         app.on_cleanup.append(self.handle_cleanup)
         app.on_shutdown.append(self.handle_shutdown)
         app.on_startup.append(self.handle_startup)
         return app
 
-    def run(self, host="0.0.0.0", port=80):
+    def run(self, host="0.0.0.0", port=int(os.environ.get("PORT", 80))):
         """Run the server synchronously"""
 
         return web.run_app(self.app, host=host, port=port)
 
-    async def start(self, host="0.0.0.0", port=80):
+    async def start(self, host="0.0.0.0", port=int(os.environ.get("PORT", 80))):
         """Start the server asynchronously."""
 
         runner = web.AppRunner(self.app)
